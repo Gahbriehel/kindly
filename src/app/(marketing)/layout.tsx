@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import "@/src/styles/globals.css"; // or marketing-specific css
 
 export const metadata: Metadata = {
-  title: "Never Forget Their Anniversary – Wedding Planner Tool",
+  // title: "Never Forget Their Anniversary – Wedding Planner Tool",
+  title: "kindly",
   description: "Warm WhatsApp reminders for busy Nigerian planners",
+  icons: {
+    icon: "/images/logo-icon.png",
+  },
 };
 
 export default function MarketingLayout({
