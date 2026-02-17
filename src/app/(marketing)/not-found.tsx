@@ -16,7 +16,9 @@ export default function NotFound(): JSX.Element {
         </Link>{" "}
         to go back
       </h3>
-      <p className="text-blue-500">If you think this is an error, please contact support.</p>
+      <p className="text-blue-500">
+        If you think this is an error, please contact support.
+      </p>
     </div>
   );
 }
