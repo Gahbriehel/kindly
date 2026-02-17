@@ -25,7 +25,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const isPublicPath = publicPaths.includes(pathname) || pathname.startsWith("/auth/");
+  const isPublicPath =
+    publicPaths.includes(pathname) || pathname.startsWith("/auth/");
 
   // Option A: Simple session check (cookies, JWT, etc.)
   const sessionToken = request.cookies.get("your-session-cookie")?.value;
