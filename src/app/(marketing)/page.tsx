@@ -14,7 +14,7 @@ import { Footer } from "./components/Footer";
 
 export default function LandingPage() {
   return (
-    <div className="relative font-sans antialiased text-gray-900 bg-white dark:bg-gray-950 dark:text-gray-100 selection:bg-[#FF9B7A]/30">
+    <div className="relative font-sans antialiased bg-white dark:bg-gray-200 text-gray-900 dark:text-gray-100 selection:bg-[#FF9B7A]/30">
       <Navbar />
       <Hero />
       <ProblemSolution />

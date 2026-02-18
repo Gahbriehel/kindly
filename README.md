@@ -5,7 +5,9 @@ Kindly is a modern web application built with Next.js, designed to provide a sea
 ## Features
 
 ### Marketing Landing Page
+
 The project includes a fully featured marketing site with the following sections:
+
 - **Hero**: Engaging introduction with dynamic visuals.
 - **Problem & Solution**: Clearly articulated value proposition.
 - **How It Works**: Step-by-step guide for users.
@@ -17,6 +19,7 @@ The project includes a fully featured marketing site with the following sections
 - **CTA**: Strong calls to action throughout the page.
 
 ### Application
+
 - **App Interface**: A dedicated app section located at `/app`.
 - **Interactive UI**: enhanced with smooth animations using Framer Motion.
 - **Responsive Design**: Fully responsive layout using Tailwind CSS.
@@ -56,6 +59,7 @@ yarn check-all
 ```
 
 This script runs:
+
 1. `prettier --write` (Format code)
 2. `prettier --check` (Verify formatting)
 3. `eslint` (Lint code)
