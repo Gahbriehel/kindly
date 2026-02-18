@@ -15,7 +15,6 @@ const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Initialize theme from localStorage or system preference
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia(
@@ -27,7 +26,6 @@ const Navbar = () => {
     }
   }, []);
 
-  // Apply theme to <html> and save to localStorage
   useEffect(() => {
     const html = document.documentElement;
     if (theme === "dark") {
@@ -39,11 +37,9 @@ const Navbar = () => {
     }
   }, [theme]);
 
-  // 🧠 Scroll helper — ensures scroll works even after navigation
   const handleScrollNav = (section: string): void => {
     if (pathname !== "/") {
-      router.push("/"); // Go to homepage first
-      // Wait a tick for React to render home sections
+      router.push("/");
       setTimeout(() => {
         scroller.scrollTo(section, {
           duration: 500,
@@ -75,7 +71,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 bg-white/80 dark:bg-gray-900/80 text-gray-800 dark:text-gray-200 shadow-md z-50 p-4 md:px-10 border-b border-gray-200/50 dark:border-gray-800/50 w-full md:w-3/4 lg:w-1/2 flex m-auto rounded-full my-4">
+    <nav className="sticky top-4 bg-white/80 dark:bg-gray-900/80 text-gray-800 dark:text-gray-200 shadow-md z-50 p-4 md:px-10 border-b border-gray-200/50 dark:border-gray-800/50 w-full md:w-3/4 lg:w-1/2 flex m-auto rounded-full ">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="flex items-center gap-1">
           <Image src="/images/logoK.png" alt="Logo" width={80} height={80} />
