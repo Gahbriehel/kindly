@@ -28,7 +28,7 @@ export function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-[800px] mx-auto px-6 py-12 text-center">
+      <div className="relative z-10 max-w-[800px] mx-auto px-6 pt-32 pb-12 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
