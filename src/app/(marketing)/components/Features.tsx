@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "./ui/button";
+import { BaseButton } from "./ui/button";
 import { motion } from "framer-motion";
 
 export function Features() {
@@ -116,9 +116,9 @@ export function Features() {
               </div>
 
               <div className="flex justify-end">
-                <Button className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full px-6 py-2 h-auto text-lg flex gap-2">
+                <BaseButton className="bg-[#25D366] hover:bg-[#128C7E] border-none text-white rounded-full">
                   Send via WhatsApp
-                </Button>
+                </BaseButton>
               </div>
             </div>
           </div>

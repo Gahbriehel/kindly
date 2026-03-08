@@ -1,57 +1,192 @@
-import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
+"use client";
 
-import { cn } from "@/src/lib/utils";
+import {
+  type ForwardedRef,
+  forwardRef,
+  type ReactNode,
+  type JSX,
+  useState,
+} from "react";
+import { motion, type HTMLMotionProps } from "framer-motion";
+import { clsx } from "clsx";
+import { ClipLoader } from "react-spinners";
+import Link, { type LinkProps } from "next/link";
+import { ConfirmActionModal } from "../Modals/ConfirmActionModal";
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  },
-);
+type Type = "button" | "submit" | "reset" | "link";
+type Color =
+  | "primary"
+  | "secondary"
+  | "white"
+  | "outline"
+  | "danger"
+  | "main"
+  | "gradient"
+  | "transparent";
+type BaseButtonTypeProps = HTMLMotionProps<"button">;
+type BaseLinkTypeProps = LinkProps;
 
-export interface ButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
+type BaseButtonProps = {
+  icon?: ReactNode;
+  type?: Type;
+  text?: string;
+  loading?: boolean;
+  hideText?: boolean;
+  color?: Color;
+  className?: string;
+  badgeNumber?: number;
+  position?: "icon-first" | "icon-last";
+  children?: ReactNode;
+} & (BaseButtonTypeProps | BaseLinkTypeProps);
+
+interface DeleteButtonProps {
+  text?: string;
+  title?: string;
+  color?: Color;
+  loading?: boolean;
+  type?: Exclude<Type, "link">;
+  onClick?: () => void;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
+const motionProps = {
+  initial: {
+    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
   },
-);
-Button.displayName = "Button";
+  whileHover: { scale: 1.01, boxShadow: "0 12px 18px -3px rgb(0 0 0 / 0.1)" },
+  whileTap: { scale: 0.99, boxShadow: "0 8px 12px -2px rgb(0 0 0 / 0.1)" },
+};
 
-export { Button, buttonVariants };
+export const BaseButton = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  BaseButtonProps
+>(function BaseButton(
+  {
+    icon,
+    type,
+    text,
+    className,
+    loading,
+    badgeNumber,
+    color = "primary",
+    position = "icon-first",
+    hideText = false,
+    children,
+    ...props
+  },
+  ref,
+) {
+  const content = children || text;
+
+  const classNames = clsx(
+    "relative flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-3 py-2 text-sm font-semibold xs:text-base sm:h-12 sm:px-6 sm:py-3 disabled:cursor-not-allowed [&>span]:hover:opacity-100 transition-all",
+    {
+      "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400":
+        color === "outline",
+      "border-[#FF9B7A] bg-[#FF9B7A] text-white hover:bg-[#FF8765] disabled:bg-gray-400 disabled:border-gray-400":
+        color === "primary" || color === "main",
+      "border-red-600 bg-red-500 text-white hover:bg-red-600 disabled:bg-gray-400 disabled:border-gray-400":
+        color === "danger",
+      "border-[#3D3530] bg-[#3D3530] text-white hover:bg-[#2A2320] disabled:bg-gray-400 disabled:border-gray-400":
+        color === "secondary",
+      "border-[#FF9B7A] bg-white text-[#FF9B7A] hover:bg-[#FFF9F5] disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
+        color === "white",
+      "border-transparent bg-gradient-to-r from-[#FF9B7A] to-[#FF8765] hover:from-[#FF8765] hover:to-[#FF7A50] text-white shadow-[#FF9B7A]/30 hover:shadow-[#FF9B7A]/50 disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-400":
+        color === "gradient",
+      "bg-transparent text-[#FF9B7A] hover:bg-[#FF9B7A]/10 border border-[#FF9B7A] hover:border-[#FF9B7A]/50 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
+        color === "transparent",
+    },
+    { "flex-row-reverse": position === "icon-last" },
+    className,
+  );
+
+  if (type === "link" || (props as BaseLinkTypeProps).href) {
+    return (
+      <Link
+        {...(props as BaseLinkTypeProps)}
+        ref={ref as ForwardedRef<HTMLAnchorElement>}
+        className={classNames}
+      >
+        {!hideText && content}
+        {icon}
+        {hideText && (
+          <span className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black px-3 py-2 text-sm text-white opacity-0 transition-opacity duration-300">
+            {text}
+          </span>
+        )}
+      </Link>
+    );
+  }
+
+  return (
+    <motion.button
+      {...(!(props as BaseButtonTypeProps).disabled && motionProps)}
+      {...(props as BaseButtonTypeProps)}
+      ref={ref as ForwardedRef<HTMLButtonElement>}
+      type={type}
+      className={classNames}
+    >
+      {!loading && (
+        <>
+          {!hideText && content}
+          {badgeNumber && (
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-sky-600 text-xs text-white">
+              {badgeNumber}
+            </span>
+          )}
+          {icon}
+        </>
+      )}
+      {loading && (
+        <ClipLoader
+          size={12}
+          color={
+            ["white", "outline", "transparent"].includes(color)
+              ? "#FF9B7A"
+              : "#ffffff"
+          }
+        />
+      )}
+      {hideText && (
+        <span className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black px-3 py-2 text-sm text-white opacity-0 transition-opacity duration-300">
+          {text}
+        </span>
+      )}
+    </motion.button>
+  );
+});
+
+BaseButton.displayName = "BaseButton";
+
+export function DeleteButton({
+  loading,
+  onClick,
+  title,
+  text = "Delete",
+  color = "danger",
+  type = "button",
+}: DeleteButtonProps): JSX.Element {
+  const [display, setDisplay] = useState(false);
+  return (
+    <>
+      <BaseButton
+        type={type}
+        color={color}
+        text={text}
+        onClick={() => {
+          setDisplay(true);
+        }}
+        loading={loading}
+      />
+      <ConfirmActionModal
+        actionName={text}
+        title={title}
+        fn={onClick ?? (() => {})}
+        loading={loading}
+        close={() => {
+          setDisplay(false);
+        }}
+        display={display}
+      />
+    </>
+  );
+}
