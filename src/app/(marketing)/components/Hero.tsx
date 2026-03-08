@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "./ui/button";
+import { BaseButton } from "./ui/button";
 import { motion } from "framer-motion";
-// import { ChevronDown } from "lucide-react"; // Optional if we add icons later
+import { BiChevronRight } from "react-icons/bi";
+import { BsChevronDown } from "react-icons/bs";
 
 export function Hero() {
   const scrollToHowItWorks = () => {
@@ -65,20 +66,19 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
         >
-          <Button
-            size="lg"
-            className="bg-[#FF9B7A] hover:bg-[#FF8765] text-white text-[1.25rem] px-10 py-6 rounded-full h-auto dark:bg-[#FF9B7A] dark:hover:bg-[#FF8765]"
-          >
-            Get started for free
-          </Button>
-          <Button
-            variant="ghost"
-            size="lg"
+          <BaseButton
+            type="link"
+            href="#"
+            icon={<BiChevronRight />}
+            color="primary"
+            text="Get started for free"
+          />
+          <BaseButton
+            color="secondary"
             onClick={scrollToHowItWorks}
-            className="text-[#5A534D] hover:text-[#3D3530] dark:text-gray-300 dark:hover:text-white text-[1.125rem] gap-2"
-          >
-            See how it works
-          </Button>
+            icon={<BsChevronDown />}
+            text="See how it works"
+          />
         </motion.div>
 
         {/* Social Proof */}
@@ -92,7 +92,7 @@ export function Hero() {
             "I always meant to send those messages… now I actually do."
           </p>
           <p className="text-[0.95rem] text-[#8B8581] dark:text-gray-400">
-            — Real user
+            — John Doe
           </p>
         </motion.div>
       </div>

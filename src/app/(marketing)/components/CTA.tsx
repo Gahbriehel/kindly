@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "./ui/button";
+import { BaseButton } from "./ui/button";
 import { motion } from "framer-motion";
 
 export function CTA() {
@@ -34,9 +34,13 @@ export function CTA() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="pt-8"
         >
-          <Button className="bg-[#FF9B7A] hover:bg-[#FF8765] text-white text-xl px-10 py-6 rounded-full h-auto">
-            Get started for free
-          </Button>
+          <BaseButton
+            color="primary"
+            type="link"
+            href="#"
+            className="w-fit m-auto !py-6 !text-lg"
+            text="Get started for free"
+          />
           <p className="mt-4 text-sm text-gray-400">
             Set it up once. Let the care continue.
           </p>

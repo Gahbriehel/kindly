@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "./ui/button";
+import { BaseButton } from "./ui/button";
 import { FaCheck } from "react-icons/fa6"; // Assuming react-icons is available
 import { motion } from "framer-motion";
 
@@ -51,9 +51,13 @@ export function Pricing() {
               Perfect for getting started.
             </p>
 
-            <Button className="cursor-pointer w-full bg-[#3D3530] text-white hover:bg-black dark:bg-gray-700 dark:hover:bg-gray-600 mb-8">
-              Start free
-            </Button>
+            <BaseButton
+              type="link"
+              href="#"
+              color="secondary"
+              className="w-full bg-[#3D3530] border-none text-white hover:bg-black dark:bg-gray-700 dark:hover:bg-gray-600 mb-8"
+              text="Start free"
+            />
 
             <ul className="space-y-4 text-[#5A534D] dark:text-gray-300">
               <li className="flex items-center gap-2">
@@ -91,9 +95,13 @@ export function Pricing() {
               Affordable monthly plans for growing businesses.
             </p>
 
-            <Button className="cursor-pointer w-full bg-[#FF9B7A] text-white hover:bg-[#FF8765] mb-8">
-              Join waitlist
-            </Button>
+            <BaseButton
+              type="button"
+              onClick={() => console.log("clicked")}
+              color="primary"
+              className="w-full bg-[#FF9B7A] border-none hover:bg-[#FF8765] mb-8"
+              text="Join waitlist"
+            />
 
             <ul className="space-y-4 text-[#5A534D] dark:text-gray-300">
               <li className="flex items-center gap-2">
