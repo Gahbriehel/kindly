@@ -7,6 +7,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { BsMoon, BsSun } from "react-icons/bs";
 import Image from "next/image";
+import { BaseButton } from "./ui/button";
+import { BiChevronRight } from "react-icons/bi";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -78,7 +80,7 @@ const Navbar = () => {
     <div className="fixed top-4 w-full z-50 px-4 md:px-8 flex justify-center pointer-events-none transition-all duration-300">
       <nav className="pointer-events-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-gray-800 dark:text-gray-200 shadow-lg p-4 md:px-10 border border-gray-200/50 dark:border-gray-800/50 w-[calc(100%-2rem)] md:w-3/4 lg:w-1/2 flex rounded-full">
         <div className="w-full flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-1">
+          <Link href="#" className="flex items-center gap-1">
             <Image src="/images/logoK.png" alt="Logo" width={80} height={80} />
           </Link>
           {/* Hamburger */}
@@ -140,12 +142,12 @@ const Navbar = () => {
             ))}
             {/* CTA in Nav */}
             <li>
-              <button
+              <BaseButton
+                color="secondary"
+                text="Start free"
                 onClick={() => handleScrollNav("pricing")}
-                className="bg-[#3D3530] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-black cursor-pointer transition-colors"
-              >
-                Start free
-              </button>
+                className="px-5 py-2 text-sm rounded-full sm:h-10 sm:px-5 sm:py-2"
+              />
             </li>
           </ul>
 
@@ -197,20 +199,20 @@ const Navbar = () => {
                   )}
                 </li>
               ))}
-              <li className="py-4 mt-4">
-                <button
+              <li className="py-4">
+                <BaseButton
+                  type="button"
+                  icon={<BiChevronRight />}
+                  color="secondary"
+                  text="Start free"
                   onClick={() => {
                     handleScrollNav("pricing");
                     setIsOpen(false);
                   }}
-                  className="bg-[#3D3530] text-white px-8 py-3 rounded-full text-xl font-medium hover:bg-black transition-colors"
-                >
-                  Start free
-                </button>
+                />
               </li>
             </motion.ul>
           )}
-
           {/* Desktop Theme Switcher */}
           <div
             className="hidden md:block cursor-pointer text-base ml-4"
