@@ -2,8 +2,7 @@
 
 import { BaseButton } from "./ui/button";
 import { motion } from "framer-motion";
-import { BiChevronRight } from "react-icons/bi";
-import { BsChevronDown } from "react-icons/bs";
+import { BsArrowRight, BsChevronDown } from "react-icons/bs";
 
 export function Hero() {
   const scrollToHowItWorks = () => {
@@ -34,7 +33,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="text-[4.5rem] leading-[1.1] mb-6 text-[#3D3530] dark:text-gray-100 font-serif"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] leading-[1.2] lg:leading-[1.1] mb-6 text-[#3D3530] dark:text-gray-100 font-serif"
         >
           Never forget your clients again.
         </motion.h1>
@@ -43,7 +42,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="text-[1.75rem] leading-[1.4] mb-4 text-[#5A534D] dark:text-gray-300"
+          className="text-lg sm:text-xl md:text-2xl lg:text-[1.75rem] leading-snug lg:leading-[1.4] mb-4 text-[#5A534D] dark:text-gray-300"
         >
           Remember birthdays, anniversaries, milestones — and reach out at the
           right time, without the stress.
@@ -53,7 +52,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-          className="text-[1.125rem] leading-relaxed mb-10 italic text-[#6B6560] dark:text-gray-400 max-w-[600px] mx-auto"
+          className="text-base sm:text-lg lg:text-[1.125rem] leading-relaxed mb-10 italic text-[#6B6560] dark:text-gray-400 max-w-[600px] mx-auto"
         >
           Because your clients deserve more than forgotten promises and
           last-minute scrambles.
@@ -68,8 +67,9 @@ export function Hero() {
         >
           <BaseButton
             type="link"
-            href="#"
-            icon={<BiChevronRight />}
+            href="/register"
+            icon={<BsArrowRight />}
+            position="icon-last"
             color="primary"
             text="Get started for free"
           />
@@ -77,8 +77,10 @@ export function Hero() {
             color="secondary"
             onClick={scrollToHowItWorks}
             icon={<BsChevronDown />}
-            text="See how it works"
-          />
+            position="icon-last"
+          >
+            See how it works
+          </BaseButton>
         </motion.div>
 
         {/* Social Proof */}
@@ -88,11 +90,11 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
           className="max-w-[500px] mx-auto p-6 border-l-4 border-[#FF9B7A] bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg"
         >
-          <p className="italic text-[#5A534D] dark:text-gray-300 text-[1.125rem] mb-2">
+          <p className="italic text-[#5A534D] dark:text-gray-300 text-base sm:text-lg lg:text-[1.125rem] mb-2">
             "I always meant to send those messages… now I actually do."
           </p>
           <p className="text-[0.95rem] text-[#8B8581] dark:text-gray-400">
-            — John Doe
+            — Real user
           </p>
         </motion.div>
       </div>
