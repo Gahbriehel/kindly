@@ -2,7 +2,8 @@
 
 import { BaseButton } from "./ui/button";
 import { motion } from "framer-motion";
-import { BsArrowRight, BsChevronDown } from "react-icons/bs";
+import { BiChevronRight } from "react-icons/bi";
+import { BsChevronDown } from "react-icons/bs";
 
 export function Hero() {
   const scrollToHowItWorks = () => {
@@ -63,24 +64,23 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 w-full px-4 sm:px-0"
         >
           <BaseButton
             type="link"
             href="/register"
-            icon={<BsArrowRight />}
-            position="icon-last"
+            icon={<BiChevronRight />}
             color="primary"
             text="Get started for free"
+            className="w-full max-w-[280px] sm:w-56 !text-base"
           />
           <BaseButton
             color="secondary"
             onClick={scrollToHowItWorks}
             icon={<BsChevronDown />}
-            position="icon-last"
-          >
-            See how it works
-          </BaseButton>
+            text="See how it works"
+            className="w-full max-w-[280px] sm:w-56 !text-base"
+          />
         </motion.div>
 
         {/* Social Proof */}
