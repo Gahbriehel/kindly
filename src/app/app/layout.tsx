@@ -1,4 +1,13 @@
 import "@/src/styles/globals.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "kindly",
+  description: "",
+  icons: {
+    icon: "/images/logo-icon.png",
+  },
+};
 
 export default async function AppLayout({
   children,

@@ -18,7 +18,6 @@ export default function MarketingLayout({
   return (
     <html lang="en" className="marketing-theme scroll-smooth">
       <body className="antialiased bg-cream-50 text-gray-900">
-        {/* Simple marketing nav, footer, etc. */}
         <header>{/* hero-style nav */}</header>
         <main>{children}</main>
         <footer>{/* trust signals, etc. */}</footer>

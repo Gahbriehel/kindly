@@ -3,6 +3,16 @@ import Link from "next/link";
 import { BsChatHeart, BsCalendarHeart, BsHeart } from "react-icons/bs";
 import "@/src/styles/globals.css";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "kindly",
+  description: "",
+  icons: {
+    icon: "/images/logo-icon.png",
+  },
+};
+
 export default function AuthLayout({
   children,
 }: {

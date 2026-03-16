@@ -10,6 +10,7 @@ import {
 } from "redux-persist";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./slices/auth";
+import networkSlice from "./slices/network";
 import storage from "redux-persist/lib/storage";
 // import appSlice from "./slices/app";
 
@@ -21,6 +22,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authSlice,
+  network: networkSlice,
   // app: appSlice,
 });
 
