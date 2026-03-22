@@ -1,45 +1,19 @@
 {
-  "name": "kindly",
-  "version": "0.1.0",
+  "name": "kindly-monorepo",
   "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "format": "prettier --ignore-path .prettierignore --write .",
-    "check-types": "tsc --pretty --noEmit",
-    "check-format": "prettier --ignore-path .prettierignore --check .",
-    "check-lint": "eslint . --ext ts --ext tsx --ext js",
-    "check-all": "yarn format && yarn check-format && yarn check-lint && yarn check-types",
+    "dev": "yarn workspaces run dev",
+    "build": "yarn workspaces run build",
+    "lint": "yarn workspaces run lint",
+    "format": "yarn workspaces run format",
+    "check-types": "yarn workspaces run check-types",
+    "check-format": "yarn workspaces run check-format",
+    "check-lint": "yarn workspaces run check-lint",
+    "check-all": "yarn workspaces run check-all",
     "prepare": "husky"
-  },
-  "dependencies": {
-    "@radix-ui/react-slot": "^1.2.4",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "framer-motion": "^12.34.0",
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-icons": "^5.5.0",
-    "react-router-dom": "^7.13.0",
-    "react-scroll": "^1.9.3",
-    "react-spinners": "^0.17.0",
-    "tailwind-merge": "^3.4.1"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@types/react-scroll": "^1.8.10",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "husky": "^9.1.7",
-    "prettier": "^3.8.1",
-    "tailwindcss": "^4",
-    "typescript": "^5"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
