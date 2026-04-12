@@ -7,62 +7,66 @@ export interface ILoginPayload {
 
 export interface ILoginResponse extends IBaseResponse {
   data: {
+    username: string;
     token: string;
+    role: string;
+    firstName: string;
+    lastName: string;
     refreshToken: string;
+    tokenExpirationDate: number;
+    refreshTokenExpirationDate: number;
   };
 }
 
 export interface IUserData {
-  _id: string;
+  username: string;
+  role: string;
   firstName: string;
   lastName: string;
+}
+
+// export interface IUserData {
+//   _id: string;
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   phone: string;
+//   account: {
+//     category: string;
+//     type: string;
+//     role: string;
+//   };
+//   password: string;
+//   address: string;
+//   city: string;
+//   state: string;
+//   country: string;
+//   emailVerified: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+//   __v: number;
+//   businessLogo: string;
+// }
+
+export interface ISignUpPayload {
   email: string;
-  phone: string;
-  account: {
-    category: string;
-    type: string;
-    role: string;
-  };
+  firstName: string;
+  lastName: string;
   password: string;
-  referral: {
-    code: string;
-  };
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  emailVerified: boolean;
-  archive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-  businessLogo: string;
 }
 
 export interface ISignUpResponse extends IBaseResponse {
-  newUser: Array<{
-    _id: string;
-    businessRef: string;
+  data: {
+    id: number;
+    email: string;
     firstName: string;
     lastName: string;
-    email: string;
-    phone: string;
-    password: string;
-    otp: string;
-    otpExpiration: string;
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    emailVerified: boolean;
-    archive: boolean;
-    createdAt: string;
-    updatedAt: string;
-    account?: {
-      category: string;
-      type: string;
-      role: string;
-    };
-    __v: number;
-  }>;
+  };
+}
+
+export interface IRefreshTokenResponse extends IBaseResponse {
+  data: {
+    token: string;
+    refreshToken: string;
+  };
 }

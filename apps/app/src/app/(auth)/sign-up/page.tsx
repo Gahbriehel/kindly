@@ -6,76 +6,88 @@ import Link from "next/link";
 import { Input } from "../../components/FormElements/Input";
 import { useState } from "react";
 import { AuthLayout } from "../../components/UI/AuthLayout";
-import { useLoginMutation } from "@/src/app/hooks/useAuthQuery";
-import { useAppSelector } from "@/src/app/hooks/useAppSelector";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { customToast } from "@/src/app/helpers/customToast";
 
 interface Inputs {
+  name: string;
   email: string;
   password: string;
-  rememberMe: boolean;
 }
 
-export default function Login() {
-  const loginMutation = useLoginMutation();
-  const { user } = useAppSelector((state) => state.auth);
+export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState<"password" | "text">(
     "password",
   );
+  const [loading, setLoading] = useState(false);
 
   const schema = yup.object({
+    name: yup.string().required("Enter Full Name"),
     email: yup.string().email("Invalid email").required("Enter Email"),
-    password: yup.string().required("Enter Password"),
-    rememberMe: yup.boolean(),
+    password: yup
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Enter Password"),
   });
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  const userObj = user as any;
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      email: userObj?.email ?? userObj?.username ?? "",
-      password: "",
-      rememberMe: false,
-    },
+    defaultValues: { name: "", email: "", password: "" },
     resolver: yupResolver(schema),
   });
 
   async function onSubmit(data: Inputs) {
+    setLoading(true);
     try {
-      const payload = {
-        username: data.email,
-        password: data.password,
-      };
-
-      loginMutation.mutate({ ...payload });
+      // Mocking registration for now as the hook is not yet available
+      console.log("Registration data:", data);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      customToast.success("Account created successfully!");
     } catch (error) {
-      console.log("Login error:", error);
+      console.log("Registration error:", error);
+      customToast.error("Failed to create account.");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <AuthLayout
-      title="Welcome back"
-      subtext="Please enter your details to sign in."
+      title="Create account"
+      subtext="Start your journey with Kindly today."
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
-      loading={loginMutation.isPending}
+      loading={loading}
       footer={
         <p className="text-gray-400 text-sm">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/sign-up"
+            href="/login"
             className="font-semibold text-[#FF9B7A] hover:underline"
           >
-            Sign up
+            Sign in
           </Link>
         </p>
       }
     >
+      <Controller
+        name="name"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Input
+            {...field}
+            label="Full Name"
+            placeholder="Enter your name"
+            type="text"
+            error={fieldState.error?.message}
+            required
+          />
+        )}
+      />
+
       <Controller
         name="email"
         control={control}
@@ -112,34 +124,10 @@ export default function Login() {
         )}
       />
 
-      <div className="flex items-center justify-between text-sm">
-        <label className="flex items-center gap-2 cursor-pointer font-medium text-gray-700">
-          <Controller
-            name="rememberMe"
-            control={control}
-            render={({ field }) => {
-              const { value, onChange, ...rest } = field;
-              return (
-                <input
-                  type="checkbox"
-                  checked={!!value}
-                  onChange={(e) => onChange(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#FF9B7A] focus:ring-[#FF9B7A]"
-                  {...rest}
-                />
-              );
-            }}
-          />
-          Remember me
-        </label>
-
-        <Link
-          href="/reset-password"
-          className="font-semibold text-[#FF9B7A] hover:underline"
-        >
-          Forgot password?
-        </Link>
-      </div>
+      <p className="text-xs text-gray-500 mt-2">
+        By clicking continue, you agree to our terms of service and privacy
+        policy.
+      </p>
     </AuthLayout>
   );
 }

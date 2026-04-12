@@ -143,8 +143,8 @@ export const customToast = {
       const response = await fn;
 
       const message =
-        "message" in response
-          ? capitalizeFirstLetter(response.message)
+        "responseMessage" in response
+          ? capitalizeFirstLetter(response.responseMessage as string)
           : (successText ?? "Operation completed successfully!");
 
       customToast.dismiss(toastId);

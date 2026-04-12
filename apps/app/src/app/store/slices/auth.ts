@@ -3,7 +3,7 @@ import type { ISignUpResponse, IUserData } from "../../models/auth";
 
 interface authState {
   token: string | null;
-  user: IUserData | ISignUpResponse["newUser"][number] | null;
+  user: IUserData | ISignUpResponse["data"] | null;
   invalidSession: boolean;
   redirectUrl: string | null;
 }
@@ -30,9 +30,7 @@ export const auth = createSlice({
     },
     setUser: (
       state,
-      {
-        payload,
-      }: PayloadAction<IUserData | ISignUpResponse["newUser"][number]>,
+      { payload }: PayloadAction<IUserData | ISignUpResponse["data"]>,
     ) => {
       state.user = payload;
     },

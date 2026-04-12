@@ -1,47 +1,86 @@
 "use client";
 
+import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
-import { BaseButton } from "@/src/components/ui/button";
+import { Input } from "../../components/FormElements/Input";
+import { useState } from "react";
+import { AuthLayout } from "../../components/UI/AuthLayout";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { customToast } from "@/src/app/helpers/customToast";
+
+interface Inputs {
+  email: string;
+}
 
 export default function ResetPasswordPage() {
+  const [loading, setLoading] = useState(false);
+
+  const schema = yup.object({
+    email: yup.string().email("Invalid email").required("Enter Email"),
+  });
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: { email: "" },
+    resolver: yupResolver(schema),
+  });
+
+  async function onSubmit(data: Inputs) {
+    setLoading(true);
+    try {
+      // Mocking reset link sent for now
+      console.log("Reset password for:", data.email);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      customToast.success("Reset link sent to your email!");
+    } catch (error) {
+      console.log("Reset password error:", error);
+      customToast.error("Failed to send reset link.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-700 w-full mx-auto">
-      <h2 className="text-3xl font-serif text-[#3D3530] dark:text-white mb-8">
-        Reset your password
-      </h2>
-
-      <form className="flex flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor="email"
-            className="text-sm font-medium text-[#3D3530] dark:text-gray-200"
+    <AuthLayout
+      title="Reset password"
+      subtext="Enter your email to receive a reset link."
+      handleSubmit={handleSubmit}
+      onSubmit={onSubmit}
+      loading={loading}
+      backButton
+      footer={
+        <p className="text-gray-400 text-sm">
+          Remembered your password?{" "}
+          <Link
+            href="/login"
+            className="font-semibold text-[#FF9B7A] hover:underline"
           >
-            Email
-          </label>
-          <input
-            id="email"
+            Sign in
+          </Link>
+        </p>
+      }
+    >
+      <Controller
+        name="email"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Input
+            {...field}
+            label="Email Address"
+            placeholder="Enter mail address"
             type="email"
-            placeholder="you@example.com"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF9B7A]/50 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
+            error={fieldState.error?.message}
+            required
           />
-        </div>
+        )}
+      />
 
-        <BaseButton
-          type="button"
-          color="primary"
-          text="Send reset link"
-          className="w-full mt-2 !h-12 !rounded-lg"
-        />
-      </form>
-
-      <div className="mt-8 text-center">
-        <Link
-          href="/login"
-          className="text-sm text-[#FF9B7A] hover:text-[#FF8765] transition-colors"
-        >
-          Back to login
-        </Link>
+      <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-xl border border-orange-100 dark:border-orange-900/30">
+        <p className="text-sm text-orange-800 dark:text-orange-200">
+          We will send a password recovery link to your inbox. Please check your
+          spam folder if you do not receive it.
+        </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

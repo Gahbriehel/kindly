@@ -1,28 +1,29 @@
 export interface IBaseResponse {
-  status: string;
-  message: string;
-  errors?: string[];
+  responseCode: string;
+  responseMessage: string;
+  status: boolean;
 }
 
 export interface IQueryParams {
   startDate?: string;
   endDate?: string;
-  approved?: string;
   staff?: string;
   status?: string;
-  paymentType?: string;
   ref?: string;
-  category?: string;
   name?: string;
   page?: number;
   limit?: number;
   role?: string;
-  purchaseRef?: string;
   expired?: boolean;
-  signal?: AbortSignal;
-  source?: string;
-  delivered?: "pending" | "complete";
-  viewed?: boolean;
   enabled?: boolean;
+  type?: string;
+  search?: string;
+
+  staffId?: string;
+  approved?: string;
   productionId?: string;
+  category?: string;
+  purchaseRef?: string;
+  viewed?: boolean;
+  paymentType?: string;
 }

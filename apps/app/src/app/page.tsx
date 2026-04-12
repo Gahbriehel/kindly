@@ -1,5 +1,13 @@
-import { redirect } from "next/navigation";
+"use client";
+import { useAppSelector } from "./hooks/useAppSelector";
 
 export default function RootPage() {
-  redirect("/login");
+  const user = useAppSelector((state) => state.auth.user);
+  console.log("user:", user);
+  // redirect("/login");
+  return (
+    <div>
+      <h1>Root Page</h1>
+    </div>
+  );
 }
