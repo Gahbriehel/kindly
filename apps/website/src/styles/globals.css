@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+*:focus-visible {
+  @apply outline-sky-500;
+}
+
+body {
+  @apply bg-white font-inter;
+}
+
+select {
+  @apply appearance-none px-2;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Print-specific styles for better printer compatibility */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+    font-size: 10pt !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Ensure receipt content is properly sized */
+  .print\:font-SpaceGrotesk {
+    font-family: "Space Grotesk", monospace !important;
+    font-size: 10pt !important;
+  }
+
+  /* Ensure tables print correctly */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  /* Hide non-printable elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Ensure printable elements are visible */
+  .print\:block {
+    display: block !important;
+  }
+}
+
+/* Print isolation: Only show #print-portal-container when printing */
+/* @layer utilities {
+  @media print {
+    #app-layout-container {
+      display: none !important;
+    }
+    #print-portal-container {
+      display: block !important;
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100vw !important;
+      min-height: 100vh !important;
+      background: white !important;
+      z-index: 9999 !important;
+    }
+  }
+} */
+
+/*
+Note: On some mobile browsers, print isolation may still not work due to browser limitations.
+For best results on mobile, consider using a PDF download or a dedicated print page.
+*/
