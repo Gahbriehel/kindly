@@ -8,7 +8,6 @@ import type { JSX } from "react";
 export default function NotFound(): JSX.Element {
   return (
     <div className="flex min-h-[80vh] w-full flex-col items-center justify-center relative overflow-hidden text-[#3D3530] dark:text-gray-100 bg-[#FFF9F5] dark:bg-gray-950 transition-colors duration-300">
-      {/* Background blobs for a soft, warm vibe */}
       <motion.div
         animate={{
           y: [0, -20, 0],

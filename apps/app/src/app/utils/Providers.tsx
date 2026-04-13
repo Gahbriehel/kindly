@@ -48,8 +48,7 @@ export function AxiosProvider({ children }: Props): JSX.Element {
       },
       async function (error: AxiosError<IBaseResponse>) {
         const errorData = error.response?.data;
-        const errorMessage = errorData?.message ?? "";
-        const errorsList = errorData?.errors;
+        const errorMessage = errorData?.responseMessage ?? "";
 
         if (INVALID_TOKEN_MESSAGES.includes(errorMessage)) {
           customToast.error("Session has expired");
@@ -61,28 +60,16 @@ export function AxiosProvider({ children }: Props): JSX.Element {
           dispatch(clearToken());
           queryClient.clear();
         }
-        if (error.request && !errorMessage && !errorsList?.length) {
+        if (error.request && !errorMessage) {
           dispatch(setOnline(false));
           axiosErrorToast({
             message:
               "No response from server. Please check your internet connection.",
           });
         }
-        const hasErrors = errorsList?.length;
         const hasMessage = errorMessage;
 
-        if (hasErrors && hasMessage) {
-          const combinedMessage = [errorMessage, ...errorsList].join("\n");
-          axiosErrorToast({
-            message: combinedMessage,
-            errorCode: error.response?.status,
-          });
-        } else if (hasErrors) {
-          axiosErrorToast({
-            message: errorsList.join("\n"),
-            errorCode: error.response?.status,
-          });
-        } else if (hasMessage) {
+        if (hasMessage) {
           axiosErrorToast({
             message: errorMessage,
             errorCode: error.response?.status,

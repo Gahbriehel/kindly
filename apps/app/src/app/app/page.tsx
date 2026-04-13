@@ -1,7 +1,13 @@
+"use client";
+import { useAppSelector } from "../hooks/useAppSelector";
+
 export default function AppPage() {
+  const { user } = useAppSelector((state) => state.auth);
   return (
     <div className="flex h-full items-center justify-center p-24">
-      <h1 className="text-4xl font-bold">this is a page in app</h1>
+      <h1 className="text-4xl font-bold">
+        Welcome {user?.firstName} {user?.lastName}
+      </h1>
     </div>
   );
 }
