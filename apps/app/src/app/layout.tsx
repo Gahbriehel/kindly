@@ -1,6 +1,7 @@
 import "@/src/styles/globals.css";
 import { Inter } from "next/font/google";
 import { Providers } from "./utils/ProvidersWrapper";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <NextTopLoader height={4} showSpinner={false} />
         <Providers>{children}</Providers>
       </body>
     </html>
