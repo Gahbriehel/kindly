@@ -1,13 +1,4 @@
 import "@/src/styles/globals.css";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "kindly",
-  description: "",
-  icons: {
-    icon: "/images/logo-icon.png",
-  },
-};
 
 export default async function AppLayout({
   children,
@@ -15,14 +6,10 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-gray-50">
-        <div className="flex h-screen overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <main className="flex-1 overflow-y-auto p-6">{children}</main>
-          </div>
-        </div>
-      </body>
-    </html>
+    <div className="flex h-screen overflow-hidden antialiased bg-gray-50">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      </div>
+    </div>
   );
 }
