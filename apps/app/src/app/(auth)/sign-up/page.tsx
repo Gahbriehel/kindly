@@ -7,22 +7,18 @@ import { Input } from "../../components/FormElements/Input";
 import { useState } from "react";
 import { AuthLayout } from "../../components/UI/AuthLayout";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { customToast } from "@/src/app/helpers/customToast";
-
-interface Inputs {
-  name: string;
-  email: string;
-  password: string;
-}
+import { ISignUpPayload } from "../../models/auth";
+import { useSignupMutation } from "../../hooks/useAuthQuery";
 
 export default function RegisterPage() {
+  const signupMutation = useSignupMutation();
   const [showPassword, setShowPassword] = useState<"password" | "text">(
     "password",
   );
-  const [loading, setLoading] = useState(false);
 
   const schema = yup.object({
-    name: yup.string().required("Enter Full Name"),
+    firstName: yup.string().required("Enter First name"),
+    lastName: yup.string().required("Enter Last name"),
     email: yup.string().email("Invalid email").required("Enter Email"),
     password: yup
       .string()
@@ -35,22 +31,21 @@ export default function RegisterPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { firstName: "", lastName: "", email: "", password: "" },
     resolver: yupResolver(schema),
   });
 
-  async function onSubmit(data: Inputs) {
-    setLoading(true);
+  async function onSubmit(data: ISignUpPayload) {
     try {
-      // Mocking registration for now as the hook is not yet available
-      console.log("Registration data:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      customToast.success("Account created successfully!");
+      const payload: ISignUpPayload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+      };
+      signupMutation.mutate(payload);
     } catch (error) {
-      console.log("Registration error:", error);
-      customToast.error("Failed to create account.");
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   }
 
@@ -60,7 +55,7 @@ export default function RegisterPage() {
       subtext="Start your journey with Kindly today."
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
-      loading={loading}
+      loading={signupMutation.isPending}
       footer={
         <p className="text-gray-400 text-sm">
           Already have an account?{" "}
@@ -74,13 +69,28 @@ export default function RegisterPage() {
       }
     >
       <Controller
-        name="name"
+        name="firstName"
         control={control}
         render={({ field, fieldState }) => (
           <Input
             {...field}
-            label="Full Name"
-            placeholder="Enter your name"
+            label="First Name"
+            placeholder="John"
+            type="text"
+            error={fieldState.error?.message}
+            required
+          />
+        )}
+      />
+
+      <Controller
+        name="lastName"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Input
+            {...field}
+            label="Last Name"
+            placeholder="Doe"
             type="text"
             error={fieldState.error?.message}
             required
@@ -95,7 +105,7 @@ export default function RegisterPage() {
           <Input
             {...field}
             label="Email Address"
-            placeholder="Enter mail address"
+            placeholder="email@address.com"
             type="email"
             error={fieldState.error?.message}
             required

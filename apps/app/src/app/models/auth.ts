@@ -18,11 +18,43 @@ export interface ILoginResponse extends IBaseResponse {
   };
 }
 
+export interface ISignUpResponse extends IBaseResponse {
+  data: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
 export interface IUserData {
   username: string;
   role: string;
   firstName: string;
   lastName: string;
+}
+
+export interface ISignUpPayload {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+}
+
+// export interface ISignUpResponse extends IBaseResponse {
+//   data: {
+//     id: number;
+//     email: string;
+//     firstName: string;
+//     lastName: string;
+//   };
+// }
+
+export interface IRefreshTokenResponse extends IBaseResponse {
+  data: {
+    token: string;
+    refreshToken: string;
+  };
 }
 
 // export interface IUserData {
@@ -47,26 +79,3 @@ export interface IUserData {
 //   __v: number;
 //   businessLogo: string;
 // }
-
-export interface ISignUpPayload {
-  email: string;
-  firstName: string;
-  lastName: string;
-  password: string;
-}
-
-export interface ISignUpResponse extends IBaseResponse {
-  data: {
-    id: number;
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
-}
-
-export interface IRefreshTokenResponse extends IBaseResponse {
-  data: {
-    token: string;
-    refreshToken: string;
-  };
-}

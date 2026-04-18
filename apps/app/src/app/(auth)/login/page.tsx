@@ -9,6 +9,7 @@ import { AuthLayout } from "../../components/UI/AuthLayout";
 import { useLoginMutation } from "@/src/app/hooks/useAuthQuery";
 import { useAppSelector } from "@/src/app/hooks/useAppSelector";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ILoginPayload } from "../../models/auth";
 
 interface Inputs {
   email: string;
@@ -46,7 +47,7 @@ export default function Login() {
 
   async function onSubmit(data: Inputs) {
     try {
-      const payload = {
+      const payload: ILoginPayload = {
         username: data.email,
         password: data.password,
       };

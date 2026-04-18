@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   // forgotPassword,
   login,
+  signup,
 } from "@/src/app/services/auth";
 import { useAppDispatch } from "@/src/app/hooks/useAppDispatch";
 import { setUser, setToken } from "@/src/app/store/slices/auth";
@@ -26,6 +27,20 @@ export function useLoginMutation() {
       );
       customToast.success(response.responseMessage);
       router.push("/app");
+    },
+    onError: (error: AxiosError<{ responseMessage: string }>) => {
+      customToast.error(error.response?.data.responseMessage ?? error.message);
+    },
+  });
+}
+
+export function useSignupMutation() {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: signup,
+    onSuccess: (response) => {
+      customToast.success(response.responseMessage);
+      router.push("/login");
     },
     onError: (error: AxiosError<{ responseMessage: string }>) => {
       customToast.error(error.response?.data.responseMessage ?? error.message);

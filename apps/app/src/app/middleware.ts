@@ -2,15 +2,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = [
-  "/",
-  "/features",
-  "/pricing",
-  "/about",
-  "/login",
-  "/register",
-  "/reset-password",
-];
+const publicPaths = ["/", "/login", "/sign-up", "/reset-password"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -27,7 +19,6 @@ export function middleware(request: NextRequest) {
 
   const isPublicPath = publicPaths.includes(pathname);
 
-  // Option A: Simple session check (cookies, JWT, etc.)
   const sessionToken = request.cookies.get("your-session-cookie")?.value;
 
   if (!isPublicPath && !sessionToken) {
@@ -37,9 +28,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Optional: logged-in users hitting / → go to dashboard
   if (sessionToken && pathname === "/") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/app", request.url));
   }
 
   return NextResponse.next();
