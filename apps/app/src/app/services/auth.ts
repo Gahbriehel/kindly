@@ -3,10 +3,17 @@ import type {
   ILoginResponse,
   ILoginPayload,
   IRefreshTokenResponse,
+  ISignUpPayload,
+  ISignUpResponse,
 } from "../models/auth";
 
 export async function login(payload: ILoginPayload) {
   const response = await axios.post<ILoginResponse>(`/login`, payload);
+  return response.data;
+}
+
+export async function signup(payload: ISignUpPayload) {
+  const response = await axios.post<ISignUpResponse>(`/kindly/user`, payload);
   return response.data;
 }
 
