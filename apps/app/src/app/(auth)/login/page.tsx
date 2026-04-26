@@ -3,13 +3,13 @@
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
-import { Input } from "../../components/FormElements/Input";
+import { Input } from "../../../components/FormElements/Input";
 import { useState } from "react";
-import { AuthLayout } from "../../components/UI/AuthLayout";
-import { useLoginMutation } from "@/src/app/hooks/useAuthQuery";
-import { useAppSelector } from "@/src/app/hooks/useAppSelector";
+import { AuthLayout } from "../../../components/UI/AuthLayout";
+import { useLoginMutation } from "@/src/hooks/useAuthQuery";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ILoginPayload } from "../../models/auth";
+import { ILoginPayload } from "../../../models/auth";
 
 interface Inputs {
   email: string;

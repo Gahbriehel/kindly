@@ -3,11 +3,11 @@
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
-import { Input } from "../../components/FormElements/Input";
+import { Input } from "../../../components/FormElements/Input";
 import { useState } from "react";
-import { AuthLayout } from "../../components/UI/AuthLayout";
+import { AuthLayout } from "../../../components/UI/AuthLayout";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { customToast } from "@/src/app/helpers/customToast";
+import { customToast } from "@/src/helpers/customToast";
 
 interface Inputs {
   email: string;

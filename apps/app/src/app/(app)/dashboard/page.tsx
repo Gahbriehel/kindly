@@ -1,7 +1,8 @@
 "use client";
-import { useAppSelector } from "../hooks/useAppSelector";
+import { JSX } from "react";
+import { useAppSelector } from "../../../hooks/useAppSelector";
 
-export default function AppPage() {
+export default function DashboardPage(): JSX.Element {
   const { user } = useAppSelector((state) => state.auth);
   return (
     <div className="flex h-full items-center justify-center p-24">

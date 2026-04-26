@@ -3,12 +3,12 @@
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
-import { Input } from "../../components/FormElements/Input";
+import { Input } from "../../../components/FormElements/Input";
 import { useState } from "react";
-import { AuthLayout } from "../../components/UI/AuthLayout";
+import { AuthLayout } from "../../../components/UI/AuthLayout";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ISignUpPayload } from "../../models/auth";
-import { useSignupMutation } from "../../hooks/useAuthQuery";
+import { ISignUpPayload } from "../../../models/auth";
+import { useSignupMutation } from "../../../hooks/useAuthQuery";
 
 export default function RegisterPage() {
   const signupMutation = useSignupMutation();

@@ -7,7 +7,14 @@ export interface ILoginPayload {
 
 export interface ILoginResponse extends IBaseResponse {
   data: {
+    id: string;
     username: string;
+    email: string;
+    phone: string;
+    city: string;
+    address: string;
+    country: string;
+    companyName: string;
     token: string;
     role: string;
     firstName: string;
@@ -21,9 +28,15 @@ export interface ILoginResponse extends IBaseResponse {
 export interface ISignUpResponse extends IBaseResponse {
   data: {
     id: string;
+    username: string;
     email: string;
     firstName: string;
     lastName: string;
+    role: string;
+    token: string;
+    refreshToken: string;
+    tokenExpirationDate: number;
+    refreshTokenExpirationDate: number;
   };
 }
 
@@ -32,6 +45,13 @@ export interface IUserData {
   role: string;
   firstName: string;
   lastName: string;
+  id: string;
+  email: string;
+  phone: string;
+  city: string;
+  address: string;
+  country: string;
+  companyName: string;
 }
 
 export interface ISignUpPayload {
