@@ -3,10 +3,10 @@ import {
   // forgotPassword,
   login,
   signup,
-} from "@/src/app/services/auth";
-import { useAppDispatch } from "@/src/app/hooks/useAppDispatch";
-import { setUser, setToken } from "@/src/app/store/slices/auth";
-import { customToast } from "@/src/app/helpers/customToast";
+} from "@/src/services/auth";
+import { useAppDispatch } from "@/src/hooks/useAppDispatch";
+import { setUser, setToken } from "@/src/store/slices/auth";
+import { customToast } from "@/src/helpers/customToast";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 
@@ -19,14 +19,21 @@ export function useLoginMutation() {
       dispatch(setToken(response.data.token));
       dispatch(
         setUser({
+          id: response.data.id,
           username: response.data.username,
           role: response.data.role,
           firstName: response.data.firstName,
           lastName: response.data.lastName,
+          email: response.data.email,
+          phone: response.data.phone,
+          city: response.data.city,
+          address: response.data.address,
+          country: response.data.country,
+          companyName: response.data.companyName,
         }),
       );
       customToast.success(response.responseMessage);
-      router.push("/app");
+      router.push("/dashboard");
     },
     onError: (error: AxiosError<{ responseMessage: string }>) => {
       customToast.error(error.response?.data.responseMessage ?? error.message);

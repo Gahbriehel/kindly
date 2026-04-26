@@ -29,7 +29,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (sessionToken && pathname === "/") {
-    return NextResponse.redirect(new URL("/app", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BaseButton } from "@/src/components/ui/button";
+import { BaseButton } from "@/src/components/UI/Buttons";
 import { BsLayers, BsHouseDoor } from "react-icons/bs";
 import type { JSX } from "react";
 
@@ -57,7 +57,7 @@ export default function AppNotFound(): JSX.Element {
         >
           <BaseButton
             type="link"
-            href="/app"
+            href="/dashboard"
             color="primary"
             icon={<BsHouseDoor className="w-4 h-4" />}
             position="icon-first"

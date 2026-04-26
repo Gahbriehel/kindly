@@ -1,6 +1,6 @@
 "use client";
 
-import { BaseButton } from "../ui/button";
+import { BaseButton } from "../UI/Buttons";
 
 interface ConfirmActionModalProps {
   actionName: string;
