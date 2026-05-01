@@ -39,8 +39,8 @@ export default function AuthLayout({
       {/* Left Pane - Marketing / Branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-[#FFF9F5] dark:bg-slate-900 p-16 relative overflow-hidden">
         {/* Decorative Background Element */}
-        <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-[#FF9B7A]/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-[#FF9B7A]/5 rounded-full blur-[80px]" />
+        <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-theme-primary/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-theme-primary/5 rounded-full blur-[80px]" />
 
         {/* Logo */}
         <motion.div
@@ -72,7 +72,7 @@ export default function AuthLayout({
             className="text-6xl leading-[1.1] font-serif tracking-tight text-[#3D3530] dark:text-slate-100"
           >
             Relationships deserve to be{" "}
-            <span className="text-[#FF9B7A]">remembered</span>.
+            <span className="text-theme-primary">remembered</span>.
           </motion.h1>
           <motion.p
             variants={itemVariants}
@@ -103,7 +103,7 @@ export default function AuthLayout({
           className="z-10 flex gap-10 text-sm text-[#5A534D] dark:text-slate-300"
         >
           <div className="flex items-center gap-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md flex items-center justify-center text-[#FF9B7A] shadow-sm ring-1 ring-black/5 dark:ring-white/10 group-hover:bg-[#FF9B7A] group-hover:text-white transition-all duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md flex items-center justify-center text-theme-primary shadow-sm ring-1 ring-black/5 dark:ring-white/10 group-hover:bg-theme-primary group-hover:text-white transition-all duration-300">
               <BsChatHeart size={24} />
             </div>
             <span className="max-w-[100px] leading-snug font-semibold">
@@ -111,7 +111,7 @@ export default function AuthLayout({
             </span>
           </div>
           <div className="flex items-center gap-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md flex items-center justify-center text-[#FF9B7A] shadow-sm ring-1 ring-black/5 dark:ring-white/10 group-hover:bg-[#FF9B7A] group-hover:text-white transition-all duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md flex items-center justify-center text-theme-primary shadow-sm ring-1 ring-black/5 dark:ring-white/10 group-hover:bg-theme-primary group-hover:text-white transition-all duration-300">
               <BsCalendarHeart size={24} />
             </div>
             <span className="max-w-[100px] leading-snug font-semibold">
@@ -119,7 +119,7 @@ export default function AuthLayout({
             </span>
           </div>
           <div className="flex items-center gap-4 group">
-            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md flex items-center justify-center text-[#FF9B7A] shadow-sm ring-1 ring-black/5 dark:ring-white/10 group-hover:bg-[#FF9B7A] group-hover:text-white transition-all duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md flex items-center justify-center text-theme-primary shadow-sm ring-1 ring-black/5 dark:ring-white/10 group-hover:bg-theme-primary group-hover:text-white transition-all duration-300">
               <BsHeart size={24} />
             </div>
             <span className="max-w-[100px] leading-snug font-semibold">

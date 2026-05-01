@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 // import { logOut } from "@/store/slices/auth";
 import { clsx } from "clsx";
 import { Logo } from "./Logo";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { MdOutlineLogout } from "react-icons/md";
 import {
@@ -17,11 +16,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { navLinks } from "../../helpers/navLinks";
 import { queryClient } from "../../utils/Providers";
 
-const ConfirmActionModal = dynamic(
-  async () =>
-    (await import("@/src/components/Modals/ConfirmActionModal"))
-      .ConfirmActionModal,
-);
+import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 
 const MiniLogo = memo(() => (
   <motion.div
@@ -59,7 +54,7 @@ const ExpandIcon = memo(() => (
     transition={{ duration: 0.1, ease: "easeInOut" }}
     className="flex h-full w-full items-center justify-center pt-4"
   >
-    <TbLayoutSidebarRightCollapse className="size-6 text-sky-600" />
+    <TbLayoutSidebarRightCollapse className="size-6 text-theme-primary" />
   </motion.div>
 ));
 ExpandIcon.displayName = "ExpandIcon";
@@ -92,16 +87,16 @@ function NavItem({
           "h-12 px-7 text-md",
           collapsed ? "cursor-e-resize justify-center" : "cursor-pointer",
           isActive
-            ? "bg-sky-100 dark:bg-sky-900/40 font-medium text-sky-700 dark:text-sky-400"
-            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-sky-600 dark:hover:text-sky-300",
+            ? "bg-theme-primary/15 font-medium text-theme-primary"
+            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-theme-primary dark:hover:text-theme-primary",
         )}
       >
         <div
           className={clsx(
             "flex shrink-0 items-center justify-center transition-transform group-hover:scale-110",
             isActive
-              ? "text-sky-600 dark:text-sky-400"
-              : "text-gray-500 dark:text-slate-500 group-hover:text-sky-500 dark:group-hover:text-sky-300",
+              ? "text-theme-primary"
+              : "text-gray-500 dark:text-slate-500 group-hover:text-theme-primary dark:group-hover:text-theme-primary",
             !collapsed && "mr-4",
           )}
         >
@@ -111,7 +106,7 @@ function NavItem({
         {isActive && (
           <motion.div
             layoutId="active-nav-indicator"
-            className="absolute left-0 top-0 h-full w-1 bg-sky-500"
+            className="absolute left-0 top-0 h-full w-1 bg-theme-primary"
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           />
         )}
@@ -196,7 +191,7 @@ export function SideNav({
                 e.stopPropagation();
                 onToggle();
               }}
-              className="ml-2 cursor-pointer text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 transition-colors"
+              className="ml-2 cursor-pointer text-theme-primary hover:text-theme-primary-hover transition-colors"
             >
               <TbLayoutSidebarLeftCollapse className="size-6" />
             </div>
@@ -257,7 +252,7 @@ export function SideNav({
       </motion.aside>
 
       <ConfirmActionModal
-        actionName="logout"
+        actionName="Logout"
         display={logOutModalDisplay}
         close={closeLogoutModal}
         fn={handleLogout}

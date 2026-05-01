@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
+:root {
+  --color-theme-primary: 255 155 122;
+  --color-theme-primary-hover: 255 135 101;
+}
+
+.theme-sky {
+  --color-theme-primary: 14 165 233;
+  --color-theme-primary-hover: 2 132 199;
+}
+
 *:focus-visible {
   @apply outline-sky-500;
 }

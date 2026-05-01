@@ -74,7 +74,7 @@ export function AuthLayout({
             <BaseButton
               text={loading ? "Processing..." : "Continue"}
               type="submit"
-              className="flex-1 !h-14 font-bold rounded-2xl shadow-lg shadow-[#FF9B7A]/20"
+              className="flex-1 !h-14 font-bold rounded-2xl shadow-lg shadow-theme-primary/20"
               color="primary"
               loading={loading}
               disabled={loading}
