@@ -4,9 +4,10 @@ import { useForm, Controller } from "react-hook-form";
 import { Input } from "@/src/components/FormElements/Input";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-import { BsPerson } from "react-icons/bs";
+import { BsPerson, BsCheckCircleFill } from "react-icons/bs";
 import type { JSX } from "react";
 import { IUserData } from "@/src/models/auth";
+import { useThemeColor } from "@/src/context/ThemeColorContext";
 
 interface ProfileFormValues {
   firstName: string;
@@ -21,6 +22,7 @@ interface ProfileFormValues {
 
 export default function ProfilePage(): JSX.Element {
   const { user } = useAppSelector((state) => state.auth);
+  const { themeColor, setThemeColor } = useThemeColor();
 
   const userObj = user as IUserData;
 
@@ -45,7 +47,7 @@ export default function ProfilePage(): JSX.Element {
     <div className="h-full">
       {/* Page header */}
       <div className="mb-8 flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FF9B7A]/15 text-[#FF9B7A]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-theme-primary/15 text-theme-primary">
           <BsPerson className="h-5 w-5" />
         </div>
         <div>
@@ -202,6 +204,54 @@ export default function ProfilePage(): JSX.Element {
                 />
               )}
             />
+          </div>
+        </section>
+
+        {/* ── Theme Preferences ────────────────────────────────────── */}
+        <section className="mb-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500">
+            Theme Preferences
+          </h2>
+          <p className="mb-5 text-xs text-gray-400 dark:text-slate-500">
+            Choose your preferred accent color for the application.
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setThemeColor("pink")}
+              className={`cursor-pointer relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                themeColor === "pink"
+                  ? "border-[#FF9B7A] bg-orange-50/50 dark:bg-orange-900/10"
+                  : "border-gray-200 dark:border-gray-700"
+              }`}
+            >
+              <div className="h-8 w-8 rounded-full bg-[#FF9B7A] shadow-sm" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Pink Accent
+              </span>
+              {themeColor === "pink" && (
+                <BsCheckCircleFill className="absolute top-2 right-2 h-4 w-4 text-[#FF9B7A]" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setThemeColor("sky")}
+              className={`cursor-pointer relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                themeColor === "sky"
+                  ? "border-sky-500 bg-sky-50/50 dark:bg-sky-900/10"
+                  : "border-gray-200 dark:border-gray-700"
+              }`}
+            >
+              <div className="h-8 w-8 rounded-full bg-sky-500 shadow-sm" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Sky Accent
+              </span>
+              {themeColor === "sky" && (
+                <BsCheckCircleFill className="absolute top-2 right-2 h-4 w-4 text-sky-500" />
+              )}
+            </button>
           </div>
         </section>
 

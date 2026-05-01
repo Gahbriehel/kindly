@@ -22,7 +22,8 @@ type Color =
   | "danger"
   | "main"
   | "gradient"
-  | "transparent";
+  | "transparent"
+  | "sky";
 type BaseButtonTypeProps = HTMLMotionProps<"button">;
 type BaseLinkTypeProps = LinkProps;
 
@@ -82,17 +83,19 @@ export const BaseButton = forwardRef<
     {
       "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400":
         color === "outline",
-      "border-[#FF9B7A] bg-[#FF9B7A] text-white hover:bg-[#FF8765] disabled:bg-gray-400 disabled:border-gray-400":
+      "border-theme-primary bg-theme-primary text-white hover:bg-theme-primary-hover disabled:bg-gray-400 disabled:border-gray-400":
         color === "primary" || color === "main",
       "border-red-600 bg-red-500 text-white hover:bg-red-600 disabled:bg-gray-400 disabled:border-gray-400":
         color === "danger",
       "border-[#3D3530] bg-[#3D3530] text-white hover:bg-[#2A2320] disabled:bg-gray-400 disabled:border-gray-400":
         color === "secondary",
-      "border-[#FF9B7A] bg-white text-[#FF9B7A] hover:bg-[#FFF9F5] disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
+      "border-sky-500 bg-sky-500 text-white hover:bg-sky-600 disabled:bg-gray-400 disabled:border-gray-400":
+        color === "sky",
+      "border-theme-primary bg-white text-theme-primary hover:bg-gray-50 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
         color === "white",
-      "border-transparent bg-gradient-to-r from-[#FF9B7A] to-[#FF8765] hover:from-[#FF8765] hover:to-[#FF7A50] text-white shadow-[#FF9B7A]/30 hover:shadow-[#FF9B7A]/50 disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-400":
+      "border-transparent bg-gradient-to-r from-theme-primary to-theme-primary-hover hover:from-theme-primary-hover hover:to-theme-primary shadow-theme-primary/30 hover:shadow-theme-primary/50 disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-400":
         color === "gradient",
-      "bg-transparent text-[#FF9B7A] hover:bg-[#FF9B7A]/10 border border-[#FF9B7A] hover:border-[#FF9B7A]/50 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
+      "bg-transparent text-theme-primary hover:bg-theme-primary/10 border border-theme-primary hover:border-theme-primary/50 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
         color === "transparent",
     },
     { "flex-row-reverse": position === "icon-last" },
@@ -141,7 +144,7 @@ export const BaseButton = forwardRef<
           size={12}
           color={
             ["white", "outline", "transparent"].includes(color)
-              ? "#FF9B7A"
+              ? "var(--color-theme-primary)"
               : "#ffffff"
           }
         />

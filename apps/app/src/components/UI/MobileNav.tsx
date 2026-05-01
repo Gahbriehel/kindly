@@ -67,15 +67,15 @@ export const MobileNav = memo(function MobileNav({
                         className={clsx(
                           "flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-200",
                           isActive
-                            ? "bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 font-semibold shadow-sm"
-                            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-sky-600 dark:hover:text-sky-300",
+                            ? "bg-theme-primary/10 text-theme-primary font-semibold shadow-sm"
+                            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-theme-primary dark:hover:text-theme-primary",
                         )}
                       >
                         <div
                           className={clsx(
                             "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
                             isActive
-                              ? "text-sky-600 dark:text-sky-400"
+                              ? "text-theme-primary"
                               : "text-gray-400 dark:text-slate-500",
                           )}
                         >

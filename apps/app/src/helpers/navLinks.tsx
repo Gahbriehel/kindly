@@ -22,6 +22,6 @@ export const navLinks = [
   {
     title: "Settings",
     icon: <FaCog className="size-5" />,
-    href: "/settings  ",
+    href: "/settings",
   },
 ];
