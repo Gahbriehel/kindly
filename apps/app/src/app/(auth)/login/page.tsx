@@ -70,7 +70,7 @@ export default function Login() {
           Don&apos;t have an account?{" "}
           <Link
             href="/sign-up"
-            className="font-semibold text-[#FF9B7A] hover:underline"
+            className="font-semibold text-theme-primary hover:underline"
           >
             Sign up
           </Link>
@@ -125,7 +125,7 @@ export default function Login() {
                   type="checkbox"
                   checked={!!value}
                   onChange={(e) => onChange(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#FF9B7A] focus:ring-[#FF9B7A]"
+                  className="w-4 h-4 rounded border-gray-300 text-theme-primary focus:ring-theme-primary"
                   {...rest}
                 />
               );
@@ -136,7 +136,7 @@ export default function Login() {
 
         <Link
           href="/reset-password"
-          className="font-semibold text-[#FF9B7A] hover:underline"
+          className="font-semibold text-theme-primary hover:underline"
         >
           Forgot password?
         </Link>
