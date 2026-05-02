@@ -255,8 +255,7 @@ export default function ProfilePage(): JSX.Element {
           </div>
         </section>
 
-        {/* ── Actions ─────────────────────────────────────────────── */}
-        <div className="flex justify-end">
+        <div className="flex justify-end mb-6 p-6">
           <BaseButton type="submit" color="primary" text="Save Changes" />
         </div>
       </form>
