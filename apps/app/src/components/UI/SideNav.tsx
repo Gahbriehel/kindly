@@ -84,19 +84,17 @@ function NavItem({
         onClick={collapsed ? onCollapsedClick : undefined}
         className={clsx(
           "group relative flex items-center transition-colors duration-200",
-          "h-12 px-7 text-md",
+          "h-12 px-7 text-md mr-2",
           collapsed ? "cursor-e-resize justify-center" : "cursor-pointer",
           isActive
-            ? "bg-theme-primary/15 font-medium text-theme-primary"
-            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-theme-primary dark:hover:text-theme-primary",
+            ? "bg-theme-primary/15 text-gray-700 rounded-xl"
+            : "text-gray-600 hover:text-gray-500",
         )}
       >
         <div
           className={clsx(
             "flex shrink-0 items-center justify-center transition-transform group-hover:scale-110",
-            isActive
-              ? "text-theme-primary"
-              : "text-gray-500 dark:text-slate-500 group-hover:text-theme-primary dark:group-hover:text-theme-primary",
+            isActive ? "text-theme-primary" : "text-gray-500",
             !collapsed && "mr-4",
           )}
         >
