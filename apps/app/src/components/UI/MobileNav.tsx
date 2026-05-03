@@ -45,7 +45,7 @@ export const MobileNav = memo(function MobileNav({
             className="fixed inset-y-0 left-0 z-50 flex w-full max-w-[280px] flex-col bg-white dark:bg-slate-950 shadow-2xl sm:hidden"
           >
             <div className="flex h-20 items-center justify-between px-6 border-b border-gray-100 dark:border-slate-800">
-              <Logo size="full" svgClassName="h-10 w-auto" />
+              <Logo size="medium" className="pr-2" />
               <button
                 onClick={onClose}
                 className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
@@ -99,8 +99,8 @@ export const MobileNav = memo(function MobileNav({
                 </div>
                 <span className="text-base font-semibold">Logout</span>
               </button>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-slate-500 text-center">
-                Powered by Oneflare
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-slate-500 ">
+                Kindly
               </p>
             </div>
           </motion.div>
