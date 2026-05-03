@@ -77,7 +77,7 @@ export default function ProfilePage(): JSX.Element {
                   id="firstName"
                   label="First Name"
                   type="text"
-                  placeholder="e.g. Sarah"
+                  placeholder="John"
                   error={fieldState.error?.message}
                 />
               )}
@@ -92,7 +92,7 @@ export default function ProfilePage(): JSX.Element {
                   id="lastName"
                   label="Last Name"
                   type="text"
-                  placeholder="e.g. Johnson"
+                  placeholder="Doe"
                   error={fieldState.error?.message}
                 />
               )}
@@ -107,7 +107,7 @@ export default function ProfilePage(): JSX.Element {
                   id="email"
                   label="Email Address"
                   type="email"
-                  placeholder="e.g. sarah@company.com"
+                  placeholder="address@example.com"
                   error={fieldState.error?.message}
                 />
               )}
@@ -122,7 +122,7 @@ export default function ProfilePage(): JSX.Element {
                   id="phone"
                   label="Phone Number"
                   type="tel"
-                  placeholder="e.g. +1 234 567 8900"
+                  placeholder="+1 234 567 8900"
                   error={fieldState.error?.message}
                 />
               )}
@@ -151,7 +151,7 @@ export default function ProfilePage(): JSX.Element {
                     id="companyName"
                     label="Company / Brand Name"
                     type="text"
-                    placeholder="e.g. Acme Corp"
+                    placeholder="Kindly company"
                     error={fieldState.error?.message}
                   />
                 )}
@@ -168,7 +168,7 @@ export default function ProfilePage(): JSX.Element {
                     id="address"
                     label="Street Address"
                     type="text"
-                    placeholder="e.g. 42 Maple Street, Suite 100"
+                    placeholder="123 Kindly Street, Lagos"
                     error={fieldState.error?.message}
                   />
                 )}
@@ -184,7 +184,7 @@ export default function ProfilePage(): JSX.Element {
                   id="city"
                   label="City"
                   type="text"
-                  placeholder="e.g. New York"
+                  placeholder="Lagos"
                   error={fieldState.error?.message}
                 />
               )}
@@ -199,7 +199,7 @@ export default function ProfilePage(): JSX.Element {
                   id="country"
                   label="Country"
                   type="text"
-                  placeholder="e.g. United States"
+                  placeholder="Nigeria"
                   error={fieldState.error?.message}
                 />
               )}
