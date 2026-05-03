@@ -40,7 +40,7 @@ const FullLogo = memo(() => (
     exit={{ opacity: 0, scale: 0.8, x: 20 }}
     transition={{ duration: 0.1, ease: "easeInOut" }}
   >
-    <Logo size="full" svgClassName="h-20 scale-[2] mx-auto" />
+    <Logo size="medium" />
   </motion.div>
 ));
 FullLogo.displayName = "FullLogo";
@@ -241,7 +241,7 @@ export function SideNav({
                   exit={{ opacity: 0, y: 10 }}
                   className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-500"
                 >
-                  Powered by Oneflare
+                  Kindly
                 </motion.p>
               )}
             </AnimatePresence>
