@@ -19,53 +19,53 @@ export interface ApiClient {
 export const clientsList: ApiClient[] = [
   {
     id: "1",
-    name: "Sarah Johnson",
+    name: "Gabriel Solomon",
     eventName: "Birthday",
     type: "Individual",
     eventDate: "2026-03-12",
     individual: {
       id: "ind_1",
-      name: "Sarah Johnson",
-      phoneNumber: "+1 234 567 8900",
-      email: "sarah.j@email.com",
-      birthDate: "1990-03-12",
+      name: "Gabriel Solomon",
+      phoneNumber: "+251 900 000 000",
+      email: "babatise002@gmail.com",
+      birthDate: "2000-01-01",
     },
   },
   {
     id: "2",
-    name: "The Chen Family",
+    name: "The Afolabi Family",
     eventName: "Wedding Anniversary",
     type: "multiple",
     eventDate: "2026-04-05",
     multiple: [
       {
         id: "ind_2",
-        name: "Michael Chen",
+        name: "Michael Afolabi",
         phoneNumber: "+1 234 567 8901",
-        email: "michael.c@email.com",
+        email: "michaelafolabi534@gmail.com",
         birthDate: "1988-11-20",
       },
       {
         id: "ind_3",
-        name: "Lisa Chen",
+        name: "Tofunmi Afolabi",
         phoneNumber: "+1 234 567 8902",
-        email: "lisa.c@email.com",
+        email: "tofunmiafolabi270@gmail.com",
         birthDate: "1992-05-18",
       },
     ],
   },
   {
     id: "3",
-    name: "Emma Rodriguez",
+    name: "Tobi Bakre",
     eventName: "Birthday",
     type: "Individual",
     eventDate: "2026-05-18",
     individual: {
       id: "ind_4",
-      name: "Emma Rodriguez",
-      phoneNumber: "+1 234 567 8903",
-      email: "emma.r@email.com",
-      birthDate: "1995-05-18",
+      name: "Tobi Bakre",
+      phoneNumber: "+234 812 345 6789",
+      email: "tobi123@gmail.com",
+      birthDate: "2000-01-01",
     },
   },
 ];
@@ -81,14 +81,14 @@ export interface DashboardEvent {
 export const dashboardTodayEvents: DashboardEvent[] = [
   {
     id: "1",
-    clientName: "Sarah Johnson",
+    clientName: "Gabriel Solomon",
     eventType: "Birthday",
     isToday: true,
   },
   {
     id: "2",
-    clientName: "The Chen Family",
-    eventType: "Anniversary",
+    clientName: "The Afolabi Family",
+    eventType: "Wedding Anniversary",
     isToday: true,
   },
 ];
@@ -96,7 +96,7 @@ export const dashboardTodayEvents: DashboardEvent[] = [
 export const dashboardUpcomingEvents: DashboardEvent[] = [
   {
     id: "3",
-    clientName: "Emma Rodriguez",
+    clientName: "Tobi Bakre",
     eventType: "Birthday",
     dateInfo: "Tomorrow",
   },
