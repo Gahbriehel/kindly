@@ -1,18 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { scroller } from "react-scroll";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BsMoon, BsSun } from "react-icons/bs";
+import { BsMoonStars, BsSun } from "react-icons/bs";
 import Image from "next/image";
-import { BaseButton } from "./ui/button";
-import { BiChevronRight } from "react-icons/bi";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState("light");
+  const navRef = useRef<HTMLElement>(null);
+
+  // Handle click outside to close mobile nav
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -78,38 +90,50 @@ const Navbar = () => {
 
   return (
     <div className="fixed top-4 w-full z-50 px-4 md:px-8 flex justify-center pointer-events-none transition-all duration-300">
-      <nav className="pointer-events-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-gray-800 dark:text-gray-200 shadow-lg p-4 md:px-10 border border-gray-200/50 dark:border-gray-800/50 w-[calc(100%-2rem)] md:w-3/4 lg:w-1/2 flex rounded-full">
+      <nav
+        ref={navRef}
+        className="pointer-events-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-gray-800 dark:text-gray-200 shadow-lg p-4 md:px-10 border border-gray-200/50 dark:border-gray-800/50 w-[calc(100%-2rem)] md:w-3/4 lg:w-1/2 flex rounded-full"
+      >
         <div className="w-full flex justify-between items-center">
           <Link href="#" className="flex items-center gap-1">
             <Image src="/images/logoK.png" alt="Logo" width={80} height={80} />
           </Link>
-          {/* Hamburger */}
-          <button
-            className="md:hidden text-3xl focus:outline-none ml-4 relative"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <motion.div
-              className="w-5 h-0.5 bg-current mb-1 rounded-full"
-              animate={{
-                rotate: isOpen ? 45 : 0,
-                y: isOpen ? 6 : 0,
-              }}
-              transition={{ duration: 0.3 }}
-            ></motion.div>
-            <motion.div
-              className="w-5 h-0.5 bg-current mb-1 rounded-full"
-              animate={{ opacity: isOpen ? 0 : 1 }}
-              transition={{ duration: 0.3 }}
-            ></motion.div>
-            <motion.div
-              className="w-5 h-0.5 bg-current rounded-full"
-              animate={{
-                rotate: isOpen ? -45 : 0,
-                y: isOpen ? -6 : 0,
-              }}
-              transition={{ duration: 0.3 }}
-            ></motion.div>
-          </button>
+          {/* Mobile Actions: Theme Switcher & Hamburger */}
+          <div className="flex items-center gap-4 md:hidden">
+            <button
+              onClick={toggleTheme}
+              className="text-2xl cursor-pointer hover:text-kblue-light transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? <BsMoonStars /> : <BsSun />}
+            </button>
+            <button
+              className="text-3xl focus:outline-none relative w-8 h-8 flex flex-col justify-center items-center"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <motion.div
+                className="w-6 h-[2px] bg-current mb-1.5 rounded-full"
+                animate={{
+                  rotate: isOpen ? 45 : 0,
+                  y: isOpen ? 8 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              ></motion.div>
+              <motion.div
+                className="w-6 h-[2px] bg-current mb-1.5 rounded-full"
+                animate={{ opacity: isOpen ? 0 : 1 }}
+                transition={{ duration: 0.3 }}
+              ></motion.div>
+              <motion.div
+                className="w-6 h-[2px] bg-current rounded-full"
+                animate={{
+                  rotate: isOpen ? -45 : 0,
+                  y: isOpen ? -8 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              ></motion.div>
+            </button>
+          </div>
 
           {/* Desktop Menu */}
           <ul className="hidden md:flex gap-8 items-center">
@@ -141,14 +165,14 @@ const Navbar = () => {
               </li>
             ))}
             {/* CTA in Nav */}
-            <li>
+            {/* <li>
               <BaseButton
                 color="secondary"
                 text="Start free"
                 onClick={() => handleScrollNav("pricing")}
                 className="px-5 py-2 text-sm rounded-full sm:h-10 sm:px-5 sm:py-2"
               />
-            </li>
+            </li>*/}
           </ul>
 
           {isOpen && (
@@ -158,27 +182,6 @@ const Navbar = () => {
               animate={{ opacity: 1, y: "0%" }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              {/* Mobile Theme Switcher */}
-              <li className="py-4 mb-4">
-                <button
-                  onClick={toggleTheme}
-                  className="cursor-pointer text-lg font-light tracking-wider relative transition-colors"
-                >
-                  {theme === "light" ? (
-                    <>
-                      <span className="flex gap-2 items-center">
-                        <BsMoon className="text-xl" /> Dark Mode
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="flex gap-2 items-center">
-                        <BsSun className="text-xl" /> Light Mode
-                      </span>
-                    </>
-                  )}
-                </button>
-              </li>
               {navLinks.map(({ name, link, type }) => (
                 <li key={link} className="py-4 gap-3 relative group">
                   {type === "router" ? (
@@ -199,7 +202,7 @@ const Navbar = () => {
                   )}
                 </li>
               ))}
-              <li className="py-4">
+              {/*  <li className="py-4">
                 <BaseButton
                   type="button"
                   icon={<BiChevronRight />}
@@ -210,21 +213,21 @@ const Navbar = () => {
                     setIsOpen(false);
                   }}
                 />
-              </li>
+              </li> */}
             </motion.ul>
           )}
           {/* Desktop Theme Switcher */}
           <div
-            className="hidden md:block cursor-pointer text-base ml-4"
+            className="hidden md:block cursor-pointer text-2xl ml-4 hover:text-kblue-light transition-colors"
             onClick={toggleTheme}
           >
             {theme === "light" ? (
-              <span role="img" aria-label="Switch to dark mode">
-                <BsMoon />
+              <span role="button" aria-label="Switch to dark mode">
+                <BsMoonStars />
               </span>
             ) : (
-              <span role="img" aria-label="Switch to light mode">
-                ☀️
+              <span role="button" aria-label="Switch to light mode">
+                <BsSun />
               </span>
             )}
           </div>
