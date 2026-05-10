@@ -1,5 +1,7 @@
 import { IBaseResponse } from "./base";
 
+export type UserRole = "ROLE_ADMIN" | "ROLE_STAFF" | "ROLE_USER";
+
 export interface ILoginPayload {
   username: string;
   password: string;
@@ -16,7 +18,7 @@ export interface ILoginResponse extends IBaseResponse {
     country: string;
     companyName: string;
     token: string;
-    role: string;
+    role: UserRole;
     firstName: string;
     lastName: string;
     refreshToken: string;
@@ -42,7 +44,7 @@ export interface ISignUpResponse extends IBaseResponse {
 
 export interface IUserData {
   username: string;
-  role: string;
+  role: UserRole;
   firstName: string;
   lastName: string;
   id: string;

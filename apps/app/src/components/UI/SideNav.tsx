@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useCallback, memo, type JSX } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 // import { logout } from "@/services/auth";
@@ -13,10 +13,12 @@ import {
   TbLayoutSidebarLeftCollapse,
 } from "react-icons/tb";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { navLinks } from "../../helpers/navLinks";
+import { getNavLinks } from "../../helpers/navLinks";
 import { queryClient } from "../../utils/Providers";
 
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
+import { UserRole } from "@/src/models/auth";
 
 const MiniLogo = memo(() => (
   <motion.div
@@ -60,7 +62,7 @@ const ExpandIcon = memo(() => (
 ExpandIcon.displayName = "ExpandIcon";
 
 interface NavItemProps {
-  icon: JSX.Element;
+  icon: React.ReactNode;
   title: string;
   href: string;
   collapsed: boolean;
@@ -76,7 +78,7 @@ function NavItem({
   collapsed,
   isActive,
   onCollapsedClick,
-}: NavItemProps): JSX.Element | null {
+}: NavItemProps): React.ReactElement {
   return (
     <li>
       <Link
@@ -119,12 +121,17 @@ export function SideNav({
 }: {
   collapsed: boolean;
   onToggle: () => void;
-}): JSX.Element {
+}): React.ReactElement {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [logOutModalDisplay, setLogOutModalDisplay] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const user = useAppSelector((state) => state.auth.user);
+  const filteredNavLinks = useMemo(
+    () => getNavLinks(user?.role as UserRole),
+    [user?.role],
+  );
 
   const handleLogout = useCallback(async () => {
     // try {
@@ -151,8 +158,6 @@ export function SideNav({
     },
     [collapsed, onToggle],
   );
-
-  const navigationLinks = useMemo(() => [...navLinks], []);
 
   return (
     <>
@@ -189,7 +194,7 @@ export function SideNav({
                 e.stopPropagation();
                 onToggle();
               }}
-              className="ml-2 cursor-pointer text-theme-primary hover:text-theme-primary-hover transition-colors"
+              className="ml-2 cursor-pointer text-gray-500 hover:text-theme-primary-hover transition-colors"
             >
               <TbLayoutSidebarLeftCollapse className="size-6" />
             </div>
@@ -199,7 +204,7 @@ export function SideNav({
         {/* Navigation Links */}
         <div className="custom-scrollbar flex-1 overflow-y-auto overflow-x-hidden py-4">
           <ul className="flex flex-col gap-1">
-            {navigationLinks.map((link) => (
+            {filteredNavLinks.map((link) => (
               <NavItem
                 key={link.title}
                 icon={link.icon}
