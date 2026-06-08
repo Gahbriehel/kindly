@@ -48,13 +48,13 @@ export default function Login() {
   async function onSubmit(data: Inputs) {
     try {
       const payload: ILoginPayload = {
-        username: data.email,
+        email: data.email,
         password: data.password,
       };
 
       loginMutation.mutate({ ...payload });
     } catch (error) {
-      console.log("Login error:", error);
+      throw error;
     }
   }
 
