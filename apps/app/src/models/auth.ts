@@ -3,57 +3,13 @@ import { IBaseResponse } from "./base";
 export type UserRole = "ROLE_ADMIN" | "ROLE_STAFF" | "ROLE_USER";
 
 export interface ILoginPayload {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface ILoginResponse extends IBaseResponse {
-  data: {
-    id: string;
-    username: string;
-    email: string;
-    phone: string;
-    city: string;
-    address: string;
-    country: string;
-    companyName: string;
-    token: string;
-    role: UserRole;
-    firstName: string;
-    lastName: string;
-    refreshToken: string;
-    tokenExpirationDate: number;
-    refreshTokenExpirationDate: number;
-  };
-}
-
-export interface ISignUpResponse extends IBaseResponse {
-  data: {
-    id: string;
-    username: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-    token: string;
-    refreshToken: string;
-    tokenExpirationDate: number;
-    refreshTokenExpirationDate: number;
-  };
-}
-
-export interface IUserData {
-  username: string;
-  role: UserRole;
-  firstName: string;
-  lastName: string;
-  id: string;
-  email: string;
-  phone: string;
-  city: string;
-  address: string;
-  country: string;
-  companyName: string;
+  accessToken: string;
+  user: IUserData;
 }
 
 export interface ISignUpPayload {
@@ -61,43 +17,35 @@ export interface ISignUpPayload {
   firstName: string;
   lastName: string;
   password: string;
+  confirmPassword: string;
 }
 
-// export interface ISignUpResponse extends IBaseResponse {
-//   data: {
-//     id: number;
-//     email: string;
-//     firstName: string;
-//     lastName: string;
-//   };
-// }
+export interface ISignUpResponse extends IBaseResponse {
+  data: { user: IUserData };
+}
 
-export interface IRefreshTokenResponse extends IBaseResponse {
+export interface IUserData {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  isActive: boolean;
+  phoneNumber: string | null;
+  companyName: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  avatarUrl: string | null;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IRefreshResponse extends IBaseResponse {
   data: {
-    token: string;
-    refreshToken: string;
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
   };
 }
-
-// export interface IUserData {
-//   _id: string;
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   phone: string;
-//   account: {
-//     category: string;
-//     type: string;
-//     role: string;
-//   };
-//   password: string;
-//   address: string;
-//   city: string;
-//   state: string;
-//   country: string;
-//   emailVerified: boolean;
-//   createdAt: string;
-//   updatedAt: string;
-//   __v: number;
-//   businessLogo: string;
-// }

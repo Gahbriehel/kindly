@@ -1,7 +1,9 @@
 export interface IBaseResponse {
-  responseCode: string;
-  responseMessage: string;
-  status: boolean;
+  success?: boolean;
+  status?: string;
+  message: string;
+  errors?: string[];
+  timestamp: string;
 }
 
 export interface IQueryParams {

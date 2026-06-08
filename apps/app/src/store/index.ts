@@ -10,7 +10,6 @@ import {
 } from "redux-persist";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./slices/auth";
-import networkSlice from "./slices/network";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 
 const createNoopStorage = () => {
@@ -31,7 +30,6 @@ const storage =
   typeof window !== "undefined"
     ? createWebStorage("local")
     : createNoopStorage();
-// import appSlice from "./slices/app";
 
 const persistConfig = {
   key: "kindly-v1",
@@ -41,8 +39,6 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authSlice,
-  network: networkSlice,
-  // app: appSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

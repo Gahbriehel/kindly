@@ -1,16 +1,18 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { ISignUpResponse, IUserData } from "../../models/auth";
+import type { IUserData } from "../../models/auth";
 
 interface authState {
-  token: string | null;
-  user: IUserData | ISignUpResponse["data"] | null;
+  user: IUserData | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   invalidSession: boolean;
   redirectUrl: string | null;
 }
 
 const initialState: authState = {
-  token: null,
   user: null,
+  accessToken: null,
+  refreshToken: null,
   invalidSession: false,
   redirectUrl: null,
 };
@@ -20,22 +22,41 @@ export const auth = createSlice({
   initialState,
   reducers: {
     logOut: (state) => {
-      state.token = null;
       state.user = null;
+      state.accessToken = null;
+      state.refreshToken = null;
       state.invalidSession = false;
       state.redirectUrl = null;
     },
-    setToken: (state, { payload }: PayloadAction<string>) => {
-      state.token = payload;
-    },
     setUser: (
       state,
-      { payload }: PayloadAction<IUserData | ISignUpResponse["data"]>,
+      {
+        payload,
+      }: PayloadAction<
+        | IUserData
+        | {
+            user: IUserData;
+            tokens: { accessToken: string; refreshToken: string };
+          }
+      >,
     ) => {
-      state.user = payload;
+      if ("user" in payload) {
+        state.user = payload.user;
+        state.accessToken = payload.tokens.accessToken;
+        state.refreshToken = payload.tokens.refreshToken;
+      } else {
+        state.user = payload;
+      }
     },
-    clearToken: (state) => {
-      state.token = null;
+    setToken: (state, { payload }: PayloadAction<string>) => {
+      state.accessToken = payload;
+    },
+    setTokens: (
+      state,
+      { payload }: PayloadAction<{ accessToken: string; refreshToken: string }>,
+    ) => {
+      state.accessToken = payload.accessToken;
+      state.refreshToken = payload.refreshToken;
     },
     invalidSession: (state) => {
       state.invalidSession = true;
@@ -53,7 +74,7 @@ export const {
   logOut,
   setUser,
   setToken,
-  clearToken,
+  setTokens,
   invalidSession,
   setRedirectUrl,
   clearRedirectUrl,

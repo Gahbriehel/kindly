@@ -2,28 +2,28 @@ import axios from "axios";
 import type {
   ILoginResponse,
   ILoginPayload,
-  IRefreshTokenResponse,
   ISignUpPayload,
   ISignUpResponse,
+  IRefreshResponse,
 } from "../models/auth";
 
 export async function login(payload: ILoginPayload) {
-  const response = await axios.post<ILoginResponse>(`/login`, payload);
+  const response = await axios.post<ILoginResponse>(`/auth/login`, payload);
   return response.data;
 }
 
 export async function signup(payload: ISignUpPayload) {
-  const response = await axios.post<ISignUpResponse>(`/kindly/user`, payload);
+  const response = await axios.post<ISignUpResponse>(`/auth/signup`, payload);
   return response.data;
 }
 
 export async function logout() {
-  const response = await axios.post(`/logout`);
+  const response = await axios.post(`/auth/logout`);
   return response.data;
 }
 
 export async function refreshTokenRequest(refreshToken: string) {
-  const response = await axios.post<IRefreshTokenResponse>(`/refresh`, {
+  const response = await axios.post<IRefreshResponse>(`/auth/refresh`, {
     refreshToken,
   });
   return response.data;

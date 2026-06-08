@@ -30,8 +30,8 @@ export default function ProfilePage(): JSX.Element {
     defaultValues: {
       firstName: userObj?.firstName ?? "",
       lastName: userObj?.lastName ?? "",
-      email: userObj?.username ?? userObj?.email ?? "",
-      phone: userObj?.phone ?? "",
+      email: userObj?.email ?? "",
+      phone: userObj?.phoneNumber ?? "",
       companyName: userObj?.companyName ?? "",
       address: userObj?.address ?? "",
       city: userObj?.city ?? "",
