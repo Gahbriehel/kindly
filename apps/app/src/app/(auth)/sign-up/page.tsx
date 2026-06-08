@@ -42,10 +42,11 @@ export default function RegisterPage() {
         lastName: data.lastName,
         email: data.email,
         password: data.password,
+        confirmPassword: data.confirmPassword,
       };
       signupMutation.mutate(payload);
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
 

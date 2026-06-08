@@ -16,27 +16,30 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      dispatch(setToken(response.data.token));
+      dispatch(setToken(response.accessToken));
       dispatch(
         setUser({
-          id: response.data.id,
-          username: response.data.username,
-          role: response.data.role,
-          firstName: response.data.firstName,
-          lastName: response.data.lastName,
-          email: response.data.email,
-          phone: response.data.phone,
-          city: response.data.city,
-          address: response.data.address,
-          country: response.data.country,
-          companyName: response.data.companyName,
+          id: response.user.id,
+          role: response.user.role,
+          firstName: response.user.firstName,
+          lastName: response.user.lastName,
+          email: response.user.email,
+          phoneNumber: response.user.phoneNumber,
+          companyName: response.user.companyName,
+          address: response.user.address,
+          city: response.user.city,
+          country: response.user.country,
+          avatarUrl: response.user.avatarUrl,
+          isActive: response.user.isActive,
+          createdAt: response.user.createdAt,
+          updatedAt: response.user.updatedAt,
         }),
       );
-      customToast.success(response.responseMessage);
+      customToast.success(response.message);
       router.push("/dashboard");
     },
-    onError: (error: AxiosError<{ responseMessage: string }>) => {
-      customToast.error(error.response?.data.responseMessage ?? error.message);
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(error.response?.data.message ?? "Login failed");
     },
   });
 }
@@ -46,11 +49,11 @@ export function useSignupMutation() {
   return useMutation({
     mutationFn: signup,
     onSuccess: (response) => {
-      customToast.success(response.responseMessage);
+      customToast.success(response.message);
       router.push("/login");
     },
-    onError: (error: AxiosError<{ responseMessage: string }>) => {
-      customToast.error(error.response?.data.responseMessage ?? error.message);
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(error.response?.data.message ?? "Signup failed");
     },
   });
 }
