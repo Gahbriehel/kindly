@@ -4,17 +4,16 @@ import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
 import { Input } from "../../../components/FormElements/Input";
-import { useState } from "react";
 import { AuthLayout } from "../../../components/UI/AuthLayout";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { customToast } from "@/src/helpers/customToast";
+import { useForgotPasswordMutation } from "@/src/hooks/useAuthQuery";
 
 interface Inputs {
   email: string;
 }
 
-export default function ResetPasswordPage() {
-  const [loading, setLoading] = useState(false);
+export default function ForgotPasswordPage() {
+  const forgotPasswordMutation = useForgotPasswordMutation();
 
   const schema = yup.object({
     email: yup.string().email("Invalid email").required("Enter Email"),
@@ -26,17 +25,14 @@ export default function ResetPasswordPage() {
   });
 
   async function onSubmit(data: Inputs) {
-    setLoading(true);
     try {
-      // Mocking reset link sent for now
-      console.log("Reset password for:", data.email);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      customToast.success("Reset link sent to your email!");
+      const payload = {
+        email: data.email,
+      };
+
+      forgotPasswordMutation.mutate(payload);
     } catch (error) {
-      console.log("Reset password error:", error);
-      customToast.error("Failed to send reset link.");
-    } finally {
-      setLoading(false);
+      throw error;
     }
   }
 
@@ -46,7 +42,7 @@ export default function ResetPasswordPage() {
       subtext="Enter your email to receive a reset link."
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
-      loading={loading}
+      loading={forgotPasswordMutation.isPending}
       backButton
       footer={
         <p className="text-gray-400 text-sm">

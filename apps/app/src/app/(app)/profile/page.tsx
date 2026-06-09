@@ -8,6 +8,7 @@ import { BsPerson, BsCheckCircleFill } from "react-icons/bs";
 import type { JSX } from "react";
 import { IUserData } from "@/src/models/auth";
 import { useThemeColor } from "@/src/context/ThemeColorContext";
+import { useGetProfileQuery } from "@/src/hooks/useAuthQuery";
 
 interface ProfileFormValues {
   firstName: string;
@@ -23,6 +24,9 @@ interface ProfileFormValues {
 export default function ProfilePage(): JSX.Element {
   const { user } = useAppSelector((state) => state.auth);
   const { themeColor, setThemeColor } = useThemeColor();
+
+  const { data, isLoading, isError, error } = useGetProfileQuery();
+  console.log({ data, isLoading, isError, error });
 
   const userObj = user as IUserData;
 

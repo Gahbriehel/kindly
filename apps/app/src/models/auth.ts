@@ -24,6 +24,10 @@ export interface ISignUpResponse extends IBaseResponse {
   data: { user: IUserData };
 }
 
+export interface IProfileResponse extends IBaseResponse {
+  user: IUserData;
+}
+
 export interface IUserData {
   id: string;
   email: string;
