@@ -24,6 +24,7 @@ export default function RegisterPage() {
       .string()
       .min(8, "Password must be at least 8 characters")
       .required("Enter Password"),
+    confirmPassword: yup.string().required("Enter Confirm Password"),
   });
 
   const {
@@ -123,6 +124,27 @@ export default function RegisterPage() {
             label="Password"
             type={showPassword}
             error={errors.password?.message}
+            hidePassword={() => {
+              setShowPassword("password");
+            }}
+            showPassword={() => {
+              setShowPassword("text");
+            }}
+            password
+            required
+          />
+        )}
+      />
+
+      <Controller
+        name="confirmPassword"
+        control={control}
+        render={({ field }) => (
+          <Input
+            {...field}
+            label="Confirm Password"
+            type={showPassword}
+            error={errors.confirmPassword?.message}
             hidePassword={() => {
               setShowPassword("password");
             }}
