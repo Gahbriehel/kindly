@@ -1,5 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  forgotPassword,
+  getProfile,
   // forgotPassword,
   login,
   signup,
@@ -58,15 +60,25 @@ export function useSignupMutation() {
   });
 }
 
-// export function useForgotPasswordMutation() {
-//   const router = useRouter();
-//   return useMutation({
-//     mutationFn: forgotPassword,
-//     onSuccess: () => {
-//       customToast.success("Mail sent. Check your inbox!");
-//       router.push("/reset-password");
-//     },
-//     onError: () => {},
-//     onSettled: () => {},
-//   });
-// }
+export function useForgotPasswordMutation() {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: (response) => {
+      customToast.success(response.message);
+      router.push("/login");
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(
+        error.response?.data.message ?? "Mail sent. Check your inbox!",
+      );
+    },
+  });
+}
+
+export function useGetProfileQuery() {
+  return useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => await getProfile(),
+  });
+}
