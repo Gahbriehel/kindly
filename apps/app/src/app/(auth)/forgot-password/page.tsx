@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
       loading={forgotPasswordMutation.isPending}
       backButton
       footer={
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-500 dark:text-slate-400 text-sm">
           Remembered your password?{" "}
           <Link
             href="/login"

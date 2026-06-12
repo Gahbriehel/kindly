@@ -61,18 +61,18 @@ export default function Login() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtext="Please enter your details to sign in."
+      subtext="Sign in to manage your clients and events"
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       loading={loginMutation.isPending}
       footer={
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-500 dark:text-slate-400 text-sm">
           Don&apos;t have an account?{" "}
           <Link
             href="/sign-up"
             className="font-semibold text-theme-primary hover:underline"
           >
-            Sign up
+            Create an account
           </Link>
         </p>
       }
@@ -136,9 +136,9 @@ export default function Login() {
 
         <Link
           href="/forgot-password"
-          className="font-semibold text-theme-primary hover:underline"
+          className="text-gray-500 dark:text-slate-400 hover:text-theme-primary font-medium hover:underline text-xs sm:text-sm transition-colors"
         >
-          Forgot password?
+          Forgot your password?
         </Link>
       </div>
     </AuthLayout>
