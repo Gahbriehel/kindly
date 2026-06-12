@@ -32,7 +32,13 @@ export default function RegisterPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: { firstName: "", lastName: "", email: "", password: "" },
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
     resolver: yupResolver(schema),
   });
 
@@ -53,19 +59,20 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout
-      title="Create account"
-      subtext="Start your journey with Kindly today."
+      title="Create your account"
+      subtext="Start managing your clients and events"
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       loading={signupMutation.isPending}
+      backButton
       footer={
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-500 dark:text-slate-400 text-sm">
           Already have an account?{" "}
           <Link
             href="/login"
             className="font-semibold text-theme-primary hover:underline"
           >
-            Sign in
+            Log in
           </Link>
         </p>
       }
@@ -158,8 +165,20 @@ export default function RegisterPage() {
       />
 
       <p className="text-xs text-gray-500 mt-2">
-        By clicking continue, you agree to our terms of service and privacy
-        policy.
+        By clicking continue, you agree to our{" "}
+        <Link
+          href="/terms-of-service"
+          className="font-semibold text-theme-primary hover:underline"
+        >
+          terms of service
+        </Link>{" "}
+        and{" "}
+        <Link
+          href="#"
+          className="font-semibold text-theme-primary hover:underline"
+        >
+          privacy policy
+        </Link>
       </p>
     </AuthLayout>
   );
