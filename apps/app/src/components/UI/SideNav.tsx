@@ -2,8 +2,7 @@
 import { useState, useMemo, useCallback, memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
-// import { logout } from "@/services/auth";
-// import { logOut } from "@/store/slices/auth";
+import { logOut } from "@/src/store/slices/auth";
 import { clsx } from "clsx";
 import { Logo } from "./Logo";
 import Link from "next/link";
@@ -15,7 +14,6 @@ import {
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { getNavLinks } from "../../helpers/navLinks";
 import { queryClient } from "../../utils/Providers";
-
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { UserRole } from "@/src/models/auth";
@@ -134,12 +132,7 @@ export function SideNav({
   );
 
   const handleLogout = useCallback(async () => {
-    // try {
-    //   await logout();
-    // } catch {
-    //   // proceed with local logout even if the API call fails
-    // }
-    // dispatch(logOut());
+    dispatch(logOut());
     queryClient.clear();
     router.push("/login");
   }, [dispatch, router]);

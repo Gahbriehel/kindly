@@ -18,37 +18,37 @@ export const navLinks: NavLink[] = [
     title: "Dashboard",
     icon: <LuLayoutDashboard className="size-5" />,
     href: "/dashboard",
-    roles: ["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"],
+    roles: ["admin", "moderator"],
   },
   {
     title: "Clients",
     icon: <MdOutlinePeopleAlt className="size-5" />,
     href: "/clients",
-    roles: ["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"],
+    roles: ["admin", "moderator"],
   },
   {
     title: "Templates",
     icon: <IoDocumentTextOutline className="size-5" />,
     href: "/templates",
-    roles: ["ROLE_USER", "ROLE_ADMIN"],
+    roles: ["admin"],
   },
   {
     title: "Settings",
     icon: <FaCog className="size-5" />,
     href: "/settings",
-    roles: ["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"],
+    roles: ["admin", "moderator"],
   },
   {
     title: "Profile",
     icon: <CgProfile className="size-5" />,
     href: "/profile",
-    roles: ["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"],
+    roles: ["admin", "moderator"],
   },
   {
     title: "Staff",
     icon: <TbUserScreen className="size-5" />,
     href: "/staff",
-    roles: ["ROLE_ADMIN", "ROLE_USER"],
+    roles: ["admin"],
   },
 ];
 

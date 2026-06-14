@@ -4,18 +4,20 @@ import "@/src/styles/globals.css";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "../../hooks/useAppSelector";
-// import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useWindowDimension } from "../../hooks/useWindowDimension";
 import { SideNav } from "../../components/UI/SideNav";
 import { TopNav } from "../../components/UI/TopNav";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { MobileNav } from "../../components/UI/MobileNav";
+import { queryClient } from "@/src/utils/Providers";
+import { logOut } from "@/src/store/slices/auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { width = 0 } = useWindowDimension();
   const { user } = useAppSelector((state) => state.auth);
   const router = useRouter();
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logOutModalDisplay, setLogOutModalDisplay] = useState(false);
@@ -40,16 +42,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     setLogOutModalDisplay(false);
   }, []);
 
-  // const handleLogout = useCallback(async () => {
-  //   try {
-  //     await logout();
-  //   } catch {
-  //     // ignore
-  //   }
-  //   dispatch(logOut());
-  //   queryClient.clear();
-  //   router.push("/login");
-  // }, [dispatch, router]);
+  const handleLogout = useCallback(async () => {
+    dispatch(logOut());
+    queryClient.clear();
+    router.push("/login");
+  }, [dispatch, router]);
 
   const handleMobileLogoutClick = useCallback(() => {
     closeMobileMenu();
@@ -57,6 +54,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [closeMobileMenu, openLogoutModal]);
   useEffect(() => {
     if (!user) {
+      dispatch(logOut());
+      queryClient.clear();
       router.push("/login");
     }
   }, [user, router]);
@@ -88,11 +87,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         )}
 
         <ConfirmActionModal
-          actionName="logout"
+          actionName="Logout"
           display={logOutModalDisplay}
           close={closeLogoutModal}
-          // fn={handleLogout}
-          fn={() => {}}
+          fn={handleLogout}
         />
       </div>
     </>
