@@ -1,6 +1,6 @@
 import { IBaseResponse } from "./base";
 
-export type UserRole = "ROLE_ADMIN" | "ROLE_STAFF" | "ROLE_USER";
+export type UserRole = "admin" | "moderator";
 
 export interface ILoginPayload {
   email: string;

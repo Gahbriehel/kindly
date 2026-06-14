@@ -26,7 +26,10 @@ export default function Login() {
 
   const schema = yup.object({
     email: yup.string().email("Invalid email").required("Enter Email"),
-    password: yup.string().required("Enter Password"),
+    password: yup
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Enter Password"),
     rememberMe: yup.boolean(),
   });
 
