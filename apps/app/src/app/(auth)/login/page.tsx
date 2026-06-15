@@ -4,7 +4,8 @@ import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
 import { Input } from "../../../components/FormElements/Input";
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { AuthLayout } from "../../../components/UI/AuthLayout";
 import { useLoginMutation } from "@/src/hooks/useAuthQuery";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
@@ -18,11 +19,22 @@ interface Inputs {
 }
 
 export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const loginMutation = useLoginMutation();
   const { user } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState<"password" | "text">(
     "password",
   );
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  const isOrganization = type === "organization";
 
   const schema = yup.object({
     email: yup.string().email("Invalid email").required("Enter Email"),
@@ -61,23 +73,31 @@ export default function Login() {
     }
   }
 
+  const title = isOrganization ? "Organization Sign In" : "Welcome back";
+  const subtext = isOrganization
+    ? "Sign in to manage your templates, clients, and staff"
+    : "Sign in to manage your clients and events";
+
   return (
     <AuthLayout
-      title="Welcome back"
-      subtext="Sign in to manage your clients and events"
+      title={title}
+      subtext={subtext}
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       loading={loginMutation.isPending}
+      backButton
       footer={
-        <p className="text-gray-500 dark:text-slate-400 text-sm">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/sign-up"
-            className="font-semibold text-theme-primary hover:underline"
-          >
-            Create an account
-          </Link>
-        </p>
+        !isOrganization ? (
+          <p className="text-gray-500 dark:text-slate-400 text-sm">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/sign-up"
+              className="font-semibold text-theme-primary hover:underline"
+            >
+              Create an account
+            </Link>
+          </p>
+        ) : null
       }
     >
       <Controller

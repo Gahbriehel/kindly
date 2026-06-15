@@ -43,15 +43,15 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
       {label && (
         <label
           htmlFor={id}
-          className="block text-sm font-semibold text-gray-600"
+          className="block text-sm font-semibold text-gray-600 dark:text-slate-400"
         >
           {label}&nbsp; {required && <span className="text-red-600">*</span>}
         </label>
       )}
       <div className="relative flex">
         {countryCode && (
-          <div className="h-10 rounded-l-xl border bg-white px-4 py-2">
-            <span className="text-sm font-medium text-gray-600">
+          <div className="h-10 rounded-l-xl border border-gray-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800">
+            <span className="text-sm font-medium text-gray-600 dark:text-slate-400">
               {countryCode}
             </span>
           </div>
@@ -62,9 +62,14 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
           id={id}
           value={props.value ?? ""}
           className={clsx(
-            "h-10 w-full rounded-r-xl border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 disabled:cursor-not-allowed",
+            "h-10 w-full rounded-r-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 outline-none transition-all placeholder-gray-400",
+            "focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20",
+            "dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500",
+            "dark:focus:border-theme-primary dark:focus:bg-slate-900 dark:focus:ring-theme-primary/20",
+            "disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-slate-800/40 dark:disabled:text-slate-600",
             className,
-            error && "border-red-500",
+            error &&
+              "border-red-500 dark:border-red-500/50 focus:border-red-500 dark:focus:border-red-500/50 focus:ring-red-500/20 dark:focus:ring-red-500/20",
             {
               "rounded-l-xl": !countryCode,
             },
