@@ -9,7 +9,7 @@ export const metadata = {
   title: "Kindly App",
   description: "Internal management for Kindly",
   icons: {
-    icon: "/images/logo-icon.png",
+    icon: "/images/kindly-icon.png",
   },
 };
 

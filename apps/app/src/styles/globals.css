@@ -2,13 +2,13 @@
 @config "../../tailwind.config.ts";
 
 :root {
-  --color-theme-primary: 255 155 122;
-  --color-theme-primary-hover: 255 135 101;
+  --color-theme-primary: 43 67 174;
+  --color-theme-primary-hover: 30 51 149;
 }
 
-.theme-sky {
-  --color-theme-primary: 14 165 233;
-  --color-theme-primary-hover: 2 132 199;
+.dark {
+  --color-theme-primary: 59 89 223;
+  --color-theme-primary-hover: 43 67 174;
 }
 
 *:focus-visible {

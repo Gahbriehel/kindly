@@ -4,10 +4,15 @@ import { useForm, Controller } from "react-hook-form";
 import { Input } from "@/src/components/FormElements/Input";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-import { BsPerson, BsCheckCircleFill } from "react-icons/bs";
+import {
+  BsPerson,
+  BsCheckCircleFill,
+  BsSun,
+  BsMoonStars,
+} from "react-icons/bs";
 import type { JSX } from "react";
 import { IUserData } from "@/src/models/auth";
-import { useThemeColor } from "@/src/context/ThemeColorContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useGetProfileQuery } from "@/src/hooks/useAuthQuery";
 
 interface ProfileFormValues {
@@ -23,7 +28,7 @@ interface ProfileFormValues {
 
 export default function ProfilePage(): JSX.Element {
   const { user } = useAppSelector((state) => state.auth);
-  const { themeColor, setThemeColor } = useThemeColor();
+  const { theme, setTheme } = useTheme();
 
   const { data, isLoading, isError, error } = useGetProfileQuery();
   console.log({ data, isLoading, isError, error });
@@ -217,43 +222,47 @@ export default function ProfilePage(): JSX.Element {
             Theme Preferences
           </h2>
           <p className="mb-5 text-xs text-gray-400 dark:text-slate-500">
-            Choose your preferred accent color for the application.
+            Choose your preferred display mode for the application.
           </p>
 
           <div className="flex gap-4">
             <button
               type="button"
-              onClick={() => setThemeColor("pink")}
-              className={`cursor-pointer relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                themeColor === "pink"
-                  ? "border-[#FF9B7A] bg-orange-50/50 dark:bg-orange-900/10"
-                  : "border-gray-200 dark:border-gray-700"
+              onClick={() => setTheme("light")}
+              className={`cursor-pointer relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 w-36 transition-all hover:bg-gray-50 dark:hover:bg-slate-700/50 ${
+                theme === "light"
+                  ? "border-theme-primary bg-theme-primary/5 dark:bg-slate-700/30"
+                  : "border-gray-200 dark:border-slate-700"
               }`}
             >
-              <div className="h-8 w-8 rounded-full bg-[#FF9B7A] shadow-sm" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Pink Accent
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/30 text-amber-500 shadow-sm">
+                <BsSun className="h-5 w-5" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Light Mode
               </span>
-              {themeColor === "pink" && (
-                <BsCheckCircleFill className="absolute top-2 right-2 h-4 w-4 text-[#FF9B7A]" />
+              {theme === "light" && (
+                <BsCheckCircleFill className="absolute top-2 right-2 h-4 w-4 text-theme-primary" />
               )}
             </button>
 
             <button
               type="button"
-              onClick={() => setThemeColor("sky")}
-              className={`cursor-pointer relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                themeColor === "sky"
-                  ? "border-sky-500 bg-sky-50/50 dark:bg-sky-900/10"
-                  : "border-gray-200 dark:border-gray-700"
+              onClick={() => setTheme("dark")}
+              className={`cursor-pointer relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 w-36 transition-all hover:bg-gray-50 dark:hover:bg-slate-700/50 ${
+                theme === "dark"
+                  ? "border-theme-primary bg-theme-primary/5 dark:bg-slate-700/30"
+                  : "border-gray-200 dark:border-slate-700"
               }`}
             >
-              <div className="h-8 w-8 rounded-full bg-sky-500 shadow-sm" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Sky Accent
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-950/30 text-indigo-500 shadow-sm">
+                <BsMoonStars className="h-5 w-5" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Dark Mode
               </span>
-              {themeColor === "sky" && (
-                <BsCheckCircleFill className="absolute top-2 right-2 h-4 w-4 text-sky-500" />
+              {theme === "dark" && (
+                <BsCheckCircleFill className="absolute top-2 right-2 h-4 w-4 text-theme-primary" />
               )}
             </button>
           </div>
