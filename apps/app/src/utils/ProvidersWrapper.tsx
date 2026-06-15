@@ -6,11 +6,11 @@ import {
   AxiosProvider,
   ToastProvider,
 } from "./Providers";
-import { ThemeColorProvider } from "../context/ThemeColorContext";
+import { ThemeProvider } from "../context/ThemeContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeColorProvider>
+    <ThemeProvider>
       <ReduxProvider>
         <QueryProvider>
           <AxiosProvider>
@@ -19,6 +19,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           </AxiosProvider>
         </QueryProvider>
       </ReduxProvider>
-    </ThemeColorProvider>
+    </ThemeProvider>
   );
 }

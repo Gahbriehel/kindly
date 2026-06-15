@@ -25,7 +25,7 @@ export function SwitchWrapper({
 }: Props): JSX.Element {
   return (
     <fieldset className={clsx("relative space-y-2", className)}>
-      <label className="block text-sm font-semibold text-gray-600">
+      <label className="block text-sm font-semibold text-gray-600 dark:text-slate-400">
         {label} {required && <span className="text-red-600">*</span>}
       </label>
       <Switch
@@ -33,8 +33,11 @@ export function SwitchWrapper({
         onChange={onChange}
         onBlur={onBlur}
         className={clsx(
-          "relative inline-flex cursor-pointer h-6 w-11 items-center rounded-full border border-gray-400 transition",
-          { "bg-theme-primary": value, "bg-gray-200": !value },
+          "relative inline-flex cursor-pointer h-6 w-11 items-center rounded-full border border-gray-400 dark:border-slate-600 transition",
+          {
+            "bg-theme-primary": value,
+            "bg-gray-200 dark:bg-slate-700": !value,
+          },
         )}
       >
         <span
