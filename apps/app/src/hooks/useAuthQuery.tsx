@@ -33,6 +33,7 @@ export function useLoginMutation() {
           country: response.user.country,
           avatarUrl: response.user.avatarUrl,
           isActive: response.user.isActive,
+          subscriptionTier: response.user.subscriptionTier,
           createdAt: response.user.createdAt,
           updatedAt: response.user.updatedAt,
         }),

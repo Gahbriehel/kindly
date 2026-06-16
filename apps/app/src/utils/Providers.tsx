@@ -84,7 +84,7 @@ export function AxiosProvider({ children }: Props): JSX.Element {
         const errorMessage = errorData?.message ?? "";
         const errorsList = errorData?.errors;
 
-        const isLoginRequest = originalRequest?.url?.includes("/auth/login");
+        const isLoginRequest = originalRequest?.url?.includes("/login");
         const isRefreshRequest =
           originalRequest?.url?.includes("/auth/refresh");
 

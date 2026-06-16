@@ -24,7 +24,10 @@ export default function RegisterPage() {
       .string()
       .min(8, "Password must be at least 8 characters")
       .required("Enter Password"),
-    confirmPassword: yup.string().required("Enter Confirm Password"),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password")], "Passwords must match")
+      .required("Enter Confirm Password"),
   });
 
   const {
