@@ -65,9 +65,10 @@ function LoginContent() {
       const payload: ILoginPayload = {
         email: data.email,
         password: data.password,
+        isOrganization,
       };
 
-      loginMutation.mutate({ ...payload });
+      loginMutation.mutate(payload);
     } catch (error) {
       throw error;
     }

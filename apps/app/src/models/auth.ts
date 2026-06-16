@@ -5,6 +5,7 @@ export type UserRole = "admin" | "moderator";
 export interface ILoginPayload {
   email: string;
   password: string;
+  isOrganization?: boolean;
 }
 
 export interface ILoginResponse extends IBaseResponse {
@@ -43,6 +44,7 @@ export interface IUserData {
   role: UserRole;
   createdAt: string;
   updatedAt: string;
+  subscriptionTier: string;
 }
 
 export interface IRefreshResponse extends IBaseResponse {

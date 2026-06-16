@@ -10,12 +10,19 @@ import type {
 import { IBaseResponse } from "../models/base";
 
 export async function login(payload: ILoginPayload) {
-  const response = await axios.post<ILoginResponse>(`/auth/login`, payload);
+  const { isOrganization, ...data } = payload;
+  const endpoint = isOrganization
+    ? `/auth/company/login`
+    : `/auth/individual/login`;
+  const response = await axios.post<ILoginResponse>(endpoint, data);
   return response.data;
 }
 
 export async function signup(payload: ISignUpPayload) {
-  const response = await axios.post<ISignUpResponse>(`/auth/signup`, payload);
+  const response = await axios.post<ISignUpResponse>(
+    `/auth/individual/signup`,
+    payload,
+  );
   return response.data;
 }
 
