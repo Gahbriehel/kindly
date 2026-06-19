@@ -1,9 +1,11 @@
 export interface IBaseResponse {
   success?: boolean;
   status?: string;
+  statusCode: number;
   message: string;
   errors?: string[];
   timestamp: string;
+  path: string;
 }
 
 export interface IQueryParams {

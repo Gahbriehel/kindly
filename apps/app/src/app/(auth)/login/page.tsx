@@ -65,6 +65,7 @@ function LoginContent() {
       const payload: ILoginPayload = {
         email: data.email,
         password: data.password,
+        forceLogout: true,
         isOrganization,
       };
 
