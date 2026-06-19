@@ -16,6 +16,7 @@ interface Props {
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   onSubmit: (data: any) => void | Promise<void>;
   backButton?: boolean;
+  backHref?: string;
   loading: boolean;
 }
 
@@ -28,6 +29,7 @@ export function AuthLayout({
   loading,
   footer,
   backButton,
+  backHref = "/",
 }: Props): JSX.Element {
   const router = useRouter();
 
@@ -63,7 +65,7 @@ export function AuthLayout({
         {backButton && (
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => router.push(backHref)}
             className="absolute left-4 top-4 lg:left-[-60px] lg:top-2 w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors z-20 group border border-gray-100 dark:border-slate-700"
           >
             <RiArrowLeftLine className="h-5 w-5 text-gray-600 dark:text-slate-300 group-hover:text-gray-800 dark:group-hover:text-white" />

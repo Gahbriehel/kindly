@@ -18,24 +18,25 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      dispatch(setToken(response.accessToken));
+      const { accessToken, individual } = response.data;
+      dispatch(setToken(accessToken));
       dispatch(
         setUser({
-          id: response.user.id,
-          role: response.user.role,
-          firstName: response.user.firstName,
-          lastName: response.user.lastName,
-          email: response.user.email,
-          phoneNumber: response.user.phoneNumber,
-          companyName: response.user.companyName,
-          address: response.user.address,
-          city: response.user.city,
-          country: response.user.country,
-          avatarUrl: response.user.avatarUrl,
-          isActive: response.user.isActive,
-          subscriptionTier: response.user.subscriptionTier,
-          createdAt: response.user.createdAt,
-          updatedAt: response.user.updatedAt,
+          id: individual.id,
+          role: "individual" as never,
+          firstName: individual.firstName,
+          lastName: individual.lastName,
+          email: individual.email,
+          phoneNumber: individual.phoneNumber,
+          companyName: null,
+          address: individual.address,
+          city: individual.city,
+          country: individual.country,
+          avatarUrl: individual.avatarUrl,
+          isActive: individual.isActive,
+          subscriptionTier: individual.subscriptionTier,
+          createdAt: individual.createdAt,
+          updatedAt: individual.updatedAt,
         }),
       );
       customToast.success(response.message);
@@ -49,13 +50,36 @@ export function useLoginMutation() {
 
 export function useSignupMutation() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   return useMutation({
     mutationFn: signup,
     onSuccess: (response) => {
+      const { accessToken, individual } = response.data;
+      dispatch(setToken(accessToken));
+      dispatch(
+        setUser({
+          id: individual.id,
+          role: "individual" as never,
+          firstName: individual.firstName,
+          lastName: individual.lastName,
+          email: individual.email,
+          phoneNumber: individual.phoneNumber,
+          companyName: null,
+          address: individual.address,
+          city: individual.city,
+          country: individual.country,
+          avatarUrl: individual.avatarUrl,
+          isActive: individual.isActive,
+          subscriptionTier: individual.subscriptionTier,
+          createdAt: individual.createdAt,
+          updatedAt: individual.updatedAt,
+        }),
+      );
       customToast.success(response.message);
-      router.push("/login");
+      router.push("/dashboard");
     },
     onError: (error: AxiosError<{ message: string }>) => {
+      console.log("error:", error);
       customToast.error(error.response?.data.message ?? "Signup failed");
     },
   });
