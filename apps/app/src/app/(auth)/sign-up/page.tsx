@@ -68,6 +68,7 @@ export default function RegisterPage() {
       onSubmit={onSubmit}
       loading={signupMutation.isPending}
       backButton
+      backHref="/login"
       footer={
         <p className="text-gray-500 dark:text-slate-400 text-sm">
           Already have an account?{" "}

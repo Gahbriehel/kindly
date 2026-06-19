@@ -5,12 +5,17 @@ export type UserRole = "admin" | "moderator";
 export interface ILoginPayload {
   email: string;
   password: string;
+  forceLogout?: boolean;
   isOrganization?: boolean;
 }
 
 export interface ILoginResponse extends IBaseResponse {
-  accessToken: string;
-  user: IUserData;
+  // accessToken: string;
+  // user: IUserData;
+  data: {
+    accessToken: string;
+    individual: IIndividualData;
+  };
 }
 
 export interface ISignUpPayload {
@@ -21,8 +26,27 @@ export interface ISignUpPayload {
   confirmPassword: string;
 }
 
+export interface IIndividualData {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  isActive: boolean;
+  phoneNumber: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  avatarUrl: string | null;
+  subscriptionTier: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ISignUpResponse extends IBaseResponse {
-  data: { user: IUserData };
+  data: {
+    accessToken: string;
+    individual: IIndividualData;
+  };
 }
 
 export interface IProfileResponse extends IBaseResponse {
