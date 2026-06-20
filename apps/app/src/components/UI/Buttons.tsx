@@ -128,26 +128,31 @@ export const BaseButton = forwardRef<
       type={type}
       className={classNames}
     >
-      {!loading && (
-        <>
-          {!hideText && content}
-          {badgeNumber && (
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-sky-600 text-xs text-white">
-              {badgeNumber}
-            </span>
-          )}
-          {icon}
-        </>
-      )}
+      <span
+        className={clsx(
+          "inline-flex items-center gap-2",
+          loading && "invisible",
+        )}
+      >
+        {!hideText && content}
+        {badgeNumber && (
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-sky-600 text-xs text-white">
+            {badgeNumber}
+          </span>
+        )}
+        {icon}
+      </span>
       {loading && (
-        <ClipLoader
-          size={12}
-          color={
-            ["white", "outline", "transparent"].includes(color)
-              ? "rgb(var(--color-theme-primary))"
-              : "#ffffff"
-          }
-        />
+        <span className="absolute inset-0 flex items-center justify-center">
+          <ClipLoader
+            size={12}
+            color={
+              ["white", "outline", "transparent"].includes(color)
+                ? "rgb(var(--color-theme-primary))"
+                : "#ffffff"
+            }
+          />
+        </span>
       )}
       {hideText && (
         <span className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black px-3 py-2 text-sm text-white opacity-0 transition-opacity duration-300">

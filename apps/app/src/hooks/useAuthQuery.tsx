@@ -43,7 +43,10 @@ export function useLoginMutation() {
       router.push("/dashboard");
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      customToast.error(error.response?.data.message ?? "Login failed");
+      const message = error.response?.data?.message;
+      if (message !== "You already have an active session on another device.") {
+        customToast.error(message ?? "Login failed");
+      }
     },
   });
 }

@@ -5,6 +5,7 @@ import { BaseButton } from "../UI/Buttons";
 interface ConfirmActionModalProps {
   actionName: string;
   title?: string;
+  message?: string;
   fn: () => void;
   loading?: boolean;
   close: () => void;
@@ -14,6 +15,7 @@ interface ConfirmActionModalProps {
 export function ConfirmActionModal({
   actionName,
   title,
+  message,
   fn,
   loading,
   close,
@@ -28,8 +30,8 @@ export function ConfirmActionModal({
           {title || `Confirm ${actionName}`}
         </h3>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
-          Are you sure you want to proceed with this action? This cannot be
-          undone.
+          {message ||
+            "Are you sure you want to proceed with this action? This cannot be undone."}
         </p>
         <div className="flex justify-end gap-3">
           <BaseButton
