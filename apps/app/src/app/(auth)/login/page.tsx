@@ -11,6 +11,8 @@ import { useLoginMutation } from "@/src/hooks/useAuthQuery";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ILoginPayload } from "../../../models/auth";
+import { ConfirmActionModal } from "../../../components/Modals/ConfirmActionModal";
+import { AxiosError } from "axios";
 
 interface Inputs {
   email: string;
@@ -35,6 +37,12 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const isOrganization = type === "organization";
+
+  // Session conflict modal states
+  const [showSessionModal, setShowSessionModal] = useState(false);
+  const [pendingPayload, setPendingPayload] = useState<ILoginPayload | null>(
+    null,
+  );
 
   const schema = yup.object({
     email: yup.string().email("Invalid email").required("Enter Email"),
@@ -65,15 +73,41 @@ function LoginContent() {
       const payload: ILoginPayload = {
         email: data.email,
         password: data.password,
-        forceLogout: true,
+        forceLogout: false,
         isOrganization,
       };
 
-      loginMutation.mutate(payload);
+      loginMutation.mutate(payload, {
+        onError: (error: AxiosError<{ message: string }>) => {
+          const message = error.response?.data?.message;
+          if (
+            message === "You already have an active session on another device."
+          ) {
+            setPendingPayload(payload);
+            setShowSessionModal(true);
+          }
+        },
+      });
     } catch (error) {
       throw error;
     }
   }
+
+  const handleForceLogoutConfirm = () => {
+    if (pendingPayload) {
+      loginMutation.mutate(
+        {
+          ...pendingPayload,
+          forceLogout: true,
+        },
+        {
+          onSettled: () => {
+            setShowSessionModal(false);
+          },
+        },
+      );
+    }
+  };
 
   const title = isOrganization ? "Organization Sign In" : "Welcome back";
   const subtext = isOrganization
@@ -166,6 +200,17 @@ function LoginContent() {
           Forgot your password?
         </Link>
       </div>
+
+      {/* Active Session Confirmation Modal */}
+      <ConfirmActionModal
+        display={showSessionModal}
+        actionName="Log Out Other Device"
+        title="Active Session Found"
+        message="You already have an active session on another device. Would you like to log out of all other devices and sign in here?"
+        fn={handleForceLogoutConfirm}
+        loading={loginMutation.isPending}
+        close={() => setShowSessionModal(false)}
+      />
     </AuthLayout>
   );
 }

@@ -13,7 +13,12 @@ export function axiosErrorToast({
   message: string;
   errorCode?: number;
 }): void {
-  if (INVALID_TOKEN_MESSAGES.includes(message) || errorCode === 401) return;
+  if (
+    INVALID_TOKEN_MESSAGES.includes(message) ||
+    errorCode === 401 ||
+    message === "You already have an active session on another device."
+  )
+    return;
 
   customToast.error(message);
 }
