@@ -21,7 +21,7 @@ export function Logo({ className, size = "medium" }: Props) {
   return (
     <Link href="/" className={clsx("flex items-center", className)}>
       <Image
-        src="/images/logoK.png"
+        src="/images/kindly-logo.png"
         alt="Kindly Logo"
         width={200}
         height={50}

@@ -14,6 +14,7 @@ import type { JSX } from "react";
 import { IUserData } from "@/src/models/auth";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useGetProfileQuery } from "@/src/hooks/useAuthQuery";
+import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 
 interface ProfileFormValues {
   firstName: string;
@@ -34,6 +35,9 @@ export default function ProfilePage(): JSX.Element {
   console.log({ data, isLoading, isError, error });
 
   const userObj = user as IUserData;
+
+  const { data: categories } = useCategoriesQuery();
+  console.log("34rqcategories: ", categories);
 
   const { control, handleSubmit } = useForm<ProfileFormValues>({
     defaultValues: {

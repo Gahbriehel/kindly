@@ -1,41 +1,19 @@
 "use client";
 
-import { JSX } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { JSX, useState } from "react";
 import { BsGear } from "react-icons/bs";
-import { SwitchWrapper } from "@/src/components/FormElements/Switch";
-import { BaseButton } from "@/src/components/UI/Buttons";
-import { Input } from "@/src/components/FormElements/Input";
-
-interface FormData {
-  emailNotifications: boolean;
-  whatsAppNotifications: boolean;
-  dailyReminders: boolean;
-  newPassword?: string;
-  twoFactorAuthentication: boolean;
-}
+import { AnimatePresence, motion } from "framer-motion";
+import { NotificationsForm } from "@/src/components/Forms/NotificationsForm";
+import { SecurityForm } from "@/src/components/Forms/SecurityForm";
+import { CategoryForm } from "@/src/components/Forms/CategoryForm";
+import { SETTINGS_TABS, type SettingsTab } from "./tabs";
 
 export default function SettingsPage(): JSX.Element {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: {
-      emailNotifications: false,
-      whatsAppNotifications: false,
-      dailyReminders: false,
-      newPassword: "",
-      twoFactorAuthentication: false,
-    },
-  });
-
-  const onSubmit = (data: FormData) => {
-    console.log("Settings updated:", data);
-  };
+  const [activeTab, setActiveTab] = useState<SettingsTab>("notifications");
 
   return (
-    <div className="w-full h-full max-w-4xl mx-auto pb-12">
+    <div className="w-full h-full mx-auto pb-12">
+      {/* Page Header */}
       <div className="mb-8 flex items-center gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-theme-primary/10 text-theme-primary ring-1 ring-theme-primary/20">
           <BsGear className="h-6 w-6" />
@@ -45,124 +23,77 @@ export default function SettingsPage(): JSX.Element {
             Settings
           </h1>
           <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-            Manage your account preferences and security
+            Manage your account preferences, security policies, and template
+            categories
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
-        <section className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-8 shadow-sm ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10 transition-all hover:shadow-md">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-              Notifications
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-              Configure how you receive alerts and reminders
-            </p>
-          </div>
-
-          <div className="grid gap-6 rounded-2xl bg-white dark:bg-slate-800/80 p-6 border border-gray-100 dark:border-slate-700/50">
-            <Controller
-              name="emailNotifications"
-              control={control}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <SwitchWrapper
-                  label="Email Notifications"
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  error={errors.emailNotifications}
-                  className="flex items-center justify-between"
+      {/* Two-column layout */}
+      <div className="mt-8 flex flex-col gap-8 md:flex-row">
+        {/* Sidebar */}
+        <aside className="w-full md:w-64 shrink-0 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 pr-0 md:pr-6 custom-scrollbar">
+          {SETTINGS_TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative flex flex-col md:flex-row items-center md:items-start gap-3 w-full p-3 rounded-xl transition-all text-left whitespace-nowrap md:whitespace-normal cursor-pointer ${
+                  isActive
+                    ? "bg-theme-primary/10 text-theme-primary"
+                    : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                }`}
+              >
+                <Icon
+                  className={`size-5 mt-0.5 shrink-0 ${isActive ? "text-theme-primary" : "text-gray-400"}`}
                 />
-              )}
-            />
-            <div className="h-px bg-gray-100 dark:bg-slate-700/50" />
-            <Controller
-              name="whatsAppNotifications"
-              control={control}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <SwitchWrapper
-                  label="WhatsApp Notifications"
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  error={errors.whatsAppNotifications}
-                  className="flex items-center justify-between"
-                />
-              )}
-            />
-            <div className="h-px bg-gray-100 dark:bg-slate-700/50" />
-            <Controller
-              name="dailyReminders"
-              control={control}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <SwitchWrapper
-                  label="Daily Reminders"
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  error={errors.dailyReminders}
-                  className="flex items-center justify-between"
-                />
-              )}
-            />
-          </div>
-        </section>
+                <div className="hidden md:block">
+                  <p className="font-semibold text-sm">{tab.name}</p>
+                  <p
+                    className={`text-xs mt-0.5 ${
+                      isActive
+                        ? "text-theme-primary/80"
+                        : "text-gray-400 dark:text-slate-500"
+                    }`}
+                  >
+                    {tab.desc}
+                  </p>
+                </div>
+                <span className="md:hidden text-xs font-semibold">
+                  {tab.name}
+                </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="active-settings-tab"
+                    className="absolute bottom-0 md:bottom-auto md:right-0 left-0 md:left-auto h-0.5 md:h-full w-full md:w-0.5 bg-theme-primary"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </aside>
 
-        <section className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-8 shadow-sm ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10 transition-all hover:shadow-md">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-              Security
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-              Manage your password and authentication methods
-            </p>
-          </div>
-
-          <div className="grid gap-8 rounded-2xl bg-white dark:bg-slate-800/80 p-6 border border-gray-100 dark:border-slate-700/50">
-            <Controller
-              name="newPassword"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Input
-                  {...field}
-                  id="password"
-                  label="Change Password"
-                  type="password"
-                  placeholder="Enter a new password"
-                  error={fieldState.error?.message}
-                />
-              )}
-            />
-
-            <div className="h-px bg-gray-100 dark:bg-slate-700/50" />
-
-            <Controller
-              name="twoFactorAuthentication"
-              control={control}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <SwitchWrapper
-                  label="Two-Factor Authentication"
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  error={errors.twoFactorAuthentication}
-                  className="flex items-center justify-between"
-                />
-              )}
-            />
-          </div>
-        </section>
-
-        <div className="flex justify-end mb-6 p-6">
-          <BaseButton
-            type="submit"
-            color="primary"
-            text="Save Changes"
-            className="px-8 py-2.5 rounded-xl text-sm font-medium shadow-sm hover:shadow transition-all"
-          />
+        {/* Content area */}
+        <div className="flex-1 min-w-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              {activeTab === "notifications" && <NotificationsForm />}
+              {activeTab === "security" && <SecurityForm />}
+              {activeTab === "categories" && <CategoryForm />}
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
