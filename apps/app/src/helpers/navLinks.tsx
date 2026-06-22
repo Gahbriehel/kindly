@@ -39,22 +39,20 @@ export const navLinks: NavLink[] = [
     roles: ["admin", "moderator"],
   },
   {
-    title: "Profile",
-    icon: <CgProfile className="size-5" />,
-    href: "/profile",
-    roles: ["admin", "moderator"],
-  },
-  {
     title: "Staff",
     icon: <TbUserScreen className="size-5" />,
     href: "/staff",
     roles: ["admin"],
   },
+  {
+    title: "Profile",
+    icon: <CgProfile className="size-5" />,
+    href: "/profile",
+    roles: ["admin", "moderator"],
+  },
 ];
 
 export const getNavLinks = (role: UserRole) => {
   const filtered = navLinks.filter((link) => link.roles.includes(role));
-  // Fall back to all links if the role doesn't match any known value
-  // (e.g. API returns a different role format than expected)
   return filtered.length > 0 ? filtered : navLinks;
 };

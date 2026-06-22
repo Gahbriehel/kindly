@@ -15,17 +15,17 @@ export interface IQueryParams {
   status?: string;
   ref?: string;
   name?: string;
-  page?: number;
-  limit?: number;
   role?: string;
   expired?: boolean;
   enabled?: boolean;
   type?: string;
   search?: string;
 
-  staffId?: string;
-  approved?: string;
-  productionId?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+
   category?: string;
   purchaseRef?: string;
   viewed?: boolean;
