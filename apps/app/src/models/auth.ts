@@ -10,10 +10,9 @@ export interface ILoginPayload {
 }
 
 export interface ILoginResponse extends IBaseResponse {
-  // accessToken: string;
-  // user: IUserData;
   data: {
     accessToken: string;
+    accountType: "INDIVIDUAL" | "ORGANIZATION";
     individual: IIndividualData;
   };
 }
@@ -45,6 +44,7 @@ export interface IIndividualData {
 export interface ISignUpResponse extends IBaseResponse {
   data: {
     accessToken: string;
+    accountType: "INDIVIDUAL" | "ORGANIZATION";
     individual: IIndividualData;
   };
 }
@@ -65,10 +65,11 @@ export interface IUserData {
   city: string | null;
   country: string | null;
   avatarUrl: string | null;
-  role: UserRole;
+  subscriptionTier: string;
   createdAt: string;
   updatedAt: string;
-  subscriptionTier: string;
+  accountType?: "INDIVIDUAL" | "ORGANIZATION";
+  role?: string;
 }
 
 export interface IRefreshResponse extends IBaseResponse {
