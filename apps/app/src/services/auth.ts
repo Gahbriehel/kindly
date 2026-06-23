@@ -5,7 +5,7 @@ import type {
   ISignUpPayload,
   ISignUpResponse,
   IRefreshResponse,
-  IProfileResponse,
+  IUpdatePasswordPayload,
 } from "../models/auth";
 import { IBaseResponse } from "../models/base";
 
@@ -46,7 +46,11 @@ export async function forgotPassword(payload: { email: string }) {
   return response.data;
 }
 
-export async function getProfile() {
-  const response = await axios.get<IProfileResponse>("/auth/me");
+export async function changePassword(payload: IUpdatePasswordPayload) {
+  const { isOrganization, ...data } = payload;
+  const endpoint = isOrganization
+    ? `/auth/company/reset-password`
+    : `/auth/individual/reset-password`;
+  const response = await axios.post<IBaseResponse>(endpoint, data);
   return response.data;
 }

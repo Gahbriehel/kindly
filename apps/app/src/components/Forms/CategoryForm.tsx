@@ -1,20 +1,28 @@
 "use client";
 
 import { JSX, useState, useMemo } from "react";
-import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
-import { BaseButton } from "@/src/components/UI/Buttons";
+import { useForm, Controller } from "react-hook-form";
+import { FiPlus } from "react-icons/fi";
+import { BaseButton, DeleteButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
 import { Table } from "@/src/components/UI/Table";
-import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
+import { ActionsList } from "@/src/components/UI/ActionsList";
 import { Drawer } from "@/src/components/Modals/Drawer";
-import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
+import {
+  useAddCategory,
+  useCategoriesQuery,
+  useDeleteCategory,
+  useUpdateCategory,
+} from "@/src/hooks/useCategoryQuery";
 import type { ICategory } from "@/src/models/categories";
-import type { ColumnDef } from "@tanstack/react-table";
+import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+
+interface CategoryFormValues {
+  name: string;
+}
 
 export function CategoryForm(): JSX.Element {
   const { data: apiData, isLoading, error } = useCategoriesQuery();
-
-  // Use API data when available, otherwise empty list
   const categories: ICategory[] = apiData?.data?.categories ?? [];
 
   // Search & Pagination (client-side filtering over API results)
@@ -43,157 +51,125 @@ export function CategoryForm(): JSX.Element {
   const [editingCategory, setEditingCategory] = useState<ICategory | null>(
     null,
   );
-  const [categoryName, setCategoryName] = useState("");
-  const [nameError, setNameError] = useState("");
 
-  // Delete confirmation state
-  const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(
-    null,
-  );
+  const { control, handleSubmit, reset } = useForm<CategoryFormValues>({
+    defaultValues: { name: "" },
+  });
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+    setEditingCategory(null);
+    reset({ name: "" });
+  };
+
+  const addMutation = useAddCategory({ onSuccess: closeDrawer });
+  const updateMutation = useUpdateCategory({ onSuccess: closeDrawer });
+  const deleteMutation = useDeleteCategory({ onSuccess: closeDrawer });
 
   const openAddDrawer = () => {
     setEditingCategory(null);
-    setCategoryName("");
-    setNameError("");
+    reset({ name: "" });
     setIsDrawerOpen(true);
   };
 
   const openEditDrawer = (category: ICategory) => {
-    if (category.isSystem) return;
     setEditingCategory(category);
-    setCategoryName(category.name);
-    setNameError("");
+    reset({ name: category.name });
     setIsDrawerOpen(true);
   };
 
-  const closeDrawer = () => setIsDrawerOpen(false);
-
-  const handleDrawerSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const name = categoryName.trim();
-
-    if (!name) {
-      setNameError("Category name is required");
-      return;
-    }
-
+  const onSubmit = ({ name }: CategoryFormValues) => {
     if (editingCategory) {
-      // TODO: wire up PATCH /categories/:id
-      console.log("Update category:", { id: editingCategory.id, name });
+      updateMutation.mutate({ id: editingCategory.id, payload: { name } });
     } else {
-      // TODO: wire up POST /categories
-      console.log("Create category:", { name });
+      addMutation.mutate({ name });
     }
-
-    closeDrawer();
   };
 
-  const handleDelete = (id: string) => {
-    // TODO: wire up DELETE /categories/:id
-    console.log("Delete category:", id);
-    setCategoryToDelete(null);
-  };
+  const columnHelper = createColumnHelper<ICategory>();
 
-  const columns = useMemo<ColumnDef<ICategory>[]>(
-    () => [
-      {
-        id: "name",
-        header: "Category Name",
-        accessorKey: "name",
-        cell: ({ row }) => {
-          const item = row.original;
-          return (
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-theme-primary/10 text-theme-primary font-bold text-sm tracking-wide">
-                {item.name.substring(0, 2).toUpperCase()}
-              </div>
-              <span className="font-semibold text-gray-900 dark:text-slate-100 text-[0.9rem]">
-                {item.name}
-              </span>
+  const columns = [
+    columnHelper.accessor("name", {
+      id: "name",
+      header: "Category Name",
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-theme-primary/10 text-theme-primary font-bold text-sm tracking-wide">
+              {item.name.substring(0, 2).toUpperCase()}
             </div>
-          );
-        },
-      },
-      {
-        id: "type",
-        header: "Type",
-        accessorKey: "isSystem",
-        cell: ({ row }) =>
-          row.original.isSystem ? (
-            <span className="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/30 px-2.5 py-0.5 text-xs font-semibold">
-              System
+            <span className="font-semibold text-gray-900 dark:text-slate-100 text-[0.9rem]">
+              {item.name}
             </span>
-          ) : (
-            <span className="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/30 px-2.5 py-0.5 text-xs font-semibold">
-              Custom
-            </span>
-          ),
+          </div>
+        );
       },
-      {
-        id: "templates",
-        header: "Templates",
-        accessorKey: "templateCount",
-        cell: ({ row }) => {
-          const n = row.original.templateCount;
-          return (
-            <span className="text-gray-600 dark:text-slate-300 font-medium">
-              {n} template{n !== 1 ? "s" : ""}
-            </span>
-          );
-        },
+    }),
+    columnHelper.accessor("isSystem", {
+      id: "type",
+      header: "Type",
+      cell: ({ row }) =>
+        row.original.isSystem ? (
+          <span className="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/30 px-2.5 py-0.5 text-xs font-semibold">
+            System
+          </span>
+        ) : (
+          <span className="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/30 px-2.5 py-0.5 text-xs font-semibold">
+            Custom
+          </span>
+        ),
+    }),
+    columnHelper.accessor("templateCount", {
+      id: "templates",
+      header: "Templates",
+      cell: ({ row }) => {
+        const n = row.original.templateCount;
+        return (
+          <span className="text-gray-600 dark:text-slate-300 font-medium">
+            {n} template{n !== 1 ? "s" : ""}
+          </span>
+        );
       },
-      {
-        id: "events",
-        header: "Events Triggered",
-        accessorKey: "eventCount",
-        cell: ({ row }) => {
-          const n = row.original.eventCount;
-          return (
-            <span className="text-gray-500 dark:text-slate-400 font-medium">
-              {n} event{n !== 1 ? "s" : ""}
-            </span>
-          );
-        },
+    }),
+    columnHelper.accessor("eventCount", {
+      id: "events",
+      header: "Events Triggered",
+      cell: ({ row }) => {
+        const n = row.original.eventCount;
+        return (
+          <span className="text-gray-500 dark:text-slate-400 font-medium">
+            {n} event{n !== 1 ? "s" : ""}
+          </span>
+        );
       },
-      {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-          const item = row.original;
-          return (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => openEditDrawer(item)}
-                disabled={item.isSystem}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-theme-primary hover:bg-theme-primary/10 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-transparent"
-                title={
-                  item.isSystem
-                    ? "System categories cannot be edited"
-                    : "Edit Category"
-                }
-              >
-                <FiEdit2 className="size-4" />
-              </button>
+    }),
+    columnHelper.accessor((rowData) => rowData, {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <ActionsList
+            actions={[
+              {
+                title: "Edit",
+                fn: () => openEditDrawer(item),
+                disabled: item.isSystem,
+              },
+              {
+                title: "Delete",
+                fn: () => deleteMutation.mutate(item.id),
+                disabled: item.isSystem,
+              },
+            ]}
+          />
+        );
+      },
+    }),
+  ] as Array<ColumnDef<ICategory>>;
 
-              <button
-                onClick={() => !item.isSystem && setCategoryToDelete(item)}
-                disabled={item.isSystem}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:text-gray-300 dark:disabled:text-slate-700 disabled:hover:bg-transparent"
-                title={
-                  item.isSystem
-                    ? "System categories cannot be deleted"
-                    : "Delete Category"
-                }
-              >
-                <FiTrash2 className="size-4" />
-              </button>
-            </div>
-          );
-        },
-      },
-    ],
-    [],
-  );
+  const isSubmitting = addMutation.isPending || updateMutation.isPending;
 
   return (
     <>
@@ -209,7 +185,7 @@ export function CategoryForm(): JSX.Element {
 
         <Table
           data={paginatedCategories}
-          columns={columns}
+          columns={columns as Array<ColumnDef<ICategory>>}
           loading={isLoading}
           error={!!error}
           searchPlaceholder="Search categories..."
@@ -241,48 +217,68 @@ export function CategoryForm(): JSX.Element {
         </Table>
       </div>
 
-      {/* Add / Edit Drawer */}
       <Drawer
         isOpen={isDrawerOpen}
         onClose={closeDrawer}
         title={editingCategory ? "Edit Category" : "Add Template Category"}
         footer={
           <fieldset className="w-full grid grid-cols-2 gap-6 py-4 px-0">
-            <BaseButton
-              onClick={closeDrawer}
-              color="outline"
-              text="Cancel"
-              className="px-5 py-2.5 rounded-xl text-sm"
-            />
-            <BaseButton
-              onClick={handleDrawerSubmit}
-              color="primary"
-              text={editingCategory ? "Save Changes" : "Create Category"}
-              className="px-5 py-2.5 rounded-xl text-sm"
-            />
+            {editingCategory ? (
+              <>
+                <DeleteButton
+                  text="Delete"
+                  title="Delete Category"
+                  loading={deleteMutation.isPending}
+                  onClick={() => deleteMutation.mutate(editingCategory.id)}
+                />
+                <BaseButton
+                  onClick={handleSubmit(onSubmit)}
+                  color="primary"
+                  text="Save Changes"
+                  loading={isSubmitting}
+                  className="px-5 py-2.5 rounded-xl text-sm"
+                />
+              </>
+            ) : (
+              <>
+                <BaseButton
+                  onClick={closeDrawer}
+                  color="outline"
+                  text="Cancel"
+                  className="px-5 py-2.5 rounded-xl text-sm"
+                />
+                <BaseButton
+                  onClick={handleSubmit(onSubmit)}
+                  color="primary"
+                  text="Create Category"
+                  loading={isSubmitting}
+                  className="px-5 py-2.5 rounded-xl text-sm"
+                />
+              </>
+            )}
           </fieldset>
         }
       >
-        <form onSubmit={handleDrawerSubmit} className="space-y-6">
-          <Input
-            id="drawer-category-name"
-            label="Category Name"
-            placeholder="e.g. Activity Checkups"
-            value={categoryName}
-            onChange={(e) => {
-              setCategoryName(e.target.value);
-              if (nameError) setNameError("");
-            }}
-            error={nameError}
-            required
-            autoFocus
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <Controller
+            name="name"
+            control={control}
+            rules={{ required: "Category name is required" }}
+            render={({ field, fieldState }) => (
+              <Input
+                {...field}
+                id="drawer-category-name"
+                label="Category Name"
+                placeholder="e.g. Activity Checkups"
+                error={fieldState.error?.message}
+                required
+                autoFocus
+              />
+            )}
           />
 
           {editingCategory && (
             <div className="p-4 rounded-xl bg-gray-50 dark:bg-slate-800/40 border border-gray-100 dark:border-slate-800/50 text-xs text-gray-500 dark:text-slate-400 space-y-1">
-              <p>
-                <strong>ID:</strong> {editingCategory.id}
-              </p>
               <p>
                 <strong>Templates Linked:</strong>{" "}
                 {editingCategory.templateCount}
@@ -294,16 +290,6 @@ export function CategoryForm(): JSX.Element {
           )}
         </form>
       </Drawer>
-
-      {/* Delete Confirmation */}
-      <ConfirmActionModal
-        actionName="Delete"
-        title="Delete Category"
-        message={`Are you sure you want to delete "${categoryToDelete?.name}"? This cannot be undone.`}
-        display={!!categoryToDelete}
-        close={() => setCategoryToDelete(null)}
-        fn={() => categoryToDelete && handleDelete(categoryToDelete.id)}
-      />
     </>
   );
 }

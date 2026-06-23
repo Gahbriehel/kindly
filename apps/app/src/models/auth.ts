@@ -80,3 +80,10 @@ export interface IRefreshResponse extends IBaseResponse {
     };
   };
 }
+
+export interface IUpdatePasswordPayload {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+  isOrganization?: boolean;
+}
