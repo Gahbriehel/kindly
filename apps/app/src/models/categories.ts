@@ -16,3 +16,7 @@ export interface ICategory {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ICategoryPayload {
+  name: string;
+}

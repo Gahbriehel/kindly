@@ -25,11 +25,11 @@ export function ConfirmActionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md min-w-0 p-6">
         <h3 className="text-lg font-semibold mb-2 dark:text-white">
           {title || `Confirm ${actionName}`}
         </h3>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
+        <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed text-pretty break-words">
           {message ||
             "Are you sure you want to proceed with this action? This cannot be undone."}
         </p>
