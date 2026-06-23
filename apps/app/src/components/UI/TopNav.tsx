@@ -17,8 +17,6 @@ export const TopNav = memo(function TopNav({
   const { user } = useAppSelector((state) => state.auth);
   const [mounted, setMounted] = useState(false);
 
-  console.log("user", user);
-
   // Avoid hydration mismatch by only rendering theme toggle after mount
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -73,7 +71,9 @@ export const TopNav = memo(function TopNav({
                   : ""}
               </p>
               <p className="text-xs text-gray-500 dark:text-slate-400">
-                {mounted && user ? capitalizeFirstLetter(user.role) : ""}
+                {mounted && user
+                  ? capitalizeFirstLetter(user.accountType || "")
+                  : ""}
               </p>
             </div>
           </div>
