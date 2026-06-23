@@ -35,12 +35,14 @@ export function ConfirmActionModal({
         </p>
         <div className="flex justify-end gap-3">
           <BaseButton
+            type="button"
             color="outline"
             onClick={close}
             disabled={loading}
             text="Cancel"
           />
           <BaseButton
+            type="button"
             color="danger"
             onClick={fn}
             loading={loading}

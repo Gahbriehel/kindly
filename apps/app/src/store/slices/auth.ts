@@ -7,6 +7,7 @@ interface authState {
   refreshToken: string | null;
   invalidSession: boolean;
   redirectUrl: string | null;
+  accountType: "INDIVIDUAL" | "ORGANIZATION" | null;
 }
 
 const initialState: authState = {
@@ -15,6 +16,7 @@ const initialState: authState = {
   refreshToken: null,
   invalidSession: false,
   redirectUrl: null,
+  accountType: null,
 };
 
 export const auth = createSlice({
@@ -27,6 +29,7 @@ export const auth = createSlice({
       state.refreshToken = null;
       state.invalidSession = false;
       state.redirectUrl = null;
+      state.accountType = null;
     },
     setUser: (
       state,
@@ -37,6 +40,7 @@ export const auth = createSlice({
         | {
             user: IUserData;
             tokens: { accessToken: string; refreshToken: string };
+            accountType?: "INDIVIDUAL" | "ORGANIZATION";
           }
       >,
     ) => {
@@ -44,8 +48,16 @@ export const auth = createSlice({
         state.user = payload.user;
         state.accessToken = payload.tokens.accessToken;
         state.refreshToken = payload.tokens.refreshToken;
+        if ("accountType" in payload && payload.accountType) {
+          state.accountType = payload.accountType;
+        } else if (payload.user.accountType) {
+          state.accountType = payload.user.accountType;
+        }
       } else {
         state.user = payload;
+        if (payload.accountType) {
+          state.accountType = payload.accountType;
+        }
       }
     },
     setToken: (state, { payload }: PayloadAction<string>) => {
@@ -67,6 +79,12 @@ export const auth = createSlice({
     clearRedirectUrl: (state) => {
       state.redirectUrl = null;
     },
+    setAccountType: (
+      state,
+      { payload }: PayloadAction<"INDIVIDUAL" | "ORGANIZATION" | null>,
+    ) => {
+      state.accountType = payload;
+    },
   },
 });
 
@@ -78,5 +96,6 @@ export const {
   invalidSession,
   setRedirectUrl,
   clearRedirectUrl,
+  setAccountType,
 } = auth.actions;
 export default auth.reducer;

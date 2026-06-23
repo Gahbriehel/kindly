@@ -10,7 +10,10 @@ import {
   FiMoreVertical,
   FiCheckCircle,
   FiClock,
+  FiUsers,
 } from "react-icons/fi";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
+import { FeatureBlock } from "@/src/components/UI/FeatureBlock";
 
 interface StaffMember {
   id: string;
@@ -113,6 +116,10 @@ const statusConfig: Record<
 };
 
 export default function StaffPage(): JSX.Element {
+  const { user, accountType } = useAppSelector((state) => state.auth);
+  const isIndividual =
+    accountType === "INDIVIDUAL" || user?.accountType === "INDIVIDUAL";
+
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -298,28 +305,40 @@ export default function StaffPage(): JSX.Element {
         </p>
       </div>
 
-      <Table
-        data={paginatedData}
-        columns={columns}
-        loading={false}
-        error={false}
-        searchPlaceholder="Search by name, role or status..."
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        renderGridItem={renderGridItem}
-        onFilterClick={() => {}}
-        pagination={{
-          currentPage,
-          totalPages,
-          totalResults: filteredData.length,
-          pageSize,
-          onPageChange: (page) => setCurrentPage(page),
-          onPageSizeChange: (size) => {
-            setPageSize(size);
-            setCurrentPage(1);
-          },
-        }}
-      />
+      {isIndividual ? (
+        <FeatureBlock
+          title="Manage your team with Staff features"
+          description="Adding or managing staff is not available for Individual accounts. Subscribe to an organization plan to invite team members, assign roles, and collaborate."
+          icon={<FiUsers className="h-10 w-10 text-theme-primary" />}
+          ctaText="Explore Plans"
+          onCtaClick={() => {
+            // Plan details/routing will be done later
+          }}
+        />
+      ) : (
+        <Table
+          data={paginatedData}
+          columns={columns}
+          loading={false}
+          error={false}
+          searchPlaceholder="Search by name, role or status..."
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          renderGridItem={renderGridItem}
+          onFilterClick={() => {}}
+          pagination={{
+            currentPage,
+            totalPages,
+            totalResults: filteredData.length,
+            pageSize,
+            onPageChange: (page) => setCurrentPage(page),
+            onPageSizeChange: (size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
+          }}
+        />
+      )}
     </div>
   );
 }
