@@ -1,16 +1,17 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
+  changePassword,
   forgotPassword,
-  getProfile,
-  // forgotPassword,
   login,
   signup,
 } from "@/src/services/auth";
+import { IUpdatePasswordPayload } from "@/src/models/auth";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
-import { setUser, setToken } from "@/src/store/slices/auth";
+import { setUser, setToken, logOut } from "@/src/store/slices/auth";
 import { customToast } from "@/src/helpers/customToast";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
+import { useAppSelector } from "./useAppSelector";
 
 export function useLoginMutation() {
   const router = useRouter();
@@ -103,9 +104,28 @@ export function useForgotPasswordMutation() {
   });
 }
 
-export function useGetProfileQuery() {
-  return useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => await getProfile(),
+export function useChangePasswordMutation() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { accessToken, accountType } = useAppSelector((state) => state.auth);
+  return useMutation({
+    mutationFn: (
+      data: Omit<IUpdatePasswordPayload, "token" | "isOrganization">,
+    ) =>
+      changePassword({
+        ...data,
+        token: accessToken ?? "",
+        isOrganization: accountType === "ORGANIZATION",
+      }),
+    onSuccess: (response) => {
+      customToast.success(response.message);
+      dispatch(logOut());
+      router.push("/login");
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(
+        error.response?.data.message ?? "Change password failed",
+      );
+    },
   });
 }
