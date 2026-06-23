@@ -18,12 +18,11 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      const { accessToken, individual } = response.data;
+      const { accessToken, accountType, individual } = response.data;
       dispatch(setToken(accessToken));
       dispatch(
         setUser({
           id: individual.id,
-          role: "individual" as never,
           firstName: individual.firstName,
           lastName: individual.lastName,
           email: individual.email,
@@ -37,6 +36,7 @@ export function useLoginMutation() {
           subscriptionTier: individual.subscriptionTier,
           createdAt: individual.createdAt,
           updatedAt: individual.updatedAt,
+          accountType,
         }),
       );
       customToast.success(response.message);
@@ -57,12 +57,11 @@ export function useSignupMutation() {
   return useMutation({
     mutationFn: signup,
     onSuccess: (response) => {
-      const { accessToken, individual } = response.data;
+      const { accessToken, accountType, individual } = response.data;
       dispatch(setToken(accessToken));
       dispatch(
         setUser({
           id: individual.id,
-          role: "individual" as never,
           firstName: individual.firstName,
           lastName: individual.lastName,
           email: individual.email,
@@ -76,13 +75,13 @@ export function useSignupMutation() {
           subscriptionTier: individual.subscriptionTier,
           createdAt: individual.createdAt,
           updatedAt: individual.updatedAt,
+          accountType,
         }),
       );
       customToast.success(response.message);
       router.push("/dashboard");
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      console.log("error:", error);
       customToast.error(error.response?.data.message ?? "Signup failed");
     },
   });
