@@ -98,7 +98,6 @@ export const BaseButton = forwardRef<
       "bg-transparent text-theme-primary hover:bg-theme-primary/10 border border-theme-primary hover:border-theme-primary/50 dark:text-theme-primary dark:hover:bg-theme-primary/20 dark:border-theme-primary dark:hover:border-theme-primary/70 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50 disabled:dark:text-slate-500 disabled:dark:border-slate-800":
         color === "transparent",
     },
-    { "flex-row-reverse": position === "icon-last" },
     className,
   );
 
@@ -132,6 +131,7 @@ export const BaseButton = forwardRef<
         className={clsx(
           "inline-flex items-center gap-2",
           loading && "invisible",
+          position === "icon-first" && "flex-row-reverse",
         )}
       >
         {!hideText && content}

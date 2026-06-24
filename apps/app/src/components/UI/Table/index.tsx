@@ -41,7 +41,14 @@ interface Props<T> {
   onViewModeChange?: (mode: "list" | "grid") => void;
   renderGridItem?: (item: T) => ReactNode;
   onFilterClick?: () => void;
+  defaultGridColumns?: 2 | 3 | 4;
 }
+
+const gridColsMap = {
+  2: "grid-cols-1 md:grid-cols-2",
+  3: "grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
+  4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4",
+};
 
 export function Table<T>({
   data,
@@ -59,6 +66,7 @@ export function Table<T>({
   onViewModeChange,
   renderGridItem,
   onFilterClick,
+  defaultGridColumns = 3,
 }: Props<T>): JSX.Element {
   const defaultView = supportedViews[0] ?? "list";
   const [internalViewMode, setInternalViewMode] = useState<"list" | "grid">(
@@ -67,6 +75,8 @@ export function Table<T>({
   const view = viewMode ?? internalViewMode;
   const setView = onViewModeChange ?? setInternalViewMode;
   const showToggle = supportedViews.length > 1;
+
+  const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(defaultGridColumns);
 
   const table = useReactTable({
     data,
@@ -107,6 +117,26 @@ export function Table<T>({
               <FiFilter className="size-4 text-gray-400 dark:text-slate-500 animate-pulse" />
               <span>Filter</span>
             </button>
+          )}
+
+          {/* Grid Columns Selector — only shown in grid mode */}
+          {view === "grid" && (
+            <div className="flex h-12 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-sm">
+              {([2, 3, 4] as const).map((cols) => (
+                <button
+                  key={cols}
+                  onClick={() => setGridColumns(cols)}
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    gridColumns === cols
+                      ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400"
+                      : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
+                  }`}
+                  title={`${cols} Columns`}
+                >
+                  {cols}x
+                </button>
+              ))}
+            </div>
           )}
 
           {/* View Mode Toggle — only rendered when both views are supported */}
@@ -281,7 +311,7 @@ export function Table<T>({
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className={`grid gap-6 ${gridColsMap[gridColumns]}`}>
                   {table.getRowModel().rows.map((row, index) => (
                     <motion.div
                       key={uuidv4()}

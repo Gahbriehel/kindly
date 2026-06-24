@@ -1,7 +1,7 @@
 import type { IBaseResponse } from "./base";
 
 export interface ITemplateResponse extends IBaseResponse {
-  data: { templates: ITemplate[] };
+  data: ITemplate[];
   pagination: {
     total: number;
     page: number;
@@ -22,6 +22,22 @@ export interface ITemplateResponse extends IBaseResponse {
 
 export interface ITemplate {
   id: string;
+  createdAt: string;
+  updatedAt: string;
+  title: string;
+  message: string;
+  type: string;
+  isActive: boolean;
+  categoryId: string;
+  individualId: string;
+  companyId: string | null;
+  category: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface ITemplatePayload {
   title: string;
   message: string;
   type: string;
