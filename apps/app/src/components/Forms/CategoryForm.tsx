@@ -7,7 +7,7 @@ import { BaseButton, DeleteButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
 import { Table } from "@/src/components/UI/Table";
 import { ActionsList } from "@/src/components/UI/ActionsList";
-import { Drawer } from "@/src/components/Modals/Drawer";
+import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import {
   useAddCategory,
   useCategoriesQuery,
@@ -217,9 +217,9 @@ export function CategoryForm(): JSX.Element {
         </Table>
       </div>
 
-      <Drawer
-        isOpen={isDrawerOpen}
-        onClose={closeDrawer}
+      <SidebarModal
+        display={isDrawerOpen}
+        close={closeDrawer}
         title={editingCategory ? "Edit Category" : "Add Template Category"}
         footer={
           <fieldset className="w-full grid grid-cols-2 gap-6 py-4 px-0">
@@ -289,7 +289,7 @@ export function CategoryForm(): JSX.Element {
             </div>
           )}
         </form>
-      </Drawer>
+      </SidebarModal>
     </>
   );
 }
