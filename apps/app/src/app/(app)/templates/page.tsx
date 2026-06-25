@@ -1,5 +1,6 @@
 "use client";
 
+import { JSX, ReactNode, useState } from "react";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Table } from "@/src/components/UI/Table";
 import {
@@ -12,11 +13,16 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 
-import { useTemplatesQuery } from "@/src/hooks/useTemplateQuery";
-import { JSX, ReactNode, useState } from "react";
+import {
+  useTemplatesQuery,
+  useDeleteTemplate,
+} from "@/src/hooks/useTemplateQuery";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { ITemplate } from "@/src/models/template";
+import { TemplateForm } from "@/src/components/Forms/TemplateForm";
+import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
+import { customToast } from "@/src/helpers/customToast";
 
 export default function TemplatesPage(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,10 +30,25 @@ export default function TemplatesPage(): JSX.Element {
   const [pageSize, setPageSize] = useState(6);
   const debouncedSearchQuery = useDebounce(searchQuery);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<ITemplate | null>(
+    null,
+  );
+  const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(
+    null,
+  );
+
   const { data, isLoading, error } = useTemplatesQuery({
     page: currentPage,
     limit: pageSize,
     search: debouncedSearchQuery,
+  });
+
+  const deleteMutation = useDeleteTemplate({
+    onSuccess: () => {
+      customToast.success("Template deleted successfully");
+      setDeletingTemplateId(null);
+    },
   });
 
   const columnHelper = createColumnHelper<ITemplate>();
@@ -123,14 +144,17 @@ export default function TemplatesPage(): JSX.Element {
             </div>
             <div className="flex items-center gap-1">
               <button
-                onClick={() => console.log("Edit template", item.id)}
+                onClick={() => {
+                  setEditingTemplate(item);
+                  setIsSidebarOpen(true);
+                }}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-500 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition-colors"
                 title="Edit Template"
               >
                 <FiEdit2 className="size-4" />
               </button>
               <button
-                onClick={() => console.log("Delete template", item.id)}
+                onClick={() => setDeletingTemplateId(item.id)}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors"
                 title="Delete Template"
               >
@@ -143,9 +167,10 @@ export default function TemplatesPage(): JSX.Element {
 
           {/* Template Title & Message Preview */}
           <div className="space-y-2">
-            <p className="text-xs text-gray-500 dark:text-slate-400 font-normal leading-relaxed line-clamp-3 bg-gray-50/50 dark:bg-slate-800/20 p-2.5 rounded-xl border border-gray-100/50 dark:border-slate-800/50 break-words font-mono">
-              {item.message}
-            </p>
+            <div
+              className="text-xs text-gray-500 dark:text-slate-400 font-normal leading-relaxed line-clamp-3 bg-gray-50/50 dark:bg-slate-800/20 p-2.5 rounded-xl border border-gray-100/50 dark:border-slate-800/50 break-words font-mono ql-editor-preview"
+              dangerouslySetInnerHTML={{ __html: item.message }}
+            />
           </div>
         </div>
 
@@ -198,21 +223,15 @@ export default function TemplatesPage(): JSX.Element {
           position="icon-first"
           color="primary"
           className="h-12 px-4.5 rounded-2xl text-sm font-medium shadow-sm transition-all"
-          // onClick={() => {}}
+          onClick={() => {
+            setEditingTemplate(null);
+            setIsSidebarOpen(true);
+          }}
           disabled={isLoading}
         />
       </div>
 
       <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-4 sm:p-6 lg:p-8 shadow-sm ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
-        {/* <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-          Templates
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-          Manage and configure message templates for automated or manual triggers
-        </p>
-      </div> */}
-
         <Table
           data={templates}
           columns={columns as Array<ColumnDef<ITemplate>>}
@@ -239,6 +258,31 @@ export default function TemplatesPage(): JSX.Element {
           }}
         ></Table>
       </div>
+
+      {/* Template Form Sidebar Modal */}
+      <TemplateForm
+        isOpen={isSidebarOpen}
+        onClose={() => {
+          setIsSidebarOpen(false);
+          setEditingTemplate(null);
+        }}
+        editingTemplate={editingTemplate}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmActionModal
+        actionName="Delete"
+        title="Delete Template"
+        message="Are you sure you want to delete this template? This action cannot be undone."
+        display={!!deletingTemplateId}
+        close={() => setDeletingTemplateId(null)}
+        loading={deleteMutation.isPending}
+        fn={() => {
+          if (deletingTemplateId) {
+            deleteMutation.mutate(deletingTemplateId);
+          }
+        }}
+      />
     </>
   );
 }
