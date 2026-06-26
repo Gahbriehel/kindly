@@ -6,6 +6,10 @@ import type {
   ISignUpResponse,
   IRefreshResponse,
   IUpdatePasswordPayload,
+  IUpdateIndividualProfilePayload,
+  IUpdateCompanyProfilePayload,
+  IIndividualProfileResponse,
+  ICompanyProfileResponse,
 } from "../models/auth";
 import { IBaseResponse } from "../models/base";
 
@@ -52,5 +56,25 @@ export async function changePassword(payload: IUpdatePasswordPayload) {
     ? `/auth/company/reset-password`
     : `/auth/individual/reset-password`;
   const response = await axios.post<IBaseResponse>(endpoint, data);
+  return response.data;
+}
+
+export async function updateIndividualProfile(
+  payload: IUpdateIndividualProfilePayload,
+) {
+  const response = await axios.patch<IIndividualProfileResponse>(
+    `/auth/individual/me`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function updateCompanyProfile(
+  payload: IUpdateCompanyProfilePayload,
+) {
+  const response = await axios.patch<ICompanyProfileResponse>(
+    `/auth/company/me`,
+    payload,
+  );
   return response.data;
 }
