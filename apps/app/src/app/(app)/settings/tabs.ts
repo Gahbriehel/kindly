@@ -1,7 +1,11 @@
-import { FiBell, FiShield, FiFolder } from "react-icons/fi";
+import { FiBell, FiShield, FiFolder, FiSun } from "react-icons/fi";
 import type { IconType } from "react-icons";
 
-export type SettingsTab = "notifications" | "security" | "categories";
+export type SettingsTab =
+  | "notifications"
+  | "security"
+  | "categories"
+  | "appearance";
 
 export interface SettingsTabConfig {
   id: SettingsTab;
@@ -28,5 +32,11 @@ export const SETTINGS_TABS: SettingsTabConfig[] = [
     name: "Template Categories",
     desc: "Manage custom categories",
     icon: FiFolder,
+  },
+  {
+    id: "appearance",
+    name: "Appearance",
+    desc: "Theme & visual preferences",
+    icon: FiSun,
   },
 ];

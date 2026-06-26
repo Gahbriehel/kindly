@@ -37,10 +37,10 @@ export default function Home(): JSX.Element {
       <header className="w-full flex items-center justify-between px-6 py-6 md:px-12 z-10">
         <Link href="/" className="flex items-center gap-2 group">
           <Image
-            src="/images/kindly-logo.png"
+            src="/images/kindly-logo-dark.png"
             alt="Kindly Logo"
-            width={200}
-            height={200}
+            width={150}
+            height={150}
             className="object-contain group-hover:scale-105 transition-transform duration-200"
           />
         </Link>

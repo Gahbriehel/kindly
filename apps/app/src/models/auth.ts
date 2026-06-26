@@ -49,8 +49,16 @@ export interface ISignUpResponse extends IBaseResponse {
   };
 }
 
-export interface IProfileResponse extends IBaseResponse {
-  user: IUserData;
+export interface IIndividualProfileResponse extends IBaseResponse {
+  data: {
+    individual: IUserData;
+  };
+}
+
+export interface ICompanyProfileResponse extends IBaseResponse {
+  data: {
+    company: IUserData;
+  };
 }
 
 export interface IUserData {
@@ -70,6 +78,27 @@ export interface IUserData {
   updatedAt: string;
   accountType?: "INDIVIDUAL" | "ORGANIZATION";
   role?: string;
+  website?: string | null;
+  description?: string | null;
+}
+
+export interface IUpdateIndividualProfilePayload {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+}
+
+export interface IUpdateCompanyProfilePayload {
+  companyName: string;
+  phoneNumber: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  website: string | null;
+  description: string | null;
 }
 
 export interface IRefreshResponse extends IBaseResponse {

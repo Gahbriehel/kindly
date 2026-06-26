@@ -4,8 +4,10 @@ import {
   forgotPassword,
   login,
   signup,
+  updateIndividualProfile,
+  updateCompanyProfile,
 } from "@/src/services/auth";
-import { IUpdatePasswordPayload } from "@/src/models/auth";
+import { IUpdatePasswordPayload, IUserData } from "@/src/models/auth";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { setUser, setToken, logOut } from "@/src/store/slices/auth";
 import { customToast } from "@/src/helpers/customToast";
@@ -125,6 +127,52 @@ export function useChangePasswordMutation() {
     onError: (error: AxiosError<{ message: string }>) => {
       customToast.error(
         error.response?.data.message ?? "Change password failed",
+      );
+    },
+  });
+}
+
+export function useUpdateIndividualProfileMutation() {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+
+  return useMutation({
+    mutationFn: updateIndividualProfile,
+    onSuccess: (response) => {
+      customToast.success(response.message || "Profile updated successfully");
+      dispatch(
+        setUser({
+          ...user,
+          ...response.data.individual,
+        } as IUserData),
+      );
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(
+        error.response?.data.message ?? "Failed to update profile",
+      );
+    },
+  });
+}
+
+export function useUpdateCompanyProfileMutation() {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+
+  return useMutation({
+    mutationFn: updateCompanyProfile,
+    onSuccess: (response) => {
+      customToast.success(response.message || "Profile updated successfully");
+      dispatch(
+        setUser({
+          ...user,
+          ...response.data.company,
+        } as IUserData),
+      );
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(
+        error.response?.data.message ?? "Failed to update profile",
       );
     },
   });

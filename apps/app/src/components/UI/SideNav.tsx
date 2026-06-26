@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useCallback, memo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { logOut } from "@/src/store/slices/auth";
@@ -17,47 +17,6 @@ import { queryClient } from "../../utils/Providers";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { UserRole } from "@/src/models/auth";
-
-const MiniLogo = memo(() => (
-  <motion.div
-    key="mini-logo"
-    initial={{ opacity: 0, scale: 0.8, x: -20 }}
-    animate={{ opacity: 1, scale: 1, x: 0 }}
-    exit={{ opacity: 0, scale: 0.8, x: -20 }}
-    transition={{ duration: 0.1, ease: "easeInOut" }}
-    className="flex h-full w-full items-center justify-center pt-4"
-  >
-    <Logo size="small" svgClassName="h-8 w-8 mx-auto" />
-  </motion.div>
-));
-MiniLogo.displayName = "MiniLogo";
-
-const FullLogo = memo(() => (
-  <motion.div
-    key="full-logo"
-    initial={{ opacity: 0, scale: 0.8, x: 20 }}
-    animate={{ opacity: 1, scale: 1, x: 0 }}
-    exit={{ opacity: 0, scale: 0.8, x: 20 }}
-    transition={{ duration: 0.1, ease: "easeInOut" }}
-  >
-    <Logo size="medium" />
-  </motion.div>
-));
-FullLogo.displayName = "FullLogo";
-
-const ExpandIcon = memo(() => (
-  <motion.div
-    key="expand-icon"
-    initial={{ opacity: 0, scale: 0.8 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 0.8 }}
-    transition={{ duration: 0.1, ease: "easeInOut" }}
-    className="flex h-full w-full items-center justify-center pt-4"
-  >
-    <TbLayoutSidebarRightCollapse className="size-6 text-theme-primary" />
-  </motion.div>
-));
-ExpandIcon.displayName = "ExpandIcon";
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -171,12 +130,38 @@ export function SideNav({
             <AnimatePresence mode="wait">
               {collapsed ? (
                 isHovered ? (
-                  <ExpandIcon key="expand-icon" />
+                  <motion.div
+                    key="expand-icon"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.1, ease: "easeInOut" }}
+                    className="flex w-full items-center justify-center"
+                  >
+                    <TbLayoutSidebarRightCollapse className="size-6 text-theme-primary" />
+                  </motion.div>
                 ) : (
-                  <MiniLogo key="mini-logo" />
+                  <motion.div
+                    key="mini-logo"
+                    initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, x: -20 }}
+                    transition={{ duration: 0.1, ease: "easeInOut" }}
+                    className="flex w-full items-center justify-center"
+                  >
+                    <Logo size="small" iconOnly className="mx-auto" />
+                  </motion.div>
                 )
               ) : (
-                <FullLogo key="full-logo" />
+                <motion.div
+                  key="full-logo"
+                  initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, x: 20 }}
+                  transition={{ duration: 0.1, ease: "easeInOut" }}
+                >
+                  <Logo size="medium" />
+                </motion.div>
               )}
             </AnimatePresence>
           </div>
