@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { NotificationsForm } from "@/src/components/Forms/NotificationsForm";
 import { SecurityForm } from "@/src/components/Forms/SecurityForm";
 import { CategoryForm } from "@/src/components/Forms/CategoryForm";
+import { AppearanceForm } from "@/src/components/Forms/AppearanceForm";
 import { SETTINGS_TABS, type SettingsTab } from "./tabs";
 
 export default function SettingsPage(): JSX.Element {
@@ -90,6 +91,7 @@ export default function SettingsPage(): JSX.Element {
               {activeTab === "notifications" && <NotificationsForm />}
               {activeTab === "security" && <SecurityForm />}
               {activeTab === "categories" && <CategoryForm />}
+              {activeTab === "appearance" && <AppearanceForm />}
             </motion.div>
           </AnimatePresence>
         </div>
