@@ -1,8 +1,7 @@
 "use client";
 import { useState, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname, useRouter } from "next/navigation";
-import { logOut } from "@/src/store/slices/auth";
+import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import { Logo } from "./Logo";
 import Link from "next/link";
@@ -11,9 +10,8 @@ import {
   TbLayoutSidebarRightCollapse,
   TbLayoutSidebarLeftCollapse,
 } from "react-icons/tb";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { getNavLinks } from "../../helpers/navLinks";
-import { queryClient } from "../../utils/Providers";
+import { useLogoutMutation } from "../../hooks/useAuthQuery";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { UserRole } from "@/src/models/auth";
@@ -80,8 +78,6 @@ export function SideNav({
   onToggle: () => void;
 }): React.ReactElement {
   const pathname = usePathname();
-  const router = useRouter();
-  const dispatch = useAppDispatch();
   const [logOutModalDisplay, setLogOutModalDisplay] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
@@ -90,11 +86,11 @@ export function SideNav({
     [user?.role],
   );
 
-  const handleLogout = useCallback(async () => {
-    dispatch(logOut());
-    queryClient.clear();
-    router.push("/login");
-  }, [dispatch, router]);
+  const { mutate: logoutMutation, isPending } = useLogoutMutation();
+
+  const handleLogout = useCallback(() => {
+    logoutMutation();
+  }, [logoutMutation]);
 
   const openLogoutModal = useCallback(() => setLogOutModalDisplay(true), []);
   const closeLogoutModal = useCallback(() => setLogOutModalDisplay(false), []);
@@ -237,6 +233,7 @@ export function SideNav({
         display={logOutModalDisplay}
         close={closeLogoutModal}
         fn={handleLogout}
+        loading={isPending}
       />
     </>
   );

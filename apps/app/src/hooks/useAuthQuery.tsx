@@ -3,6 +3,7 @@ import {
   changePassword,
   forgotPassword,
   login,
+  logout,
   signup,
   updateIndividualProfile,
   updateCompanyProfile,
@@ -14,6 +15,7 @@ import { customToast } from "@/src/helpers/customToast";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { useAppSelector } from "./useAppSelector";
+import { queryClient } from "../utils/Providers";
 
 export function useLoginMutation() {
   const router = useRouter();
@@ -174,6 +176,28 @@ export function useUpdateCompanyProfileMutation() {
       customToast.error(
         error.response?.data.message ?? "Failed to update profile",
       );
+    },
+  });
+}
+
+export function useLogoutMutation() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { accountType } = useAppSelector((state) => state.auth);
+
+  return useMutation({
+    mutationFn: () => logout(accountType === "ORGANIZATION"),
+    onSuccess: (response) => {
+      dispatch(logOut());
+      queryClient.clear();
+      router.push("/login");
+      customToast.success(response?.message || "Logged out successfully");
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(error.response?.data.message ?? "Logout failed");
+      dispatch(logOut());
+      queryClient.clear();
+      router.push("/login");
     },
   });
 }
