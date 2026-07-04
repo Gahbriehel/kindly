@@ -12,6 +12,7 @@ import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { MobileNav } from "../../components/UI/MobileNav";
 import { queryClient } from "@/src/utils/Providers";
 import { logOut } from "@/src/store/slices/auth";
+import { useLogoutMutation } from "../../hooks/useAuthQuery";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { width = 0 } = useWindowDimension();
@@ -42,11 +43,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     setLogOutModalDisplay(false);
   }, []);
 
-  const handleLogout = useCallback(async () => {
-    dispatch(logOut());
-    queryClient.clear();
-    router.push("/login");
-  }, [dispatch, router]);
+  const { mutate: logoutMutation, isPending } = useLogoutMutation();
+
+  const handleLogout = useCallback(() => {
+    logoutMutation();
+  }, [logoutMutation]);
 
   const handleMobileLogoutClick = useCallback(() => {
     closeMobileMenu();
@@ -91,6 +92,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           display={logOutModalDisplay}
           close={closeLogoutModal}
           fn={handleLogout}
+          loading={isPending}
         />
       </div>
     </>

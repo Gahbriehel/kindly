@@ -30,8 +30,11 @@ export async function signup(payload: ISignUpPayload) {
   return response.data;
 }
 
-export async function logout() {
-  const response = await axios.post(`/auth/logout`);
+export async function logout(isOrganization: boolean) {
+  const endpoint = isOrganization
+    ? `/auth/company/logout`
+    : `/auth/individual/logout`;
+  const response = await axios.post(endpoint);
   return response.data;
 }
 

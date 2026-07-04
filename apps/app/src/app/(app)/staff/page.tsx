@@ -11,9 +11,16 @@ import {
   FiCheckCircle,
   FiClock,
   FiUsers,
+  FiPlus,
+  FiBriefcase,
 } from "react-icons/fi";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
+import { useAppDispatch } from "@/src/hooks/useAppDispatch";
+import { setAccountType } from "@/src/store/slices/auth";
 import { FeatureBlock } from "@/src/components/UI/FeatureBlock";
+import { UpgradeModal } from "@/src/components/Modals/UpgradeModal";
+import { BaseButton } from "@/src/components/UI/Buttons";
+import { customToast } from "@/src/helpers/customToast";
 
 interface StaffMember {
   id: string;
@@ -116,10 +123,12 @@ const statusConfig: Record<
 };
 
 export default function StaffPage(): JSX.Element {
+  const dispatch = useAppDispatch();
   const { user, accountType } = useAppSelector((state) => state.auth);
-  const isIndividual =
-    accountType === "INDIVIDUAL" || user?.accountType === "INDIVIDUAL";
+  const isIndividual = accountType === "INDIVIDUAL";
+  const tier = user?.subscriptionTier?.toUpperCase() || "BASIC";
 
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -294,6 +303,18 @@ export default function StaffPage(): JSX.Element {
     );
   };
 
+  const handleSwitchToCompany = () => {
+    dispatch(setAccountType("ORGANIZATION"));
+    customToast.success(
+      "Switched to Company Account view. You can now manage your staff.",
+    );
+  };
+
+  const handleCreateCompany = () => {
+    console.log("Create Company Clicked");
+    customToast.info("Simulated Company creation process started!");
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
@@ -306,15 +327,69 @@ export default function StaffPage(): JSX.Element {
       </div>
 
       {isIndividual ? (
-        <FeatureBlock
-          title="Manage your team with Staff features"
-          description="Adding or managing staff is not available for Individual accounts. Subscribe to an organization plan to invite team members, assign roles, and collaborate."
-          icon={<FiUsers className="h-10 w-10 text-theme-primary" />}
-          ctaText="Explore Plans"
-          onCtaClick={() => {
-            // Plan details/routing will be done later
-          }}
-        />
+        <div className="w-full flex items-center justify-center">
+          {tier === "PLATINUM" ? (
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:shadow-slate-950/40 text-center flex flex-col items-center justify-center min-h-[400px] w-full max-w-4xl">
+              {/* Decorative background glow */}
+              <div className="absolute -left-20 -top-20 h-40 w-40 rounded-full bg-theme-primary/5 blur-3xl pointer-events-none" />
+              <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-indigo-500/5 blur-3xl pointer-events-none" />
+
+              {/* Icon Badge */}
+              <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-tr from-theme-primary/10 to-indigo-500/10 text-theme-primary">
+                <FiUsers className="h-10 w-10 text-theme-primary" />
+              </div>
+
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 tracking-tight">
+                Switch to Company Mode
+              </h2>
+              <p className="mt-3 max-w-lg text-gray-500 dark:text-slate-400 text-sm leading-relaxed">
+                You are a Platinum member! To manage team members, invite staff,
+                and collaborate, switch to your Company Account, or create a
+                brand new company profile.
+              </p>
+
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <BaseButton
+                  type="button"
+                  color="primary"
+                  className="px-8 font-semibold shadow-lg shadow-theme-primary/20"
+                  icon={<FiBriefcase className="size-4" />}
+                  position="icon-first"
+                  onClick={handleSwitchToCompany}
+                >
+                  Switch to Company Account
+                </BaseButton>
+
+                <BaseButton
+                  type="button"
+                  color="outline"
+                  className="px-8 font-semibold"
+                  icon={<FiPlus className="size-4" />}
+                  position="icon-first"
+                  onClick={handleCreateCompany}
+                >
+                  Create a Company
+                </BaseButton>
+              </div>
+            </div>
+          ) : tier === "PREMIUM" ? (
+            <FeatureBlock
+              title="Upgrade to Platinum for Staff Features"
+              description="As a Premium member, you can add more than 5 clients. However, creating a company account and managing staff is only available for Platinum members."
+              icon={<FiUsers className="h-10 w-10 text-theme-primary" />}
+              ctaText="Upgrade to Platinum"
+              onCtaClick={() => setIsUpgradeOpen(true)}
+            />
+          ) : (
+            <FeatureBlock
+              title="Upgrade Plan for Staff Features"
+              description="As a Basic member, you are limited to only 5 clients and cannot manage staff. Upgrade your plan to invite team members, assign roles, and collaborate."
+              icon={<FiUsers className="h-10 w-10 text-theme-primary" />}
+              ctaText="Explore Plans"
+              onCtaClick={() => setIsUpgradeOpen(true)}
+            />
+          )}
+        </div>
       ) : (
         <Table
           data={paginatedData}
@@ -339,6 +414,11 @@ export default function StaffPage(): JSX.Element {
           }}
         />
       )}
+
+      <UpgradeModal
+        isOpen={isUpgradeOpen}
+        onClose={() => setIsUpgradeOpen(false)}
+      />
     </div>
   );
 }
