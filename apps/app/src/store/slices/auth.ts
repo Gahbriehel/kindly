@@ -85,6 +85,11 @@ export const auth = createSlice({
     ) => {
       state.accountType = payload;
     },
+    updateSubscriptionTier: (state, { payload }: PayloadAction<string>) => {
+      if (state.user) {
+        state.user.subscriptionTier = payload;
+      }
+    },
   },
 });
 
@@ -97,5 +102,6 @@ export const {
   setRedirectUrl,
   clearRedirectUrl,
   setAccountType,
+  updateSubscriptionTier,
 } = auth.actions;
 export default auth.reducer;

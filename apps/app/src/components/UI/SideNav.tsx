@@ -10,9 +10,11 @@ import {
   TbLayoutSidebarRightCollapse,
   TbLayoutSidebarLeftCollapse,
 } from "react-icons/tb";
+import { FiZap, FiX } from "react-icons/fi";
 import { getNavLinks } from "../../helpers/navLinks";
 import { useLogoutMutation } from "../../hooks/useAuthQuery";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
+import { UpgradeModal } from "../Modals/UpgradeModal";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { UserRole } from "@/src/models/auth";
 
@@ -80,6 +82,8 @@ export function SideNav({
   const pathname = usePathname();
   const [logOutModalDisplay, setLogOutModalDisplay] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [isUpgradeDismissed, setIsUpgradeDismissed] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
   const filteredNavLinks = useMemo(
     () => getNavLinks(user?.role as UserRole),
@@ -192,6 +196,61 @@ export function SideNav({
           </ul>
         </div>
 
+        {/* Upgrade CTA */}
+        {!collapsed &&
+          user?.subscriptionTier?.toUpperCase() !== "PLATINUM" &&
+          !isUpgradeDismissed && (
+            <div className="mx-4 mb-4 relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-slate-800/80 to-slate-900/80 p-4 text-white shadow-lg shadow-black/20">
+              {/* Subtle ambient glow, brand-colored not purple/amber */}
+              <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none" />
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsUpgradeDismissed(true);
+                }}
+                className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+              >
+                <FiX className="size-3.5" />
+              </button>
+
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-sm">
+                  <FiZap className="size-4 shrink-0" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-white/90">
+                  Upgrade to Platinum
+                </span>
+                <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[0.6rem] font-bold text-indigo-300 uppercase shrink-0">
+                  20% off
+                </span>
+              </div>
+
+              <p className="text-[0.75rem] leading-snug text-white/60 mb-3 font-medium">
+                {user?.subscriptionTier?.toUpperCase() === "PREMIUM"
+                  ? "Unlock company accounts, staff management, and unlimited clients."
+                  : "Unlock more clients, staff collaboration, and organization features."}
+              </p>
+
+              <div className="flex items-baseline gap-1 mb-3">
+                <span className="text-xl font-bold">$40</span>
+                <span className="text-[0.65rem] text-white/50 font-medium">
+                  /month
+                </span>
+              </div>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setUpgradeModalOpen(true);
+                }}
+                className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 py-2 text-xs font-bold text-white shadow-md hover:from-indigo-400 hover:to-blue-400 active:scale-98 transition-all cursor-pointer text-center"
+              >
+                Upgrade now
+              </button>
+            </div>
+          )}
+
         {/* Footer / Logout */}
         <div className="mt-auto shrink-0 border-t border-gray-200 dark:border-slate-800 p-3">
           <button
@@ -234,6 +293,11 @@ export function SideNav({
         close={closeLogoutModal}
         fn={handleLogout}
         loading={isPending}
+      />
+
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
       />
     </>
   );
