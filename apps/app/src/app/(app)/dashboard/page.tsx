@@ -10,7 +10,6 @@ import { getRelativeDays, formatRelativeTime } from "@/src/helpers/dateHelpers";
 import { getCategoryConfig } from "@/src/helpers/categoryConfig";
 import dayjs from "dayjs";
 
-
 interface IClient {
   id: string;
   fullName: string;
