@@ -39,7 +39,7 @@ export function Features() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-6 md:p-8 max-w-4xl mx-auto"
+          className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 md:p-8 max-w-4xl mx-auto"
         >
           {/* Fake Browser header */}
           <div className="flex gap-2 mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
@@ -106,7 +106,7 @@ export function Features() {
                 Message ready
               </h4>
 
-              <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 mb-6 font-serif text-lg text-[#3D3530] dark:text-gray-200 leading-relaxed">
+              <div className="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-6 font-serif text-lg text-[#3D3530] dark:text-gray-200 leading-relaxed">
                 <p className="mb-4">Happy 3rd Anniversary, Tunde & Aisha! 🎉</p>
                 <p className="mb-4">
                   Three years since your beautiful day! Hope you're celebrating

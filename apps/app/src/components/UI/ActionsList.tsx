@@ -43,7 +43,7 @@ export function ActionsList({
         <Popover.Portal>
           <Popover.Content
             sideOffset={5}
-            className="z-10 w-48 space-y-1 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 shadow-xl will-change-[transform,opacity] focus:shadow-2xl"
+            className="z-10 w-48 space-y-1 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 will-change-[transform,opacity]"
           >
             <>
               {actions?.map(({ color = "blue", ...action }) => (

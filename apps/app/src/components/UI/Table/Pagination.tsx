@@ -102,7 +102,7 @@ export function Pagination({
               className={clsx(
                 "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold transition-all",
                 currentPage === page
-                  ? "bg-indigo-600 dark:bg-indigo-500 text-white shadow-sm shadow-indigo-200 dark:shadow-indigo-900/40"
+                  ? "bg-indigo-600 dark:bg-indigo-500 text-white"
                   : "text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800",
               )}
             >

@@ -34,7 +34,7 @@ export function Pricing() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="border border-gray-200 dark:border-gray-700 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800"
+            className="border border-gray-200 dark:border-gray-700 rounded-2xl p-8 transition-all duration-300 bg-white dark:bg-gray-800"
           >
             <h3 className="text-2xl font-bold text-[#3D3530] dark:text-gray-100 mb-2">
               Free

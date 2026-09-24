@@ -42,7 +42,7 @@ export const MobileNav = memo(function MobileNav({
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 left-0 z-50 flex w-full max-w-[280px] flex-col bg-white dark:bg-slate-950 shadow-2xl sm:hidden"
+            className="fixed inset-y-0 left-0 z-50 flex w-full max-w-[280px] flex-col bg-white dark:bg-slate-950 sm:hidden"
           >
             <div className="flex h-20 items-center justify-between px-6 border-b border-gray-100 dark:border-slate-800">
               <Logo size="medium" className="pr-2" />
@@ -67,7 +67,7 @@ export const MobileNav = memo(function MobileNav({
                         className={clsx(
                           "flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-200",
                           isActive
-                            ? "bg-theme-primary/10 text-theme-primary font-semibold shadow-sm"
+                            ? "bg-theme-primary/10 text-theme-primary font-semibold"
                             : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-theme-primary dark:hover:text-theme-primary",
                         )}
                       >

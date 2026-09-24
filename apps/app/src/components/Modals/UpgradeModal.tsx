@@ -82,7 +82,7 @@ export function UpgradeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-2xl w-full max-w-5xl p-6 md:p-10 relative my-8">
+      <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-gray-100 dark:border-slate-800 w-full max-w-5xl p-6 md:p-10 relative my-8">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -114,7 +114,7 @@ export function UpgradeModal({
                 className={`relative flex flex-col rounded-3xl border p-6 md:p-8 transition-all duration-200 ${plan.color}`}
               >
                 {plan.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-theme-primary to-indigo-500 px-4 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-white shadow-md">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-theme-primary to-indigo-500 px-4 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-white">
                     Most Popular
                   </span>
                 )}

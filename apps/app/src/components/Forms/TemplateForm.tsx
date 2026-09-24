@@ -187,7 +187,7 @@ export function TemplateForm({
                       className={clsx(
                         "px-4 py-2 border rounded-full text-xs font-semibold transition-all duration-200",
                         isSelected
-                          ? "bg-theme-primary text-white border-theme-primary shadow-sm hover:bg-theme-primary/90"
+                          ? "bg-theme-primary text-white border-theme-primary hover:bg-theme-primary/90"
                           : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700",
                       )}
                     >

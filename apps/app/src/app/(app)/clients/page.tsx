@@ -28,7 +28,7 @@ export default function ClientsPage(): JSX.Element {
           </div>
           <button
             onClick={() => setIsUpgradeOpen(true)}
-            className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl transition-all self-start sm:self-center shrink-0 cursor-pointer shadow-sm"
+            className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl transition-all self-start sm:self-center shrink-0 cursor-pointer"
           >
             <FiZap className="size-3.5" />
             Upgrade Plan
@@ -50,7 +50,7 @@ export default function ClientsPage(): JSX.Element {
           </div>
           <button
             onClick={() => setIsUpgradeOpen(true)}
-            className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider bg-theme-primary hover:bg-theme-primary-hover text-white px-4 py-2 rounded-xl transition-all self-start sm:self-center shrink-0 cursor-pointer shadow-sm"
+            className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider bg-theme-primary hover:bg-theme-primary-hover text-white px-4 py-2 rounded-xl transition-all self-start sm:self-center shrink-0 cursor-pointer"
           >
             Upgrade to Platinum
           </button>

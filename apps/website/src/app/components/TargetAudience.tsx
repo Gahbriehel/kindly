@@ -60,7 +60,7 @@ export function TargetAudience() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center text-center border border-transparent dark:border-gray-700"
+              className="bg-white dark:bg-gray-800 p-6 rounded-xl transition-all duration-300 flex items-center justify-center text-center border border-transparent dark:border-gray-700"
             >
               <p className="font-medium text-[#5A534D] dark:text-gray-200">
                 {audience}

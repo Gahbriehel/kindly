@@ -79,7 +79,7 @@ export const TopNav = memo(function TopNav({
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-20 w-full shrink-0 items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 sm:px-6 shadow-sm dark:shadow-slate-900/50 transition-colors duration-200">
+    <header className="sticky top-0 z-10 flex h-20 w-full shrink-0 items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 sm:px-6 transition-colors duration-200">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
@@ -103,9 +103,9 @@ export const TopNav = memo(function TopNav({
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-gray-100 dark:hover:bg-slate-800 hover:shadow-sm group cursor-pointer border border-transparent bg-transparent focus:outline-none"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-gray-100 dark:hover:bg-slate-800 group cursor-pointer border border-transparent bg-transparent focus:outline-none"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-theme-primary/20 text-theme-primary shadow-sm transition-transform duration-200 group-hover:scale-105">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-theme-primary/20 text-theme-primary transition-transform duration-200 group-hover:scale-105">
               <p className="text-sm font-bold uppercase">
                 {mounted && user?.firstName ? user.firstName.charAt(0) : "U"}
               </p>
@@ -127,7 +127,7 @@ export const TopNav = memo(function TopNav({
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-2xl ring-1 ring-black/5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 ring-1 ring-black/5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               {/* Header Info */}
               <div className="px-3 py-2.5">
                 <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">

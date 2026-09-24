@@ -67,7 +67,7 @@ export function ProfileView(): JSX.Element {
   const fullName =
     [currentFirstName.trim(), currentLastName.trim()]
       .filter(Boolean)
-      .join(" ") || "Ade Balogun";
+      .join(" ") || "John Doe";
 
   const getInitials = () => {
     const f = currentFirstName.trim();
@@ -122,7 +122,7 @@ export function ProfileView(): JSX.Element {
   }
 
   return (
-    <div className="rounded-3xl border border-gray-200/80 bg-white p-6 sm:p-8 shadow-xs dark:border-slate-700/60 dark:bg-slate-800">
+    <div className="rounded-3xl border border-gray-200/80 bg-white p-6 sm:p-8 dark:border-slate-700/60 dark:bg-slate-800">
       {/* Top Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -155,7 +155,7 @@ export function ProfileView(): JSX.Element {
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="self-start sm:self-auto inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-2xs hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
+            className="self-start sm:self-auto inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
           >
             <LuPencil className="size-3.5 text-gray-500 dark:text-slate-400" />
             <span>Edit</span>
