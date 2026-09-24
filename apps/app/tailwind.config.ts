@@ -73,6 +73,10 @@ const config: Config = {
           "primary-hover":
             "rgb(var(--color-theme-primary-hover) / <alpha-value>)",
         },
+        gray: {
+          50: "#F0F1F3",
+          100: "#F0F1F3",
+        },
       },
     },
   },
