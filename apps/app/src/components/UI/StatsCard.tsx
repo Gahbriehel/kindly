@@ -78,7 +78,7 @@ export function StatsCard({
   if (isLoading) {
     return (
       <div
-        className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-4 min-w-[240px] w-64 shrink-0 h-36 ${className}`}
+        className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-slate-800 flex flex-col gap-4 min-w-[240px] w-64 shrink-0 h-36 ${className}`}
       >
         <div className="flex justify-between items-start">
           <Skeleton className="h-4 w-24" />
@@ -115,7 +115,7 @@ export function StatsCard({
   return (
     <motion.div
       variants={cardVariants}
-      className={`group relative flex h-28 w-80 shrink-0 flex-col justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:border-gray-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 ${className}`}
+      className={`group relative flex h-28 w-80 shrink-0 flex-col justify-between rounded-2xl border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-gray-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 ${className}`}
       whileHover={{
         scale: 1.02,
         y: 4,
@@ -148,7 +148,7 @@ export function StatsCard({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -5 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 top-10 z-20 w-auto min-w-[120px] rounded-lg bg-gray-900 dark:bg-slate-800 px-3 py-2 text-xs text-white shadow-lg border dark:border-slate-700 pointer-events-none"
+                  className="absolute left-0 top-10 z-20 w-auto min-w-[120px] rounded-lg bg-gray-900 dark:bg-slate-800 px-3 py-2 text-xs text-white border dark:border-slate-700 pointer-events-none"
                 >
                   <div className="absolute -top-1 left-3 h-2 w-2 rotate-45 bg-gray-900 dark:bg-slate-800 border-l border-t dark:border-slate-700"></div>
                   <p className="text-center whitespace-nowrap">{tooltip}</p>

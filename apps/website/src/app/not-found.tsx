@@ -45,7 +45,7 @@ export default function NotFound(): JSX.Element {
           <motion.div
             animate={{ rotate: [-5, 5, -5] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="w-32 h-32 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center z-10 relative border border-gray-100 dark:border-gray-700"
+            className="w-32 h-32 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center z-10 relative border border-gray-100 dark:border-gray-700"
           >
             <BsSearch className="w-12 h-12 text-[#FF9B7A]" />
           </motion.div>
@@ -90,7 +90,7 @@ export default function NotFound(): JSX.Element {
             color="primary"
             icon={<BsArrowLeft />}
             position="icon-first"
-            className="rounded-full px-8 py-4 shadow-lg hover:shadow-xl transition-all border-none bg-[#FF9B7A] hover:bg-[#FF8765] text-white"
+            className="rounded-full px-8 py-4 transition-all border-none bg-[#FF9B7A] hover:bg-[#FF8765] text-white"
             text="Take me home"
           />
         </motion.div>

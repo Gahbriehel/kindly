@@ -250,7 +250,7 @@ export default function StaffPage(): JSX.Element {
   const renderGridItem = (item: StaffMember) => {
     const cfg = statusConfig[item.status];
     return (
-      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-slate-900/40 hover:-translate-y-1">
+      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-1">
         {/* Card Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -329,7 +329,7 @@ export default function StaffPage(): JSX.Element {
       {isIndividual ? (
         <div className="w-full flex items-center justify-center">
           {tier === "PLATINUM" ? (
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:shadow-slate-950/40 text-center flex flex-col items-center justify-center min-h-[400px] w-full max-w-4xl">
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[400px] w-full max-w-4xl">
               {/* Decorative background glow */}
               <div className="absolute -left-20 -top-20 h-40 w-40 rounded-full bg-theme-primary/5 blur-3xl pointer-events-none" />
               <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-indigo-500/5 blur-3xl pointer-events-none" />
@@ -352,7 +352,7 @@ export default function StaffPage(): JSX.Element {
                 <BaseButton
                   type="button"
                   color="primary"
-                  className="px-8 font-semibold shadow-lg shadow-theme-primary/20"
+                  className="px-8 font-semibold"
                   icon={<FiBriefcase className="size-4" />}
                   position="icon-first"
                   onClick={handleSwitchToCompany}

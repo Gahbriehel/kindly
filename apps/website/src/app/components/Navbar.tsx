@@ -92,7 +92,7 @@ const Navbar = () => {
     <div className="fixed top-4 w-full z-50 px-4 md:px-8 flex justify-center pointer-events-none transition-all duration-300">
       <nav
         ref={navRef}
-        className="pointer-events-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-gray-800 dark:text-gray-200 shadow-lg p-4 md:px-10 border border-gray-200/50 dark:border-gray-800/50 w-[calc(100%-2rem)] md:w-3/4 lg:w-1/2 flex rounded-full"
+        className="pointer-events-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-gray-800 dark:text-gray-200 p-4 md:px-10 border border-gray-200/50 dark:border-gray-800/50 w-[calc(100%-2rem)] md:w-3/4 lg:w-1/2 flex rounded-full"
       >
         <div className="w-full flex justify-between items-center">
           <Link href="#" className="flex items-center gap-1">
@@ -177,7 +177,7 @@ const Navbar = () => {
 
           {isOpen && (
             <motion.ul
-              className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-white/95 dark:bg-gray-900/95 shadow-xl flex flex-col items-center py-10 md:hidden backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-800/50"
+              className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-white/95 dark:bg-gray-900/95 flex flex-col items-center py-10 md:hidden backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-800/50"
               initial={{ opacity: 0, y: "-50%" }}
               animate={{ opacity: 1, y: "0%" }}
               transition={{ duration: 0.5, ease: "easeInOut" }}

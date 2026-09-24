@@ -59,14 +59,14 @@ export function AuthLayout({
           ease: [0.23, 1, 0.32, 1],
         }}
         onSubmit={handleSubmit(onSubmit)}
-        className="relative overflow-visible rounded-[2rem] border-0 bg-white dark:bg-slate-900 shadow-2xl dark:shadow-slate-950/50 w-full p-8 sm:p-10 transition-colors duration-200"
+        className="relative overflow-visible rounded-[2rem] border-0 bg-white dark:bg-slate-900 w-full p-8 sm:p-10 transition-colors duration-200"
       >
         {/* Circular Back Button on top-left / left of the card */}
         {backButton && (
           <button
             type="button"
             onClick={() => router.push(backHref)}
-            className="absolute left-4 top-4 lg:left-[-60px] lg:top-2 w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors z-20 group border border-gray-100 dark:border-slate-700"
+            className="absolute left-4 top-4 lg:left-[-60px] lg:top-2 w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors z-20 group border border-gray-100 dark:border-slate-700"
           >
             <RiArrowLeftLine className="h-5 w-5 text-gray-600 dark:text-slate-300 group-hover:text-gray-800 dark:group-hover:text-white" />
           </button>
@@ -78,7 +78,7 @@ export function AuthLayout({
           <BaseButton
             text={loading ? "Processing..." : getSubmitText()}
             type="submit"
-            className="w-full !h-14 font-bold rounded-2xl shadow-lg shadow-theme-primary/20"
+            className="w-full !h-14 font-bold rounded-2xl"
             color="primary"
             loading={loading}
             disabled={loading}

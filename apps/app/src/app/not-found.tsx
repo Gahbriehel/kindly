@@ -22,9 +22,9 @@ export default function AppNotFound(): JSX.Element {
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
           className="mb-6 relative"
         >
-          <div className="relative flex items-center justify-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-inner">
+          <div className="relative flex items-center justify-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
             <BsLayers className="w-16 h-16 text-gray-400 dark:text-gray-500" />
-            <div className="absolute -bottom-4 -right-4 bg-theme-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+            <div className="absolute -bottom-4 -right-4 bg-theme-primary text-white text-xs font-bold px-3 py-1 rounded-full">
               404 Error
             </div>
           </div>

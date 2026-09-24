@@ -51,7 +51,7 @@ export function ProblemSolution() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-sm border border-[#FF9B7A]/20 dark:border-gray-800 hover:shadow-md transition-all duration-300"
+              className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-[#FF9B7A]/20 dark:border-gray-800 transition-all duration-300"
             >
               <div className="text-4xl text-[#FF9B7A] mb-6">{item.icon}</div>
               <h3 className="text-xl font-bold text-[#3D3530] dark:text-gray-200 mb-4 min-h-[56px]">
@@ -70,7 +70,7 @@ export function ProblemSolution() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-4xl mx-auto bg-white dark:bg-gray-900 p-12 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800"
+          className="text-center max-w-4xl mx-auto bg-white dark:bg-gray-900 p-12 rounded-3xl border border-gray-100 dark:border-gray-800"
         >
           <p className="text-2xl md:text-3xl font-serif text-[#3D3530] dark:text-gray-200 mb-4">
             The problem isn't that you don't value your clients

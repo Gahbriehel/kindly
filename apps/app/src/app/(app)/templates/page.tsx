@@ -123,7 +123,7 @@ export default function TemplatesPage(): JSX.Element {
     };
 
     return (
-      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-slate-900/40 hover:-translate-y-1 flex flex-col justify-between h-full min-h-[220px]">
+      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between h-full min-h-[220px]">
         <div>
           {/* Card Header */}
           <div className="flex items-center justify-between gap-3">
@@ -193,7 +193,7 @@ export default function TemplatesPage(): JSX.Element {
             <BaseButton
               text="Use Template"
               onClick={() => console.log("Use template", item.id)}
-              className="!h-8 sm:!h-9 px-3 sm:px-4 w-full sm:w-auto rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all"
+              className="!h-8 sm:!h-9 px-3 sm:px-4 w-full sm:w-auto rounded-lg text-xs sm:text-sm font-medium transition-all"
             />
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function TemplatesPage(): JSX.Element {
           icon={<FiPlus className="size-4" />}
           position="icon-first"
           color="primary"
-          className="h-12 px-4.5 rounded-2xl text-sm font-medium shadow-sm transition-all"
+          className="h-12 px-4.5 rounded-2xl text-sm font-medium transition-all"
           onClick={() => {
             setEditingTemplate(null);
             setIsSidebarOpen(true);
@@ -231,7 +231,7 @@ export default function TemplatesPage(): JSX.Element {
         />
       </div>
 
-      <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-4 sm:p-6 lg:p-8 shadow-sm ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
+      <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-4 sm:p-6 lg:p-8 ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
         <Table
           data={templates}
           columns={columns as Array<ColumnDef<ITemplate>>}

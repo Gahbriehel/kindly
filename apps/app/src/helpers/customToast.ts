@@ -32,8 +32,7 @@ const toastConfig = {
     fontSize: "14px",
     fontWeight: "500",
     padding: "16px 20px",
-    boxShadow:
-      "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    boxShadow: "none",
     border: "1px solid #e5e7eb",
     maxWidth: "400px",
   },

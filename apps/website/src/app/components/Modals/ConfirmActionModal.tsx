@@ -23,7 +23,7 @@ export function ConfirmActionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-6">
         <h3 className="text-lg font-semibold mb-2 dark:text-white">
           {title || `Confirm ${actionName}`}
         </h3>

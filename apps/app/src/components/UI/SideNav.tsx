@@ -121,7 +121,7 @@ export function SideNav({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={clsx(
-          "relative isolate z-20 flex h-screen shrink-0 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm transition-colors duration-200",
+          "relative isolate z-20 flex h-screen shrink-0 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-colors duration-200",
           collapsed && "cursor-e-resize",
         )}
       >
@@ -200,7 +200,7 @@ export function SideNav({
         {!collapsed &&
           user?.subscriptionTier?.toUpperCase() !== "PLATINUM" &&
           !isUpgradeDismissed && (
-            <div className="mx-4 mb-4 relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-slate-800/80 to-slate-900/80 p-4 text-white shadow-lg shadow-black/20">
+            <div className="mx-4 mb-4 relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-slate-800/80 to-slate-900/80 p-4 text-white">
               {/* Subtle ambient glow, brand-colored not purple/amber */}
               <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none" />
 
@@ -215,7 +215,7 @@ export function SideNav({
               </button>
 
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-sm">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500 text-white">
                   <FiZap className="size-4 shrink-0" />
                 </div>
                 <span className="text-xs font-bold uppercase tracking-wider text-white/90">
@@ -244,7 +244,7 @@ export function SideNav({
                   e.stopPropagation();
                   setUpgradeModalOpen(true);
                 }}
-                className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 py-2 text-xs font-bold text-white shadow-md hover:from-indigo-400 hover:to-blue-400 active:scale-98 transition-all cursor-pointer text-center"
+                className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 py-2 text-xs font-bold text-white hover:from-indigo-400 hover:to-blue-400 active:scale-98 transition-all cursor-pointer text-center"
               >
                 Upgrade now
               </button>

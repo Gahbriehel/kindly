@@ -49,11 +49,8 @@ interface DeleteButtonProps {
 }
 
 const motionProps = {
-  initial: {
-    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-  },
-  whileHover: { scale: 1.01, boxShadow: "0 12px 18px -3px rgb(0 0 0 / 0.1)" },
-  whileTap: { scale: 0.99, boxShadow: "0 8px 12px -2px rgb(0 0 0 / 0.1)" },
+  whileHover: { scale: 1.01 },
+  whileTap: { scale: 0.99 },
 };
 
 export const BaseButton = forwardRef<
@@ -90,7 +87,7 @@ export const BaseButton = forwardRef<
         color === "secondary",
       "border-[#FF9B7A] bg-white text-[#FF9B7A] hover:bg-[#FFF9F5] disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
         color === "white",
-      "border-transparent bg-gradient-to-r from-[#FF9B7A] to-[#FF8765] hover:from-[#FF8765] hover:to-[#FF7A50] text-white shadow-[#FF9B7A]/30 hover:shadow-[#FF9B7A]/50 disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-400":
+      "border-transparent bg-gradient-to-r from-[#FF9B7A] to-[#FF8765] hover:from-[#FF8765] hover:to-[#FF7A50] text-white disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-400":
         color === "gradient",
       "bg-transparent text-[#FF9B7A] hover:bg-[#FF9B7A]/10 border border-[#FF9B7A] hover:border-[#FF9B7A]/50 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50":
         color === "transparent",

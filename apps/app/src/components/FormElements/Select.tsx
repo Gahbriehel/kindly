@@ -248,7 +248,7 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
           >
             <Combobox.Options
               className={cn(
-                "absolute top-8 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-slate-800 dark:shadow-slate-900/50 dark:ring-slate-700 sm:text-sm",
+                "absolute top-8 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-slate-800 dark:ring-slate-700 sm:text-sm",
                 optionsClassName,
               )}
             >

@@ -113,7 +113,7 @@ export function Table<T>({
           {onFilterClick && (
             <button
               onClick={onFilterClick}
-              className="flex h-12 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer"
+              className="flex h-12 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer"
             >
               <FiFilter className="size-4 text-gray-400 dark:text-slate-500 animate-pulse" />
               <span>Filter</span>
@@ -122,7 +122,7 @@ export function Table<T>({
 
           {/* Grid Columns Selector — only shown in grid mode */}
           {view === "grid" && (
-            <div className="flex h-12 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-sm">
+            <div className="flex h-12 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
               {([2, 3, 4] as const).map((cols) => (
                 <button
                   key={cols}
@@ -142,7 +142,7 @@ export function Table<T>({
 
           {/* View Mode Toggle — only rendered when both views are supported */}
           {showToggle && (
-            <div className="flex h-12 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-sm">
+            <div className="flex h-12 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
               {supportedViews.includes("list") && (
                 <button
                   onClick={() => setView("list")}
@@ -183,7 +183,7 @@ export function Table<T>({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 p-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-slate-900/50 border border-gray-50 dark:border-slate-800 transition-colors duration-200"
+            className="overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 p-2 border border-gray-50 dark:border-slate-800 transition-colors duration-200"
           >
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -324,7 +324,7 @@ export function Table<T>({
                         renderGridItem(row.original)
                       ) : (
                         // Default Fallback Grid Card
-                        <div className="rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-slate-900/40">
+                        <div className="rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
                           <div className="flex flex-col gap-4">
                             {row.getVisibleCells().map((cell) => {
                               const header = cell.column.columnDef.header;
@@ -358,7 +358,7 @@ export function Table<T>({
 
                 {/* Footer / Pagination */}
                 {!loading && !error && data.length > 0 && pagination && (
-                  <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 border border-gray-50 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                  <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 border border-gray-50 dark:border-slate-800">
                     <Pagination {...pagination} />
                   </div>
                 )}

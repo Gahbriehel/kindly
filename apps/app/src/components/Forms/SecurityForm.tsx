@@ -46,7 +46,7 @@ export function SecurityForm(): JSX.Element {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
-      <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-8 shadow-sm ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
+      <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-8 ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
             Security &amp; Access
@@ -96,7 +96,7 @@ export function SecurityForm(): JSX.Element {
             color="primary"
             text="Save Changes"
             loading={isPending}
-            className="px-8 py-2.5 rounded-xl text-sm font-medium shadow-sm hover:shadow transition-all"
+            className="px-8 py-2.5 rounded-xl text-sm font-medium transition-all"
           />
         </div>
       </div>

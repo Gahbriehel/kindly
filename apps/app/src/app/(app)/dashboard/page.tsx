@@ -111,7 +111,7 @@ export default function DashboardPage(): JSX.Element {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.01)] dark:shadow-slate-950/20 overflow-hidden">
+          <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
             {isLoading ? (
               <div className="p-6 space-y-4">
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -197,7 +197,7 @@ export default function DashboardPage(): JSX.Element {
             <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-100 font-serif">
               Today's events
             </h2>
-            <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.01)] dark:shadow-slate-950/20 overflow-hidden">
+            <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
               {isLoading ? (
                 <div className="p-5 space-y-4">
                   {[1, 2].map((n) => (
@@ -276,7 +276,7 @@ export default function DashboardPage(): JSX.Element {
             <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-100 font-serif">
               Recent Activity
             </h2>
-            <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.01)] dark:shadow-slate-950/20 p-6">
+            <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
               {isLoading ? (
                 <div className="space-y-5 animate-pulse">
                   {[1, 2, 3, 4].map((n) => (

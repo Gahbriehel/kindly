@@ -60,7 +60,7 @@ export const SidebarModal = ({
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             style={{ marginRight: layoutOffset }}
             className={clsx(
-              "relative z-10 flex h-full w-full flex-col bg-white shadow-2xl dark:bg-slate-950 sm:max-w-xl",
+              "relative z-10 flex h-full w-full flex-col bg-white dark:bg-slate-950 sm:max-w-xl",
               "border-l border-gray-100 dark:border-slate-800",
               className,
             )}

@@ -66,7 +66,7 @@ export default function Home(): JSX.Element {
             {/* Individual Portal Pill */}
             <Link
               href="/login?type=individual"
-              className="flex items-center gap-4 px-6 py-4 bg-slate-800/30 border border-slate-700/30 rounded-2xl text-left hover:bg-slate-800/50 hover:border-slate-600/50 hover:shadow-lg hover:shadow-sky-500/5 transition-all duration-300 w-full max-w-lg group cursor-pointer backdrop-blur-md"
+              className="flex items-center gap-4 px-6 py-4 bg-slate-800/30 border border-slate-700/30 rounded-2xl text-left hover:bg-slate-800/50 hover:border-slate-600/50 transition-all duration-300 w-full max-w-lg group cursor-pointer backdrop-blur-md"
             >
               <div className="flex-shrink-0 w-10 h-10 bg-theme-primary/20 rounded-xl flex items-center justify-center text-theme-primary group-hover:scale-105 transition-transform duration-200">
                 <FaPerson className="w-5 h-5" />
@@ -85,7 +85,7 @@ export default function Home(): JSX.Element {
             {/* Organization Portal Pill */}
             <Link
               href="/login?type=organization"
-              className="flex items-center gap-4 px-6 py-4 bg-slate-800/30 border border-slate-700/30 rounded-2xl text-left hover:bg-slate-800/50 hover:border-slate-600/50 hover:shadow-lg hover:shadow-sky-500/5 transition-all duration-300 w-full max-w-lg group cursor-pointer backdrop-blur-md"
+              className="flex items-center gap-4 px-6 py-4 bg-slate-800/30 border border-slate-700/30 rounded-2xl text-left hover:bg-slate-800/50 hover:border-slate-600/50 transition-all duration-300 w-full max-w-lg group cursor-pointer backdrop-blur-md"
             >
               <div className="flex-shrink-0 w-10 h-10 bg-theme-primary/20 rounded-xl flex items-center justify-center text-theme-primary group-hover:scale-105 transition-transform duration-200">
                 <RiBuilding4Fill className="w-5 h-5" />
@@ -137,7 +137,7 @@ export default function Home(): JSX.Element {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.4 }}
-              className="relative bg-slate-900/90 border border-slate-700/50 w-full max-w-md rounded-[2.5rem] p-8 md:p-10 shadow-2xl z-10 overflow-hidden backdrop-blur-xl"
+              className="relative bg-slate-900/90 border border-slate-700/50 w-full max-w-md rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden backdrop-blur-xl"
             >
               {/* Inner Glows */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-theme-primary/10 rounded-full blur-2xl pointer-events-none" />
