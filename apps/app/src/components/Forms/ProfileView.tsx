@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type JSX } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { FiMail, FiPhone } from "react-icons/fi";
 import { LuPencil } from "react-icons/lu";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
@@ -26,7 +26,7 @@ export function ProfileView(): JSX.Element {
 
   const updateProfileMutation = useUpdateProfileMutation();
 
-  const { control, handleSubmit, reset, watch } = useForm<ProfileFormValues>({
+  const { control, handleSubmit, reset } = useForm<ProfileFormValues>({
     defaultValues: {
       firstName: userObj?.firstName ?? "",
       lastName: userObj?.lastName ?? "",
@@ -52,9 +52,9 @@ export function ProfileView(): JSX.Element {
   }, [userObj, reset]);
 
   // Watch values for live preview in the summary card while editing
-  const watchedFirstName = watch("firstName");
-  const watchedLastName = watch("lastName");
-  const watchedPhone = watch("phone");
+  const watchedFirstName = useWatch({ control, name: "firstName" });
+  const watchedLastName = useWatch({ control, name: "lastName" });
+  const watchedPhone = useWatch({ control, name: "phone" });
 
   // Determine current display values
   const currentFirstName = isEditing

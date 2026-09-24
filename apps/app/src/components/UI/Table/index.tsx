@@ -78,6 +78,7 @@ export function Table<T>({
 
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(defaultGridColumns);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
