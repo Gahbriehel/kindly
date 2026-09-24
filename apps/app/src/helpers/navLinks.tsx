@@ -1,6 +1,5 @@
 import { LuLayoutDashboard } from "react-icons/lu";
 import { MdOutlinePeopleAlt } from "react-icons/md";
-import { FaCog } from "react-icons/fa";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { TbUserScreen } from "react-icons/tb";
 import { CgProfile } from "react-icons/cg";
@@ -31,12 +30,6 @@ export const navLinks: NavLink[] = [
     icon: <IoDocumentTextOutline className="size-5" />,
     href: "/templates",
     roles: ["admin"],
-  },
-  {
-    title: "Settings",
-    icon: <FaCog className="size-5" />,
-    href: "/settings",
-    roles: ["admin", "moderator"],
   },
   {
     title: "Staff",

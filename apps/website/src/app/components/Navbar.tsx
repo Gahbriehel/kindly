@@ -39,7 +39,7 @@ const Navbar = () => {
     if (initialTheme !== theme) {
       setTimeout(() => setTheme(initialTheme), 0);
     }
-  }, []);
+  }, [theme]);
 
   // Apply theme to <html> and save to localStorage
   useEffect(() => {

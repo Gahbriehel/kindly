@@ -59,7 +59,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       queryClient.clear();
       router.push("/login");
     }
-  }, [user, router]);
+  }, [user, router, dispatch]);
 
   return (
     <>
