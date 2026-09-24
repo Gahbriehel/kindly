@@ -8,7 +8,6 @@ import { clsx } from "clsx";
 import { Logo } from "./Logo";
 import { navLinks } from "@/src/helpers/navLinks";
 import { IoClose } from "react-icons/io5";
-import { MdOutlineLogout } from "react-icons/md";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -19,7 +18,6 @@ interface MobileNavProps {
 export const MobileNav = memo(function MobileNav({
   isOpen,
   onClose,
-  onLogoutClick,
 }: MobileNavProps): JSX.Element {
   const pathname = usePathname();
 
@@ -90,15 +88,6 @@ export const MobileNav = memo(function MobileNav({
             </nav>
 
             <div className="border-t border-gray-100 dark:border-slate-800 p-6 space-y-4">
-              <button
-                onClick={onLogoutClick}
-                className="flex w-full items-center gap-4 rounded-xl px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/40">
-                  <MdOutlineLogout size={20} />
-                </div>
-                <span className="text-base font-semibold">Logout</span>
-              </button>
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-slate-500 ">
                 Kindly
               </p>
