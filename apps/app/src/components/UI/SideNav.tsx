@@ -5,15 +5,12 @@ import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import { Logo } from "./Logo";
 import Link from "next/link";
-import { MdOutlineLogout } from "react-icons/md";
 import {
   TbLayoutSidebarRightCollapse,
   TbLayoutSidebarLeftCollapse,
 } from "react-icons/tb";
 import { FiZap, FiX } from "react-icons/fi";
 import { getNavLinks } from "../../helpers/navLinks";
-import { useLogoutMutation } from "../../hooks/useAuthQuery";
-import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { UpgradeModal } from "../Modals/UpgradeModal";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { UserRole } from "@/src/models/auth";
@@ -46,7 +43,7 @@ function NavItem({
           "h-12 px-7 text-md mr-2",
           collapsed ? "cursor-e-resize justify-center" : "cursor-pointer",
           isActive
-            ? "bg-theme-primary/15 text-gray-700 rounded-xl"
+            ? "bg-theme-primary/15 text-theme-primary text-gray-700 rounded-xl"
             : "text-gray-600 hover:text-gray-500",
         )}
       >
@@ -59,7 +56,7 @@ function NavItem({
         >
           {icon}
         </div>
-        {!collapsed && <span className="truncate">{title}</span>}
+        {!collapsed && <span className="truncate ">{title}</span>}
         {isActive && (
           <motion.div
             layoutId="active-nav-indicator"
@@ -80,7 +77,6 @@ export function SideNav({
   onToggle: () => void;
 }): React.ReactElement {
   const pathname = usePathname();
-  const [logOutModalDisplay, setLogOutModalDisplay] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [isUpgradeDismissed, setIsUpgradeDismissed] = useState(false);
@@ -89,15 +85,6 @@ export function SideNav({
     () => getNavLinks(user?.role as UserRole),
     [user?.role],
   );
-
-  const { mutate: logoutMutation, isPending } = useLogoutMutation();
-
-  const handleLogout = useCallback(() => {
-    logoutMutation();
-  }, [logoutMutation]);
-
-  const openLogoutModal = useCallback(() => setLogOutModalDisplay(true), []);
-  const closeLogoutModal = useCallback(() => setLogOutModalDisplay(false), []);
 
   // Intercept clicks on the collapsed sidebar to expand instead
   const handleCollapsedClick = useCallback(
@@ -253,23 +240,6 @@ export function SideNav({
 
         {/* Footer / Logout */}
         <div className="mt-auto shrink-0 border-t border-gray-200 dark:border-slate-800 p-3">
-          <button
-            onClick={(e) => {
-              if (collapsed) return;
-              e.stopPropagation();
-              openLogoutModal();
-            }}
-            className={clsx(
-              "mt-2 flex w-full items-center rounded-lg p-2 text-red-600 dark:text-red-400 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20",
-              collapsed
-                ? "justify-center cursor-e-resize"
-                : "px-3 cursor-pointer",
-            )}
-          >
-            <MdOutlineLogout className="size-4 shrink-0" />
-            {!collapsed && <span className="ml-3 font-medium">Logout</span>}
-          </button>
-
           <div className="mt-2 h-4 overflow-hidden text-center">
             <AnimatePresence>
               {!collapsed && (
@@ -286,14 +256,6 @@ export function SideNav({
           </div>
         </div>
       </motion.aside>
-
-      <ConfirmActionModal
-        actionName="Logout"
-        display={logOutModalDisplay}
-        close={closeLogoutModal}
-        fn={handleLogout}
-        loading={isPending}
-      />
 
       <UpgradeModal
         isOpen={upgradeModalOpen}
