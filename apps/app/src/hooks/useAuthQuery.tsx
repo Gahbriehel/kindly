@@ -134,7 +134,7 @@ export function useChangePasswordMutation() {
   });
 }
 
-export function useUpdateIndividualProfileMutation() {
+export function useUpdateProfileMutation() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 

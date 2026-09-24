@@ -91,16 +91,6 @@ export const TopNav = memo(function TopNav({
         <h1 className="text-xl font-semibold text-gray-900 dark:text-slate-100 min-w-fit">
           {title}
         </h1>
-        <div className="hidden md:flex flex-col items-start ml-6 border-l border-gray-200 dark:border-slate-700 pl-6">
-          <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">
-            {mounted && user?.firstName
-              ? `Good morning, ${user.firstName}.`
-              : "Good morning."}
-          </p>
-          <p className="text-xs text-gray-500 dark:text-slate-400">
-            You have relationships to nurture today.
-          </p>
-        </div>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
