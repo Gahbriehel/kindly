@@ -48,20 +48,20 @@ const Navbar = () => {
       "(prefers-color-scheme: dark)",
     ).matches;
     const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
-    if (initialTheme !== theme) {
-      setTimeout(() => setTheme(initialTheme), 0);
-    }
-  }, [theme]);
+    // One-time sync from localStorage/matchMedia on mount; SSR always renders
+    // "light" first so this can't run during render without a hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTheme(initialTheme);
+  }, []);
 
   useEffect(() => {
     const html = document.documentElement;
     if (theme === "dark") {
       html.classList.add("dark");
-      localStorage.setItem("theme", "dark");
     } else {
       html.classList.remove("dark");
-      localStorage.setItem("theme", "light");
     }
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   const handleScrollNav = (section: string): void => {
