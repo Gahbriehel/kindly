@@ -2,6 +2,7 @@
 
 import Navbar from "./components/Navbar";
 import { Hero } from "./components/Hero";
+import { Redefined } from "./components/Redefined";
 import { ProblemSolution } from "./components/ProblemSolution";
 import { HowItWorks } from "./components/HowItWorks";
 import { TargetAudience } from "./components/TargetAudience";
@@ -17,6 +18,7 @@ export default function LandingPage() {
     <div className="relative font-sans antialiased bg-white dark:bg-gray-200 text-gray-900 dark:text-gray-100 selection:bg-[#FF9B7A]/30">
       <Navbar />
       <Hero />
+      <Redefined />
       <ProblemSolution />
       <HowItWorks />
       <TargetAudience />
