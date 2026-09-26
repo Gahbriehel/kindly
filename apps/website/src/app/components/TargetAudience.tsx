@@ -28,7 +28,10 @@ export function TargetAudience() {
   };
 
   return (
-    <section className="py-24 px-6 bg-[#FFF9F5] dark:bg-gray-950 transition-colors duration-300">
+    <section
+      id="target-audience"
+      className="py-24 px-6 bg-[#FFF9F5] dark:bg-gray-950 transition-colors duration-300"
+    >
       <div className="max-w-4xl mx-auto text-center">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
