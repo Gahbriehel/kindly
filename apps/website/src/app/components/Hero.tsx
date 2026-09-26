@@ -2,8 +2,32 @@
 
 import { BaseButton } from "./ui/button";
 import { motion } from "framer-motion";
-import { BiChevronRight } from "react-icons/bi";
+import { BiChevronRight, BiCalendarCheck } from "react-icons/bi";
 import { BsChevronDown } from "react-icons/bs";
+import { PiCake, PiHeart, PiBriefcase, PiBellSimple } from "react-icons/pi";
+
+const socialProofAvatars = [
+  "/images/anniversary-lady.jpg",
+  "/images/birthday-guy.jpg",
+  "/images/sarah-johnson.jpg",
+  "/images/anniversary-guy.jpg",
+];
+
+function Circle({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`aspect-square w-full rounded-full flex items-center justify-center overflow-hidden ${className ?? ""}`}
+    >
+      {children}
+    </div>
+  );
+}
 
 export function Hero() {
   const scrollToHowItWorks = () => {
@@ -13,89 +37,234 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-32 pb-16">
-      {/* Background image with overlay */}
-      <div className="absolute inset-0 z-0">
+    <section className="relative overflow-hidden bg-white dark:bg-gray-950 pt-36 pb-20 md:pt-44 md:pb-28 px-6 md:px-10">
+      <div className="relative z-10 max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-10 items-center">
+        {/* Left column */}
+        <div className="text-center lg:text-left">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 rounded-full bg-[#EEF0F9] dark:bg-gray-900 px-4 py-1.5 text-sm font-medium text-[#26337F] dark:text-gray-300 mb-6"
+          >
+            <BiCalendarCheck className="text-base" />
+            Client management
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+            className="font-jakarta text-4xl sm:text-5xl lg:text-[64px] leading-[1.15] lg:leading-[67.2px] font-extrabold tracking-tight lg:tracking-[-1.6px] text-gray-900 dark:text-gray-50 mb-6 lg:max-w-[613px] mx-auto lg:mx-0"
+          >
+            Your clients remember who{" "}
+            <span className="relative inline-block whitespace-nowrap">
+              remembered
+              <svg
+                viewBox="0 0 300 60"
+                className="absolute -inset-x-3 -inset-y-2 w-[calc(100%+1.5rem)] h-[calc(100%+1rem)] text-[#4756BE]"
+                fill="none"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 30C12 12 60 4 150 4C240 4 288 12 288 30C288 48 240 56 150 56C60 56 12 48 12 30Z"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                />
+              </svg>
+            </span>{" "}
+            them.
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="text-lg leading-relaxed text-gray-500 dark:text-gray-400 mb-10 max-w-[520px] mx-auto lg:mx-0"
+          >
+            Kindly keeps every client, birthday, anniversary and follow-up in
+            one place, then tells you who to reach out to today — and writes the
+            message with you.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-12"
+          >
+            <BaseButton
+              type="link"
+              href="/register"
+              icon={<BiChevronRight />}
+              color="secondary"
+              text="Start free with 50 clients"
+              className="w-full max-w-[280px] sm:w-auto !text-base !rounded-full !border-[#2F3E9E] !bg-[#2F3E9E] hover:!bg-[#26337F]"
+            />
+            <BaseButton
+              color="outline"
+              onClick={scrollToHowItWorks}
+              icon={<BsChevronDown />}
+              text="See how it works"
+              className="w-full max-w-[280px] sm:w-auto !text-base !rounded-full"
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            className="flex items-center gap-4 justify-center lg:justify-start"
+          >
+            <div className="flex -space-x-3 shrink-0">
+              {socialProofAvatars.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt=""
+                  className="h-10 w-10 rounded-full object-cover border-2 border-white dark:border-gray-950"
+                />
+              ))}
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                2,400 businesses keep their client dates here
+              </p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                Set up your account in three steps
+              </p>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right column — illustration */}
         <motion.div
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1762960070624-92864239a639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0aG91Z2h0ZnVsJTIwcHJvZmVzc2lvbmFsJTIwd2FybSUyMGxpZ2h0aW5nfGVufDF8fHx8MTc3MDkxNTYyMHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral')`,
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FFF9F5]/90 via-[#FFE8DC]/90 to-[#FFD9C8]/90 dark:from-gray-900/90 dark:via-gray-900/80 dark:to-gray-900/90" />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 max-w-[800px] mx-auto px-6 py-12 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] leading-[1.2] lg:leading-[1.1] mb-6 text-[#3D3530] dark:text-gray-100 font-serif"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          className="relative hidden sm:block w-full max-w-[480px] mx-auto lg:max-w-[560px] pb-14 pl-6"
         >
-          Never forget your clients again.
-        </motion.h1>
+          <div className="relative grid grid-cols-3 gap-3 md:gap-4">
+            <div className="relative">
+              <Circle>
+                <img
+                  src="/images/anniversary-lady.jpg"
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </Circle>
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -top-3 -left-5 flex items-center gap-1.5 rounded-full bg-[#12162B] text-white text-xs font-medium pl-2.5 pr-3 py-1.5 shadow-lg whitespace-nowrap"
+              >
+                <PiBriefcase className="text-sm" />
+                Work anniversary
+              </motion.div>
+            </div>
+            <Circle className="bg-[#D9DEF5]" />
+            <div className="relative">
+              <Circle>
+                <img
+                  src="/images/birthday-guy.jpg"
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </Circle>
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1,
+                }}
+                className="absolute -bottom-3 -right-4 flex items-center gap-1.5 rounded-full bg-[#12162B] text-white text-xs font-medium px-3 py-1.5 shadow-lg whitespace-nowrap"
+              >
+                <PiCake className="text-sm" />
+                Birthday
+              </motion.div>
+            </div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="text-lg sm:text-xl md:text-2xl lg:text-[1.75rem] leading-snug lg:leading-[1.4] mb-4 text-[#5A534D] dark:text-gray-300"
-        >
-          Remember birthdays, anniversaries, milestones — and reach out at the
-          right time, without the stress.
-        </motion.p>
+            <Circle className="bg-[#BFEAD9]" />
+            <Circle className="bg-[#161E3D] flex-col text-white">
+              <span className="text-3xl md:text-4xl font-bold leading-none">
+                48
+              </span>
+              <span className="text-[0.7rem] text-white/70 mt-1">
+                dates kept
+              </span>
+            </Circle>
+            <div className="relative">
+              <Circle className="bg-[#FBD3DC]" />
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5,
+                }}
+                className="absolute -bottom-3 -right-4 flex items-center gap-1.5 rounded-full bg-[#FFE7ED] text-[#E24C74] text-xs font-medium px-3 py-1.5 shadow-lg whitespace-nowrap"
+              >
+                <PiHeart className="text-sm" />
+                Anniversary
+              </motion.div>
+            </div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-          className="text-base sm:text-lg lg:text-[1.125rem] leading-relaxed mb-10 italic text-[#6B6560] dark:text-gray-400 max-w-[600px] mx-auto"
-        >
-          Because your clients deserve more than forgotten promises and
-          last-minute scrambles.
-        </motion.p>
+            <Circle>
+              <img
+                src="/images/sarah-johnson.jpg"
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            </Circle>
+            <Circle className="bg-[#F6D889]" />
+            <Circle>
+              <img
+                src="/images/anniversary-guy.jpg"
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            </Circle>
+          </div>
 
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 w-full px-4 sm:px-0"
-        >
-          <BaseButton
-            type="link"
-            href="/register"
-            icon={<BiChevronRight />}
-            color="primary"
-            text="Get started for free"
-            className="w-full max-w-[280px] sm:w-56 !text-base"
-          />
-          <BaseButton
-            color="secondary"
-            onClick={scrollToHowItWorks}
-            icon={<BsChevronDown />}
-            text="See how it works"
-            className="w-full max-w-[280px] sm:w-56 !text-base"
-          />
-        </motion.div>
-
-        {/* Social Proof */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
-          className="max-w-[500px] mx-auto p-6 border-l-4 border-[#FF9B7A] bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg"
-        >
-          <p className="italic text-[#5A534D] dark:text-gray-300 text-base sm:text-lg lg:text-[1.125rem] mb-2">
-            "I always meant to send those messages… now I actually do."
-          </p>
-          <p className="text-[0.95rem] text-[#8B8581] dark:text-gray-400">
-            — Real user
-          </p>
+          {/* Floating reminder card */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
+            className="absolute -bottom-2 -left-6 w-[260px] rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl p-4"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="h-9 w-9 shrink-0 rounded-full bg-[#FBD3DC] flex items-center justify-center text-xs font-semibold text-[#B3435F]">
+                  SJ
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+                    Sarah Johnson
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Birthday
+                  </p>
+                </div>
+              </div>
+              <PiBellSimple className="text-gray-300 dark:text-gray-600 text-lg shrink-0" />
+            </div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1.5">
+              Today
+            </p>
+            <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A45]" />
+              Send message
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

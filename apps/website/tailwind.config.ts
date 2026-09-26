@@ -13,6 +13,7 @@ const config: Config = {
         inter: ["var(--font-inter)"],
         manrope: ["var(--font-manrope)"],
         SpaceGrotesk: ["var(--font-space-grotesk)"],
+        jakarta: ["var(--font-jakarta)"],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
