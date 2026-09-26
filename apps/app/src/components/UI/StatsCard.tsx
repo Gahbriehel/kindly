@@ -114,7 +114,7 @@ export function StatsCard({
   return (
     <motion.div
       variants={cardVariants}
-      className={`group relative flex h-20 w-48 sm:w-52 shrink-0 flex-col justify-between rounded-2xl border border-gray-100 bg-white p-3.5 sm:p-4 transition-all duration-300 hover:border-gray-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 ${className}`}
+      className={`group relative flex h-20 w-58 sm:w-60 shrink-0 flex-col justify-between rounded-2xl border border-gray-100 bg-white p-3.5 sm:p-4 transition-all duration-300 hover:border-gray-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 ${className}`}
       whileHover={{
         scale: 1.02,
         y: -2,

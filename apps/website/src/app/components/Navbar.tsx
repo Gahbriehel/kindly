@@ -4,16 +4,29 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { scroller } from "react-scroll";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { BsMoonStars, BsSun } from "react-icons/bs";
-import Image from "next/image";
+import { BiChevronRight } from "react-icons/bi";
+import { BaseButton } from "./ui/button";
+
+const navLinks = [
+  { name: "About us", link: "about", type: "scroll" },
+  { name: "How it works", link: "how-it-works", type: "scroll" },
+  { name: "Features", link: "features", type: "scroll" },
+  { name: "Who it's for", link: "target-audience", type: "scroll" },
+  { name: "Team", link: "team", type: "scroll" },
+  { name: "Pricing", link: "pricing", type: "scroll" },
+];
+
+const navLinkClass =
+  "font-inter text-[14px] leading-[20px] tracking-[0px] font-medium text-[#374151] hover:text-[#2F3E9E] dark:text-gray-300 dark:hover:text-white transition-colors";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState("light");
   const navRef = useRef<HTMLElement>(null);
 
-  // Handle click outside to close mobile nav
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
@@ -29,7 +42,6 @@ const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Initialize theme from localStorage or system preference
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia(
@@ -41,7 +53,6 @@ const Navbar = () => {
     }
   }, [theme]);
 
-  // Apply theme to <html> and save to localStorage
   useEffect(() => {
     const html = document.documentElement;
     if (theme === "dark") {
@@ -53,187 +64,160 @@ const Navbar = () => {
     }
   }, [theme]);
 
-  // 🧠 Scroll helper — ensures scroll works even after navigation
   const handleScrollNav = (section: string): void => {
     if (pathname !== "/") {
-      router.push("/"); // Go to homepage first
-      // Wait a tick for React to render home sections
+      router.push("/");
       setTimeout(() => {
         scroller.scrollTo(section, {
           duration: 500,
           smooth: true,
-          offset: -50,
+          offset: -80,
         });
       }, 400);
     } else {
       scroller.scrollTo(section, {
         duration: 500,
         smooth: true,
-        offset: -50,
+        offset: -80,
       });
     }
     setIsOpen(false);
   };
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => {
-      const newTheme = prevTheme === "light" ? "dark" : "light";
-      return newTheme;
-    });
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
-  const navLinks = [
-    { name: "How it works", link: "how-it-works", type: "scroll" },
-    { name: "Features", link: "features", type: "scroll" },
-    { name: "Pricing", link: "pricing", type: "scroll" },
-  ];
-
   return (
-    <div className="fixed top-4 w-full z-50 px-4 md:px-8 flex justify-center pointer-events-none transition-all duration-300">
+    <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-900">
       <nav
         ref={navRef}
-        className="pointer-events-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-gray-800 dark:text-gray-200 p-4 md:px-10 border border-gray-200/50 dark:border-gray-800/50 w-[calc(100%-2rem)] md:w-3/4 lg:w-1/2 flex rounded-full"
+        className="max-w-7xl mx-auto px-6 md:px-10 h-20 flex items-center justify-between"
       >
-        <div className="w-full flex justify-between items-center">
-          <Link href="#" className="flex items-center gap-1">
-            <Image src="/images/logoK.png" alt="Logo" width={80} height={80} />
-          </Link>
-          {/* Mobile Actions: Theme Switcher & Hamburger */}
-          <div className="flex items-center gap-4 md:hidden">
-            <button
-              onClick={toggleTheme}
-              className="text-2xl cursor-pointer hover:text-kblue-light transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === "light" ? <BsMoonStars /> : <BsSun />}
-            </button>
-            <button
-              className="text-3xl focus:outline-none relative w-8 h-8 flex flex-col justify-center items-center"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              <motion.div
-                className="w-6 h-[2px] bg-current mb-1.5 rounded-full"
-                animate={{
-                  rotate: isOpen ? 45 : 0,
-                  y: isOpen ? 8 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              ></motion.div>
-              <motion.div
-                className="w-6 h-[2px] bg-current mb-1.5 rounded-full"
-                animate={{ opacity: isOpen ? 0 : 1 }}
-                transition={{ duration: 0.3 }}
-              ></motion.div>
-              <motion.div
-                className="w-6 h-[2px] bg-current rounded-full"
-                animate={{
-                  rotate: isOpen ? -45 : 0,
-                  y: isOpen ? -8 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              ></motion.div>
-            </button>
-          </div>
+        <Link href="/" className="flex items-center shrink-0">
+          <Image
+            src="/images/kindly-logo-light.png"
+            alt="Kindly"
+            width={200}
+            height={50}
+            priority
+            className="h-9 w-auto object-contain dark:hidden"
+          />
+          <Image
+            src="/images/kindly-logo-dark.png"
+            alt="Kindly"
+            width={200}
+            height={50}
+            priority
+            className="h-9 w-auto object-contain hidden dark:block"
+          />
+        </Link>
 
-          {/* Desktop Menu */}
-          <ul className="hidden md:flex gap-8 items-center">
-            {navLinks.map(({ name, link, type }) => (
-              <li key={link} className="relative group">
-                {type === "router" ? (
-                  <Link
-                    href={link}
-                    className="hover:text-kblue-light dark:hover:text-kblue-light text-base relative transition-colors"
-                  >
-                    <span>{name}</span>
-                    <span
-                      className={`absolute bottom-0 left-0 h-0.5 bg-current transition-all duration-300 ease-in-out ${
-                        pathname === link
-                          ? "w-full bg-blue-100"
-                          : "w-0 group-hover:wl"
-                      }`}
-                    ></span>
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => handleScrollNav(link)}
-                    className="cursor-pointer hover:text-kblue-light dark:hover:text-kblue-light text-base relative transition-colors"
-                  >
-                    <span>{name}</span>
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-current transition-all duration-300 ease-in-out group-hover:w-full"></span>
-                  </button>
-                )}
+        {/* Desktop Menu */}
+        <ul className="hidden lg:flex items-center gap-8">
+          {navLinks.map(({ name, link }) => (
+            <li key={link}>
+              <button
+                onClick={() => handleScrollNav(link)}
+                className={`cursor-pointer ${navLinkClass}`}
+              >
+                {name}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Desktop Actions */}
+        <div className="hidden lg:flex items-center gap-5">
+          <Link href="/login" className={navLinkClass}>
+            Sign in
+          </Link>
+          <BaseButton
+            type="link"
+            href="/register"
+            icon={<BiChevronRight />}
+            color="secondary"
+            text="Get started"
+            className="!h-12 !w-[140px] !gap-1.5 !rounded-xl !border-[#2B43AE] !bg-[#2B43AE] !py-[9px] !px-5 !text-sm hover:!bg-[#23368D]"
+          />
+          <button
+            onClick={toggleTheme}
+            className="text-xl text-gray-400 hover:text-[#2F3E9E] transition-colors cursor-pointer"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <BsMoonStars /> : <BsSun />}
+          </button>
+        </div>
+
+        {/* Mobile Actions */}
+        <div className="flex items-center gap-4 lg:hidden">
+          <button
+            onClick={toggleTheme}
+            className="text-xl text-gray-400 cursor-pointer"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <BsMoonStars /> : <BsSun />}
+          </button>
+          <button
+            className="relative w-8 h-8 flex flex-col justify-center items-center focus:outline-none"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <motion.div
+              className="w-6 h-[2px] bg-gray-900 dark:bg-gray-100 mb-1.5 rounded-full"
+              animate={{ rotate: isOpen ? 45 : 0, y: isOpen ? 8 : 0 }}
+              transition={{ duration: 0.3 }}
+            />
+            <motion.div
+              className="w-6 h-[2px] bg-gray-900 dark:bg-gray-100 mb-1.5 rounded-full"
+              animate={{ opacity: isOpen ? 0 : 1 }}
+              transition={{ duration: 0.3 }}
+            />
+            <motion.div
+              className="w-6 h-[2px] bg-gray-900 dark:bg-gray-100 rounded-full"
+              animate={{ rotate: isOpen ? -45 : 0, y: isOpen ? -8 : 0 }}
+              transition={{ duration: 0.3 }}
+            />
+          </button>
+        </div>
+
+        {isOpen && (
+          <motion.ul
+            className="absolute top-full left-0 w-full bg-white dark:bg-gray-950 flex flex-col items-center py-8 lg:hidden border-b border-gray-100 dark:border-gray-900"
+            initial={{ opacity: 0, y: "-10%" }}
+            animate={{ opacity: 1, y: "0%" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {navLinks.map(({ name, link }) => (
+              <li key={link} className="py-3">
+                <button
+                  onClick={() => handleScrollNav(link)}
+                  className="cursor-pointer text-base font-medium text-gray-800 dark:text-gray-200"
+                >
+                  {name}
+                </button>
               </li>
             ))}
-            {/* CTA in Nav */}
-            {/* <li>
+            <li className="pt-4 flex flex-col items-center gap-4 w-full px-8">
+              <Link
+                href="/login"
+                className="text-base font-medium text-gray-800 dark:text-gray-200"
+                onClick={() => setIsOpen(false)}
+              >
+                Sign in
+              </Link>
               <BaseButton
+                type="link"
+                href="/register"
+                icon={<BiChevronRight />}
                 color="secondary"
-                text="Start free"
-                onClick={() => handleScrollNav("pricing")}
-                className="px-5 py-2 text-sm rounded-full sm:h-10 sm:px-5 sm:py-2"
+                text="Get started"
+                className="w-full !gap-1.5 !rounded-xl !border-[#2B43AE] !bg-[#2B43AE] !py-[9px] hover:!bg-[#23368D]"
               />
-            </li>*/}
-          </ul>
-
-          {isOpen && (
-            <motion.ul
-              className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-white/95 dark:bg-gray-900/95 flex flex-col items-center py-10 md:hidden backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-800/50"
-              initial={{ opacity: 0, y: "-50%" }}
-              animate={{ opacity: 1, y: "0%" }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              {navLinks.map(({ name, link, type }) => (
-                <li key={link} className="py-4 gap-3 relative group">
-                  {type === "router" ? (
-                    <Link
-                      href={link}
-                      className="text-lg font-light tracking-wider relative transition-colors dark:text-gray-300"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {name}
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => handleScrollNav(link)}
-                      className="cursor-pointer text-lg font-light tracking-wider relative transition-colors dark:text-gray-300"
-                    >
-                      {name}
-                    </button>
-                  )}
-                </li>
-              ))}
-              {/*  <li className="py-4">
-                <BaseButton
-                  type="button"
-                  icon={<BiChevronRight />}
-                  color="secondary"
-                  text="Start free"
-                  onClick={() => {
-                    handleScrollNav("pricing");
-                    setIsOpen(false);
-                  }}
-                />
-              </li> */}
-            </motion.ul>
-          )}
-          {/* Desktop Theme Switcher */}
-          <div
-            className="hidden md:block cursor-pointer text-2xl ml-4 hover:text-kblue-light transition-colors"
-            onClick={toggleTheme}
-          >
-            {theme === "light" ? (
-              <span role="button" aria-label="Switch to dark mode">
-                <BsMoonStars />
-              </span>
-            ) : (
-              <span role="button" aria-label="Switch to light mode">
-                <BsSun />
-              </span>
-            )}
-          </div>
-        </div>
+            </li>
+          </motion.ul>
+        )}
       </nav>
-    </div>
+    </header>
   );
 };
 

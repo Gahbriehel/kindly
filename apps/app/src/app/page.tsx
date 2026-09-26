@@ -3,17 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type JSX } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, type JSX } from "react";
+import { motion } from "framer-motion";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-import { RiHeartFill, RiBuilding4Fill, RiArrowRightLine } from "react-icons/ri";
-import { BaseButton } from "../components/UI/Buttons";
-import { FaPerson } from "react-icons/fa6";
+
+const AVATARS = [
+  "https://i.pravatar.cc/64?img=11",
+  "https://i.pravatar.cc/64?img=32",
+  "https://i.pravatar.cc/64?img=47",
+  "https://i.pravatar.cc/64?img=65",
+];
 
 export default function Home(): JSX.Element {
   const { accessToken } = useAppSelector((state) => state.auth);
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // If already authenticated, redirect to dashboard
   useEffect(() => {
@@ -28,180 +31,130 @@ export default function Home(): JSX.Element {
   }
 
   return (
-    <div className="bg-[#021323] text-white min-h-screen relative overflow-hidden font-inter flex flex-col justify-between selection:bg-sky-500/30">
-      {/* Glow Effects */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-[120px] -translate-x-1/4 -translate-y-1/4 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-theme-primary/5 rounded-full blur-[140px] translate-x-1/4 translate-y-1/4 pointer-events-none" />
-
-      {/* Header */}
-      <header className="w-full flex items-center justify-between px-6 py-6 md:px-12 z-10">
-        <Link href="/" className="flex items-center gap-2 group">
-          <Image
-            src="/images/kindly-logo-dark.png"
-            alt="Kindly Logo"
-            width={150}
-            height={150}
-            className="object-contain group-hover:scale-105 transition-transform duration-200"
-          />
-        </Link>
-      </header>
-
+    <div className="bg-[#021323] text-white h-screen flex flex-col font-inter selection:bg-theme-primary/30 overflow-hidden">
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto px-6 py-12 text-center z-10 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center w-full"
-        >
-          <span className="text-xs font-bold tracking-[0.25em] text-theme-primary uppercase mb-4 block animate-pulse">
-            Kindly Workspace
-          </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight max-w-3xl leading-[1.15] mb-12">
-            Coordinate and track impact in one workspace.
-          </h1>
+      <main className="flex-1 min-h-0 flex overflow-hidden">
+        <div className="w-full h-full max-h-full px-6 sm:px-10 lg:px-16 xl:px-24 flex flex-col justify-center lg:grid lg:grid-cols-2 lg:[grid-template-rows:1fr] gap-4 sm:gap-6 lg:gap-16 xl:gap-24">
+          {/* Copy */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-xl shrink-0 flex flex-col justify-center"
+          >
+            <span className="self-start inline-block text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 mb-4">
+              What&apos;s waiting inside
+            </span>
 
-          {/* Feature / Portal Selection Stack */}
-          <div className="w-full flex flex-col items-center gap-4 mb-10">
-            {/* Individual Portal Pill */}
-            <Link
-              href="/login?type=individual"
-              className="flex items-center gap-4 px-6 py-4 bg-slate-800/30 border border-slate-700/30 rounded-2xl text-left hover:bg-slate-800/50 hover:border-slate-600/50 transition-all duration-300 w-full max-w-lg group cursor-pointer backdrop-blur-md"
-            >
-              <div className="flex-shrink-0 w-10 h-10 bg-theme-primary/20 rounded-xl flex items-center justify-center text-theme-primary group-hover:scale-105 transition-transform duration-200">
-                <FaPerson className="w-5 h-5" />
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-[3.25rem] font-extrabold tracking-tight leading-[1.15] mb-4">
+              Your mornings start with{" "}
+              <span className="text-[#9AA5E6]">people</span>, not spreadsheets.
+            </h1>
+
+            <p className="text-slate-400 text-base lg:text-lg leading-relaxed max-w-md mb-6">
+              Every birthday, anniversary and follow-up in one calm list, with
+              the invoice already written one click away.
+            </p>
+
+            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3 mb-8">
+              <div className="flex -space-x-3 shrink-0 sm:pt-0.5">
+                {AVATARS.map((src) => (
+                  <Image
+                    key={src}
+                    src={src}
+                    alt=""
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 rounded-full object-cover ring-2 ring-[#021323]"
+                  />
+                ))}
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-white text-base leading-snug">
-                  Individual Portal
-                </h3>
-                <p className="text-sm text-slate-400 truncate">
-                  Manage clients and connect with organizations
+              <div className="text-sm leading-snug">
+                <p className="text-white font-medium">
+                  2,400 businesses never miss a client&apos;s big day
+                </p>
+                <p className="text-slate-500">
+                  Set up your account in three steps
                 </p>
               </div>
-              <RiArrowRightLine className="w-5 h-5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-1 transition-all" />
-            </Link>
+            </div>
 
-            {/* Organization Portal Pill */}
-            <Link
-              href="/login?type=organization"
-              className="flex items-center gap-4 px-6 py-4 bg-slate-800/30 border border-slate-700/30 rounded-2xl text-left hover:bg-slate-800/50 hover:border-slate-600/50 transition-all duration-300 w-full max-w-lg group cursor-pointer backdrop-blur-md"
-            >
-              <div className="flex-shrink-0 w-10 h-10 bg-theme-primary/20 rounded-xl flex items-center justify-center text-theme-primary group-hover:scale-105 transition-transform duration-200">
-                <RiBuilding4Fill className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-white text-base leading-snug">
-                  Organization Portal
-                </h3>
-                <p className="text-sm text-slate-400 truncate">
-                  Manage operations, moderators, and events
-                </p>
-              </div>
-              <RiArrowRightLine className="w-5 h-5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-1 transition-all" />
-            </Link>
-          </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href="/sign-up"
+                className="inline-flex w-44 whitespace-nowrap items-center justify-center rounded-xl bg-white text-[#021323] font-semibold text-sm sm:text-base px-6 py-3 hover:bg-slate-200 transition-colors"
+              >
+                Create account
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex w-44 whitespace-nowrap items-center justify-center rounded-xl bg-theme-primary text-white font-semibold text-sm sm:text-base px-6 py-3 hover:bg-theme-primary-hover transition-colors"
+              >
+                Sign in
+              </Link>
+            </div>
+          </motion.div>
 
-          <BaseButton
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            className="w-2/3"
-            text="Sign in"
-            icon={<RiArrowRightLine className="w-4 h-4" />}
-            position="icon-first"
-            color="primary"
-          />
-        </motion.div>
+          {/* Product Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="relative hidden lg:flex flex-1 min-h-0 min-w-0 items-center justify-center overflow-hidden"
+          >
+            <Image
+              src="/images/landing1.png"
+              alt="Kindly calendar and client group preview"
+              width={1386}
+              height={1266}
+              className="w-full h-full object-contain"
+              priority
+            />
+          </motion.div>
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="w-full text-center py-6 text-sm text-slate-500 border-t border-slate-800/30 z-10 bg-slate-950/20">
-        © 2026 Kindly. All rights reserved.
-      </footer>
+      <footer className="w-full bg-white text-[#021323] shrink-0">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <Image
+            src="/images/kindly-logo.png"
+            alt="Kindly"
+            width={120}
+            height={32}
+            className="object-contain"
+          />
 
-      {/* Selection Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
-            />
-            {/* Modal Box */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", duration: 0.4 }}
-              className="relative bg-slate-900/90 border border-slate-700/50 w-full max-w-md rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden backdrop-blur-xl"
+          <nav className="flex items-center gap-6 text-sm text-slate-600">
+            <Link
+              href="/about"
+              className="hover:text-[#021323] transition-colors"
             >
-              {/* Inner Glows */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-theme-primary/10 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
+              About
+            </Link>
+            <Link
+              href="/help"
+              className="hover:text-[#021323] transition-colors"
+            >
+              Help
+            </Link>
+            <Link
+              href="/privacy"
+              className="hover:text-[#021323] transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-[#021323] transition-colors"
+            >
+              Terms
+            </Link>
+          </nav>
 
-              <h2 className="text-2xl font-bold text-white text-center mb-2">
-                Select Your Portal
-              </h2>
-              <p className="text-slate-400 text-center text-sm mb-8">
-                Choose how you want to sign in to Kindly
-              </p>
-
-              <div className="space-y-4">
-                <Link
-                  href="/login?type=individual"
-                  className="flex items-center justify-between p-4 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-slate-500/50 rounded-2xl transition-all duration-200 group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-theme-primary/20 rounded-xl flex items-center justify-center text-theme-primary">
-                      <RiHeartFill className="w-5 h-5" />
-                    </div>
-                    <div className="text-left">
-                      <h4 className="font-semibold text-white group-hover:text-theme-primary transition-colors">
-                        Individual Portal
-                      </h4>
-                      <p className="text-xs text-slate-400">
-                        Volunteers & Donors
-                      </p>
-                    </div>
-                  </div>
-                  <RiArrowRightLine className="w-5 h-5 text-slate-500 group-hover:text-theme-primary group-hover:translate-x-1 transition-all" />
-                </Link>
-
-                <Link
-                  href="/login?type=organization"
-                  className="flex items-center justify-between p-4 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-slate-500/50 rounded-2xl transition-all duration-200 group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-theme-primary/20 rounded-xl flex items-center justify-center text-theme-primary">
-                      <RiBuilding4Fill className="w-5 h-5" />
-                    </div>
-                    <div className="text-left">
-                      <h4 className="font-semibold text-white group-hover:text-sky-400 transition-colors">
-                        Organization Portal
-                      </h4>
-                      <p className="text-xs text-slate-400">
-                        Non-profits & Staff
-                      </p>
-                    </div>
-                  </div>
-                  <RiArrowRightLine className="w-5 h-5 text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all" />
-                </Link>
-              </div>
-
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="mt-8 text-sm font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer w-full text-center"
-              >
-                Cancel
-              </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+          <span className="text-xs text-slate-400">© 2026 Kindly</span>
+        </div>
+      </footer>
     </div>
   );
 }
