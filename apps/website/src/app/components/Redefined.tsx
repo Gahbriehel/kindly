@@ -92,7 +92,7 @@ export function Redefined() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="font-jakarta text-4xl sm:text-5xl lg:text-[64px] leading-[1.15] lg:leading-[100%] font-extrabold tracking-tight lg:tracking-[-1.6px] max-w-6xl"
+          className="font-jakarta text-4xl sm:text-5xl lg:text-[64px] leading-[1.15] lg:leading-[100%] font-extrabold tracking-tight lg:tracking-[-1.6px] max-w-5xl"
         >
           <span className="text-white">Client management</span>
           <InlineAvatar src="/images/anniversary-lady.jpg" />
@@ -102,7 +102,7 @@ export function Redefined() {
           <span className="text-gray-500">people and the dates</span>
           <InlineAvatar src="/images/anniversary-guy.jpg" />
           <span className="text-gray-500">that </span>
-          <span className="text-white underline decoration-white/60 underline-offset-4">
+          <span className="text-gray-500 underline decoration-white/60 underline-offset-4">
             made them clients.
           </span>
         </motion.h2>

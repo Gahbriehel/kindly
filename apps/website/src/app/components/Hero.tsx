@@ -37,7 +37,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-white dark:bg-gray-950 pt-36 pb-20 md:pt-44 md:pb-28 px-6 md:px-10">
+    <section className="relative overflow-hidden bg-white dark:bg-gray-950 pt-18 pb-20 md:pt-22 md:pb-28 px-6 md:px-10">
       <div className="relative z-10 max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-10 items-center">
         {/* Left column */}
         <div className="text-center lg:text-left">
@@ -84,7 +84,7 @@ export function Hero() {
             className="text-lg leading-relaxed text-gray-500 dark:text-gray-400 mb-10 max-w-[520px] mx-auto lg:mx-0"
           >
             Kindly keeps every client, birthday, anniversary and follow-up in
-            one place, then tells you who to reach out to today — and writes the
+            one place, then tells you who to reach out to today, and writes the
             message with you.
           </motion.p>
 
@@ -99,7 +99,7 @@ export function Hero() {
               href="/register"
               icon={<BiChevronRight />}
               color="secondary"
-              text="Start free with 50 clients"
+              text="Start free with 5 clients"
               className="w-full max-w-[280px] sm:w-auto !text-base !rounded-full !border-[#2F3E9E] !bg-[#2F3E9E] hover:!bg-[#26337F]"
             />
             <BaseButton
@@ -143,7 +143,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="relative hidden sm:block w-full max-w-[480px] mx-auto lg:max-w-[560px] pb-14 pl-6"
+          className="relative block w-full max-w-[320px] sm:max-w-[480px] mx-auto lg:max-w-[560px] pb-14 pl-6"
         >
           <div className="relative grid grid-cols-3 gap-3 md:gap-4">
             <div className="relative">

@@ -11,7 +11,6 @@ import { BiChevronRight } from "react-icons/bi";
 import { BaseButton } from "./ui/button";
 
 const navLinks = [
-  { name: "About us", link: "about", type: "scroll" },
   { name: "How it works", link: "how-it-works", type: "scroll" },
   { name: "Features", link: "features", type: "scroll" },
   { name: "Who it's for", link: "target-audience", type: "scroll" },
