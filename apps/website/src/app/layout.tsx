@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "kindly",
   description: "Warm reminders for busy creators",
   icons: {
-    icon: "/images/logo-icon.png",
+    icon: "/images/kindly-icon.png",
   },
 };
 
