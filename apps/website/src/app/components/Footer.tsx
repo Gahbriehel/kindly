@@ -29,14 +29,36 @@ const productLinks: FooterLink[] = [
 
 const companyLinks: FooterLink[] = [
   { name: "Meet the team", href: "team", type: "scroll" },
-  { name: "Contact", href: "#", type: "route" },
+  {
+    name: "Contact",
+    href: process.env.NEXT_PUBLIC_CONTACT_URL || "",
+    type: "route",
+  },
 ];
 
+const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
+
 const socialLinks = [
-  { icon: FaLinkedinIn, href: "#", label: "LinkedIn" },
-  { icon: FaXTwitter, href: "#", label: "X" },
-  { icon: FaYoutube, href: "#", label: "YouTube" },
-  { icon: HiOutlineMail, href: "mailto:hello@kindly.app", label: "Email" },
+  {
+    icon: FaLinkedinIn,
+    href: process.env.NEXT_PUBLIC_LINKEDIN_URL || "",
+    label: "LinkedIn",
+  },
+  {
+    icon: FaXTwitter,
+    href: process.env.NEXT_PUBLIC_X_URL || "",
+    label: "X",
+  },
+  {
+    icon: FaYoutube,
+    href: process.env.NEXT_PUBLIC_YOUTUBE_URL || "",
+    label: "YouTube",
+  },
+  {
+    icon: HiOutlineMail,
+    href: contactEmail ? `mailto:${contactEmail}` : "",
+    label: "Email",
+  },
 ];
 
 function FooterColumn({
@@ -206,10 +228,13 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 border-t border-white/10 text-xs text-white/40">
           <div>© {new Date().getFullYear()} Kindly. All rights reserved.</div>
           <div className="flex items-center gap-6">
-            <Link href="#" className="hover:text-white transition-colors">
+            <Link
+              href="/privacy"
+              className="hover:text-white transition-colors"
+            >
               Privacy
             </Link>
-            <Link href="#" className="hover:text-white transition-colors">
+            <Link href="/terms" className="hover:text-white transition-colors">
               Terms
             </Link>
             <button

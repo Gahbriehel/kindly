@@ -40,7 +40,7 @@ export function CTA() {
           </p>
 
           <Link
-            href="/register"
+            href={process.env.NEXT_PUBLIC_SIGNUP_URL || ""}
             className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-6 py-3.5 rounded-full hover:bg-gray-100 hover:shadow-md active:scale-[0.98] transition-all duration-200 text-sm sm:text-base group"
           >
             <span>Create your account</span>

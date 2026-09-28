@@ -31,6 +31,8 @@ export interface PricingSectionData {
   footerNote: string;
 }
 
+const signupUrl = process.env.NEXT_PUBLIC_SIGNUP_URL || "";
+
 export const pricingData: PricingSectionData = {
   badge: "Pricing",
   title: "Start free, pay when your list grows",
@@ -58,7 +60,7 @@ export const pricingData: PricingSectionData = {
       ],
       cta: {
         text: "Current plan",
-        href: "/register",
+        href: signupUrl,
         variant: "outline",
       },
     },
@@ -83,7 +85,7 @@ export const pricingData: PricingSectionData = {
       ],
       cta: {
         text: "Get started",
-        href: "/register",
+        href: signupUrl,
         variant: "primary",
       },
     },
@@ -106,7 +108,7 @@ export const pricingData: PricingSectionData = {
       ],
       cta: {
         text: "Upgrade now",
-        href: "/register",
+        href: signupUrl,
         variant: "outline",
       },
     },

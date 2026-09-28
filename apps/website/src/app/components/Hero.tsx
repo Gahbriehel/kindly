@@ -96,7 +96,7 @@ export function Hero() {
           >
             <BaseButton
               type="link"
-              href="/register"
+              href={process.env.NEXT_PUBLIC_SIGNUP_URL || ""}
               icon={<BiChevronRight />}
               color="secondary"
               text="Start free with 5 clients"

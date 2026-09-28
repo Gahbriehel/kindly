@@ -21,6 +21,9 @@ const navLinks = [
 const navLinkClass =
   "font-inter text-[14px] leading-[20px] tracking-[0px] font-medium text-[#374151] hover:text-[#2F3E9E] dark:text-gray-300 dark:hover:text-white transition-colors";
 
+const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL || "";
+const signupUrl = process.env.NEXT_PUBLIC_SIGNUP_URL || "";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState("light");
@@ -138,12 +141,12 @@ const Navbar = () => {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-5">
-          <Link href="/login" className={navLinkClass}>
+          <Link href={loginUrl} className={navLinkClass}>
             Sign in
           </Link>
           <BaseButton
             type="link"
-            href="/register"
+            href={signupUrl}
             icon={<BiChevronRight />}
             color="secondary"
             text="Get started"
@@ -208,7 +211,7 @@ const Navbar = () => {
             ))}
             <li className="pt-4 flex flex-col items-center gap-4 w-full px-8">
               <Link
-                href="/login"
+                href={loginUrl}
                 className="text-base font-medium text-gray-800 dark:text-gray-200"
                 onClick={() => setIsOpen(false)}
               >
@@ -216,7 +219,7 @@ const Navbar = () => {
               </Link>
               <BaseButton
                 type="link"
-                href="/register"
+                href={signupUrl}
                 icon={<BiChevronRight />}
                 color="secondary"
                 text="Get started"
