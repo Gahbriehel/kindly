@@ -239,29 +239,29 @@ export function Hero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
-            className="absolute -bottom-2 -left-6 w-[260px] rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl p-4"
+            className="absolute -bottom-2 -left-3 sm:-left-6 w-[170px] sm:w-[220px] md:w-[260px] rounded-xl sm:rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl p-2.5 sm:p-3.5 md:p-4"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 shrink-0 rounded-full bg-[#FBD3DC] flex items-center justify-center text-xs font-semibold text-[#B3435F]">
+            <div className="flex items-start justify-between mb-1.5 sm:mb-2.5 md:mb-3">
+              <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5">
+                <div className="h-6 w-6 sm:h-8 sm:w-8 md:h-9 md:w-9 shrink-0 rounded-full bg-[#FBD3DC] flex items-center justify-center text-[9px] sm:text-xs font-semibold text-[#B3435F]">
                   SJ
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+                  <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
                     Sarah Johnson
                   </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <p className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500">
                     Birthday
                   </p>
                 </div>
               </div>
-              <PiBellSimple className="text-gray-300 dark:text-gray-600 text-lg shrink-0" />
+              <PiBellSimple className="text-gray-300 dark:text-gray-600 text-xs sm:text-base md:text-lg shrink-0" />
             </div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1.5">
+            <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1 sm:mb-1.5">
               Today
             </p>
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A45]" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs md:text-sm text-gray-500 dark:text-gray-400">
+              <span className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-[#FF6A45] shrink-0" />
               Send message
             </div>
           </motion.div>
