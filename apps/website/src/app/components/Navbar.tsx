@@ -85,13 +85,25 @@ const Navbar = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>): void => {
+    if (pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    setIsOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-900">
       <nav
         ref={navRef}
         className="max-w-7xl mx-auto px-6 md:px-10 h-20 flex items-center justify-between"
       >
-        <Link href="/" className="flex items-center shrink-0">
+        <Link
+          href="/"
+          onClick={handleLogoClick}
+          className="flex items-center shrink-0"
+        >
           <Image
             src="/images/kindly-logo-light.png"
             alt="Kindly"
