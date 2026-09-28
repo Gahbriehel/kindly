@@ -14,7 +14,7 @@ export const whoItsForData = {
   tabs: [
     {
       id: "event-planner",
-      label: "Event planner",
+      label: "Event planners",
       stat: "Manage clients",
       tracking: "Tracking 180 clients",
       headline:
