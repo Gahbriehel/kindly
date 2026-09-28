@@ -3,13 +3,9 @@
 import Navbar from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { Redefined } from "./components/Redefined";
-import { ProblemSolution } from "./components/ProblemSolution";
 import { HowItWorks } from "./components/HowItWorks";
-import { TargetAudience } from "./components/TargetAudience";
-import { VsComparison } from "./components/VsComparison";
 import { Features } from "./components/Features";
 import { Pricing } from "./components/Pricing";
-import { TrustPrivacy } from "./components/TrustPrivacy";
 import { CTA } from "./components/CTA";
 import { Footer } from "./components/Footer";
 
@@ -22,10 +18,6 @@ export default function LandingPage() {
       <HowItWorks />
       <Features />
       <Pricing />
-      <ProblemSolution />
-      <TargetAudience />
-      <VsComparison />
-      <TrustPrivacy />
       <CTA />
       <Footer />
     </div>
