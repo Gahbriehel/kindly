@@ -13,8 +13,7 @@ import { BaseButton } from "./ui/button";
 const navLinks = [
   { name: "How it works", link: "how-it-works", type: "scroll" },
   { name: "Features", link: "features", type: "scroll" },
-  { name: "Who it's for", link: "target-audience", type: "scroll" },
-  { name: "Team", link: "team", type: "scroll" },
+  { name: "Who it's for", link: "who-its-for", type: "scroll" },
   { name: "Pricing", link: "pricing", type: "scroll" },
 ];
 
