@@ -20,10 +20,10 @@ export default function LandingPage() {
       <Hero />
       <Redefined />
       <HowItWorks />
+      <Features />
       <ProblemSolution />
       <TargetAudience />
       <VsComparison />
-      <Features />
       <Pricing />
       <TrustPrivacy />
       <CTA />
