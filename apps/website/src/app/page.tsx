@@ -19,8 +19,8 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <Redefined />
-      <ProblemSolution />
       <HowItWorks />
+      <ProblemSolution />
       <TargetAudience />
       <VsComparison />
       <Features />
