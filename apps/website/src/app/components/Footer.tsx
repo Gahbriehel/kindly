@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { scroller } from "react-scroll";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaLinkedinIn, FaXTwitter, FaYoutube } from "react-icons/fa6";
@@ -104,13 +105,26 @@ function FooterColumn({
 
 export function Footer() {
   const [email, setEmail] = useState("");
+  const pathname = usePathname();
+  const router = useRouter();
 
   const handleScrollNav = (section: string): void => {
-    scroller.scrollTo(section, {
-      duration: 500,
-      smooth: true,
-      offset: -80,
-    });
+    if (pathname !== "/") {
+      router.push("/");
+      setTimeout(() => {
+        scroller.scrollTo(section, {
+          duration: 500,
+          smooth: true,
+          offset: -80,
+        });
+      }, 400);
+    } else {
+      scroller.scrollTo(section, {
+        duration: 500,
+        smooth: true,
+        offset: -80,
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -119,7 +133,11 @@ export function Footer() {
   };
 
   const handleBackToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (pathname !== "/") {
+      router.push("/");
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (
