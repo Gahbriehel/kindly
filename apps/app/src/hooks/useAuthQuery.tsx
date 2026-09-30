@@ -23,7 +23,7 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      const { accessToken, accountType, individual } = response.data;
+      const { accessToken, individual } = response.data;
       dispatch(setToken(accessToken));
       dispatch(
         setUser({
@@ -41,7 +41,6 @@ export function useLoginMutation() {
           subscriptionTier: individual.subscriptionTier,
           createdAt: individual.createdAt,
           updatedAt: individual.updatedAt,
-          accountType,
         }),
       );
       customToast.success(response.message);
@@ -62,7 +61,7 @@ export function useSignupMutation() {
   return useMutation({
     mutationFn: signup,
     onSuccess: (response) => {
-      const { accessToken, accountType, individual } = response.data;
+      const { accessToken, individual } = response.data;
       dispatch(setToken(accessToken));
       dispatch(
         setUser({
@@ -80,7 +79,6 @@ export function useSignupMutation() {
           subscriptionTier: individual.subscriptionTier,
           createdAt: individual.createdAt,
           updatedAt: individual.updatedAt,
-          accountType,
         }),
       );
       customToast.success(response.message);
@@ -111,15 +109,12 @@ export function useForgotPasswordMutation() {
 export function useChangePasswordMutation() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { accessToken, accountType } = useAppSelector((state) => state.auth);
+  const { accessToken } = useAppSelector((state) => state.auth);
   return useMutation({
-    mutationFn: (
-      data: Omit<IUpdatePasswordPayload, "token" | "isOrganization">,
-    ) =>
+    mutationFn: (data: Omit<IUpdatePasswordPayload, "token">) =>
       changePassword({
         ...data,
         token: accessToken ?? "",
-        isOrganization: accountType === "ORGANIZATION",
       }),
     onSuccess: (response) => {
       customToast.success(response.message);
@@ -183,10 +178,9 @@ export function useUpdateCompanyProfileMutation() {
 export function useLogoutMutation() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { accountType } = useAppSelector((state) => state.auth);
 
   return useMutation({
-    mutationFn: () => logout(accountType === "ORGANIZATION"),
+    mutationFn: () => logout(),
     onSuccess: (response) => {
       dispatch(logOut());
       queryClient.clear();

@@ -6,35 +6,31 @@ import type {
   ISignUpResponse,
   IRefreshResponse,
   IUpdatePasswordPayload,
-  IUpdateIndividualProfilePayload,
+  IUpdateProfilePayload,
   IUpdateCompanyProfilePayload,
-  IIndividualProfileResponse,
+  IProfileResponse,
   ICompanyProfileResponse,
 } from "../models/auth";
 import { IBaseResponse } from "../models/base";
 
 export async function login(payload: ILoginPayload) {
-  const { isOrganization, ...data } = payload;
-  const endpoint = isOrganization
-    ? `/auth/company/login`
-    : `/auth/individual/login`;
-  const response = await axios.post<ILoginResponse>(endpoint, data);
-  return response.data;
-}
-
-export async function signup(payload: ISignUpPayload) {
-  const response = await axios.post<ISignUpResponse>(
-    `/auth/individual/signup`,
+  const response = await axios.post<ILoginResponse>(
+    `/auth/login`,
     payload,
   );
   return response.data;
 }
 
-export async function logout(isOrganization: boolean) {
-  const endpoint = isOrganization
-    ? `/auth/company/logout`
-    : `/auth/individual/logout`;
-  const response = await axios.post(endpoint);
+export async function signup(payload: ISignUpPayload) {
+  const response = await axios.post<ISignUpResponse>(
+    `/auth/signup`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function logout() {
+  const response = await axios.post(`/auth/logout`);
   return response.data;
 }
 
@@ -54,19 +50,18 @@ export async function forgotPassword(payload: { email: string }) {
 }
 
 export async function changePassword(payload: IUpdatePasswordPayload) {
-  const { isOrganization, ...data } = payload;
-  const endpoint = isOrganization
-    ? `/auth/company/reset-password`
-    : `/auth/individual/reset-password`;
-  const response = await axios.post<IBaseResponse>(endpoint, data);
+  const response = await axios.post<IBaseResponse>(
+    `/auth/reset-password`,
+    payload,
+  );
   return response.data;
 }
 
-export async function updateIndividualProfile(
-  payload: IUpdateIndividualProfilePayload,
+export async function updateProfile(
+  payload: IUpdateProfilePayload,
 ) {
-  const response = await axios.patch<IIndividualProfileResponse>(
-    `/auth/individual/me`,
+  const response = await axios.patch<IProfileResponse>(
+    `/auth/me`,
     payload,
   );
   return response.data;

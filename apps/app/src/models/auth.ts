@@ -6,13 +6,12 @@ export interface ILoginPayload {
   email: string;
   password: string;
   forceLogout?: boolean;
-  isOrganization?: boolean;
 }
 
 export interface ILoginResponse extends IBaseResponse {
   data: {
     accessToken: string;
-    accountType: "INDIVIDUAL" | "ORGANIZATION";
+    accountType?: string;
     individual: IIndividualData;
   };
 }
@@ -44,14 +43,14 @@ export interface IIndividualData {
 export interface ISignUpResponse extends IBaseResponse {
   data: {
     accessToken: string;
-    accountType: "INDIVIDUAL" | "ORGANIZATION";
-    individual: IIndividualData;
+    accountType?: string;
+    user: IUserData;
   };
 }
 
-export interface IIndividualProfileResponse extends IBaseResponse {
+export interface IProfileResponse extends IBaseResponse {
   data: {
-    individual: IUserData;
+    user: IUserData;
   };
 }
 
@@ -76,13 +75,12 @@ export interface IUserData {
   subscriptionTier: string;
   createdAt: string;
   updatedAt: string;
-  accountType?: "INDIVIDUAL" | "ORGANIZATION";
   role?: string;
   website?: string | null;
   description?: string | null;
 }
 
-export interface IUpdateIndividualProfilePayload {
+export interface IUpdateProfilePayload {
   firstName: string;
   lastName: string;
   phoneNumber: string | null;
@@ -114,5 +112,4 @@ export interface IUpdatePasswordPayload {
   token: string;
   newPassword: string;
   confirmPassword: string;
-  isOrganization?: boolean;
 }
