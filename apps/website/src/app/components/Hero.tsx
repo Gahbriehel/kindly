@@ -37,7 +37,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-white dark:bg-gray-950 pt-36 pb-20 md:pt-44 md:pb-28 px-6 md:px-10">
+    <section className="relative overflow-hidden bg-white dark:bg-gray-950 pt-18 pb-20 md:pt-22 md:pb-28 px-6 md:px-10">
       <div className="relative z-10 max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-10 items-center">
         {/* Left column */}
         <div className="text-center lg:text-left">
@@ -84,7 +84,7 @@ export function Hero() {
             className="text-lg leading-relaxed text-gray-500 dark:text-gray-400 mb-10 max-w-[520px] mx-auto lg:mx-0"
           >
             Kindly keeps every client, birthday, anniversary and follow-up in
-            one place, then tells you who to reach out to today — and writes the
+            one place, then tells you who to reach out to today, and writes the
             message with you.
           </motion.p>
 
@@ -96,10 +96,10 @@ export function Hero() {
           >
             <BaseButton
               type="link"
-              href="/register"
+              href={process.env.NEXT_PUBLIC_SIGNUP_URL || ""}
               icon={<BiChevronRight />}
               color="secondary"
-              text="Start free with 50 clients"
+              text="Start free with 5 clients"
               className="w-full max-w-[280px] sm:w-auto !text-base !rounded-full !border-[#2F3E9E] !bg-[#2F3E9E] hover:!bg-[#26337F]"
             />
             <BaseButton
@@ -143,7 +143,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="relative hidden sm:block w-full max-w-[480px] mx-auto lg:max-w-[560px] pb-14 pl-6"
+          className="relative block w-full max-w-[320px] sm:max-w-[480px] mx-auto lg:max-w-[560px] pb-14 pl-6"
         >
           <div className="relative grid grid-cols-3 gap-3 md:gap-4">
             <div className="relative">
@@ -239,29 +239,29 @@ export function Hero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
-            className="absolute -bottom-2 -left-6 w-[260px] rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl p-4"
+            className="absolute -bottom-2 -left-3 sm:-left-6 w-[170px] sm:w-[220px] md:w-[260px] rounded-xl sm:rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl p-2.5 sm:p-3.5 md:p-4"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 shrink-0 rounded-full bg-[#FBD3DC] flex items-center justify-center text-xs font-semibold text-[#B3435F]">
+            <div className="flex items-start justify-between mb-1.5 sm:mb-2.5 md:mb-3">
+              <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5">
+                <div className="h-6 w-6 sm:h-8 sm:w-8 md:h-9 md:w-9 shrink-0 rounded-full bg-[#FBD3DC] flex items-center justify-center text-[9px] sm:text-xs font-semibold text-[#B3435F]">
                   SJ
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+                  <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
                     Sarah Johnson
                   </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <p className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500">
                     Birthday
                   </p>
                 </div>
               </div>
-              <PiBellSimple className="text-gray-300 dark:text-gray-600 text-lg shrink-0" />
+              <PiBellSimple className="text-gray-300 dark:text-gray-600 text-xs sm:text-base md:text-lg shrink-0" />
             </div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1.5">
+            <p className="text-[11px] sm:text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1 sm:mb-1.5">
               Today
             </p>
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A45]" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs md:text-sm text-gray-500 dark:text-gray-400">
+              <span className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-[#FF6A45] shrink-0" />
               Send message
             </div>
           </motion.div>

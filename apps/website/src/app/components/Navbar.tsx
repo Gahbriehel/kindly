@@ -11,16 +11,17 @@ import { BiChevronRight } from "react-icons/bi";
 import { BaseButton } from "./ui/button";
 
 const navLinks = [
-  { name: "About us", link: "about", type: "scroll" },
   { name: "How it works", link: "how-it-works", type: "scroll" },
   { name: "Features", link: "features", type: "scroll" },
-  { name: "Who it's for", link: "target-audience", type: "scroll" },
-  { name: "Team", link: "team", type: "scroll" },
+  { name: "Who it's for", link: "who-its-for", type: "scroll" },
   { name: "Pricing", link: "pricing", type: "scroll" },
 ];
 
 const navLinkClass =
   "font-inter text-[14px] leading-[20px] tracking-[0px] font-medium text-[#374151] hover:text-[#2F3E9E] dark:text-gray-300 dark:hover:text-white transition-colors";
+
+const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL || "";
+const signupUrl = process.env.NEXT_PUBLIC_SIGNUP_URL || "";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,8 +49,6 @@ const Navbar = () => {
       "(prefers-color-scheme: dark)",
     ).matches;
     const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
-    // One-time sync from localStorage/matchMedia on mount; SSR always renders
-    // "light" first so this can't run during render without a hydration mismatch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initialTheme);
   }, []);
@@ -88,13 +87,25 @@ const Navbar = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>): void => {
+    if (pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    setIsOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-900">
       <nav
         ref={navRef}
         className="max-w-7xl mx-auto px-6 md:px-10 h-20 flex items-center justify-between"
       >
-        <Link href="/" className="flex items-center shrink-0">
+        <Link
+          href="/"
+          onClick={handleLogoClick}
+          className="flex items-center shrink-0"
+        >
           <Image
             src="/images/kindly-logo-light.png"
             alt="Kindly"
@@ -129,12 +140,12 @@ const Navbar = () => {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-5">
-          <Link href="/login" className={navLinkClass}>
+          <Link href={loginUrl} className={navLinkClass}>
             Sign in
           </Link>
           <BaseButton
             type="link"
-            href="/register"
+            href={signupUrl}
             icon={<BiChevronRight />}
             color="secondary"
             text="Get started"
@@ -199,7 +210,7 @@ const Navbar = () => {
             ))}
             <li className="pt-4 flex flex-col items-center gap-4 w-full px-8">
               <Link
-                href="/login"
+                href={loginUrl}
                 className="text-base font-medium text-gray-800 dark:text-gray-200"
                 onClick={() => setIsOpen(false)}
               >
@@ -207,7 +218,7 @@ const Navbar = () => {
               </Link>
               <BaseButton
                 type="link"
-                href="/register"
+                href={signupUrl}
                 icon={<BiChevronRight />}
                 color="secondary"
                 text="Get started"
