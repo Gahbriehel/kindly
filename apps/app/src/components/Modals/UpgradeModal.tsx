@@ -33,16 +33,16 @@ export function UpgradeModal({
     {
       name: "BASIC",
       price: "$0",
-      description: "Ideal for individual creators getting started.",
+      description: "Ideal for creators getting started.",
       features: [
         "Up to 5 clients",
         "Personal template library",
-        "Individual dashboard access",
+        "Full dashboard access",
       ],
       notIncluded: [
         "Staff & team collaboration",
-        "Company account creation",
         "Unlimited client management",
+        "Dedicated account manager",
       ],
       color: "border-gray-200 dark:border-slate-800",
       buttonColor: "outline" as const,
@@ -54,10 +54,10 @@ export function UpgradeModal({
       features: [
         "More than 5 clients (Unlimited)",
         "Personal template library",
-        "Individual dashboard access",
+        "Full dashboard access",
         "Priority email support",
       ],
-      notIncluded: ["Staff & team collaboration", "Company account creation"],
+      notIncluded: ["Staff & team collaboration", "Dedicated account manager"],
       color: "border-gray-200 dark:border-slate-800",
       buttonColor: "primary" as const,
     },
@@ -68,7 +68,7 @@ export function UpgradeModal({
       features: [
         "Unlimited clients",
         "Staff & team collaboration",
-        "Create or switch to a company account",
+        "Staff directory & access levels",
         "Dedicated account manager",
         "Early access to new features",
       ],

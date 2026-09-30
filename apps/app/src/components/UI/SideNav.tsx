@@ -215,8 +215,8 @@ export function SideNav({
 
               <p className="text-[0.75rem] leading-snug text-white/60 mb-3 font-medium">
                 {user?.subscriptionTier?.toUpperCase() === "PREMIUM"
-                  ? "Unlock company accounts, staff management, and unlimited clients."
-                  : "Unlock more clients, staff collaboration, and organization features."}
+                  ? "Unlock staff directory, team collaboration, and priority features."
+                  : "Unlock more clients, staff collaboration, and advanced features."}
               </p>
 
               <div className="flex items-baseline gap-1 mb-3">

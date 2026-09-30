@@ -44,7 +44,7 @@ export default function ClientsPage(): JSX.Element {
               <p className="text-sm font-semibold">Premium Plan Status</p>
               <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
                 You have unlimited client capacity! Upgrade to Platinum to
-                create a Company Account, manage staff, and collaborate.
+                invite team members, manage staff, and collaborate.
               </p>
             </div>
           </div>

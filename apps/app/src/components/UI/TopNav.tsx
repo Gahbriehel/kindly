@@ -4,20 +4,14 @@ import { memo, useEffect, useState, useRef, type JSX } from "react";
 import { usePathname } from "next/navigation";
 import { navLinks } from "@/src/helpers/navLinks";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { setAccountType } from "../../store/slices/auth";
 import { useLogoutMutation } from "../../hooks/useAuthQuery";
-import { customToast } from "@/src/helpers/customToast";
 import {
   FiMenu,
   FiBell,
   FiChevronDown,
   FiUser,
-  FiBriefcase,
-  FiPlus,
   FiLogOut,
 } from "react-icons/fi";
-import { capitalizeFirstLetter } from "@/src/helpers/capitalizeFirstLetter";
 import Link from "next/link";
 
 export const TopNav = memo(function TopNav({
@@ -26,8 +20,7 @@ export const TopNav = memo(function TopNav({
   onMenuClick?: () => void;
 }): JSX.Element {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
-  const { user, accountType } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
   const [mounted, setMounted] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -56,22 +49,6 @@ export const TopNav = memo(function TopNav({
 
   const currentNav = navLinks.find((link) => pathname.startsWith(link.href));
   const title = currentNav?.title || "Dashboard";
-
-  const handleSwitchAccount = () => {
-    const nextType =
-      accountType === "INDIVIDUAL" ? "ORGANIZATION" : "INDIVIDUAL";
-    dispatch(setAccountType(nextType));
-    customToast.success(
-      `Switched view to ${capitalizeFirstLetter(nextType)} Mode`,
-    );
-    setIsDropdownOpen(false);
-  };
-
-  const handleCreateCompany = () => {
-    console.log("Create Company Clicked");
-    customToast.info("Simulated Company creation process started!");
-    setIsDropdownOpen(false);
-  };
 
   const handleLogout = () => {
     setIsDropdownOpen(false);
@@ -116,11 +93,6 @@ export const TopNav = memo(function TopNav({
                   ? `${user?.firstName || ""} ${user?.lastName || ""}`
                   : ""}
               </p>
-              <p className="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-1">
-                {mounted && accountType
-                  ? `${capitalizeFirstLetter(accountType)} View`
-                  : ""}
-              </p>
             </div>
             <FiChevronDown className="hidden sm:block size-4 text-gray-400 dark:text-slate-500 transition-transform duration-200 group-hover:text-gray-600 dark:group-hover:text-slate-400" />
           </button>
@@ -155,30 +127,6 @@ export const TopNav = memo(function TopNav({
                   <FiUser className="size-4 shrink-0" />
                   View Profile
                 </Link>
-
-                {/* Platinum-only switcher options */}
-                {user?.subscriptionTier?.toUpperCase() === "PLATINUM" && (
-                  <>
-                    <button
-                      onClick={handleSwitchAccount}
-                      className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-gray-600 dark:text-slate-300 hover:bg-theme-primary/5 dark:hover:bg-slate-800 hover:text-theme-primary transition-colors text-left cursor-pointer"
-                    >
-                      <FiBriefcase className="size-4 shrink-0" />
-                      Switch to{" "}
-                      {accountType === "INDIVIDUAL"
-                        ? "Company Account"
-                        : "Individual Account"}
-                    </button>
-
-                    <button
-                      onClick={handleCreateCompany}
-                      className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-gray-600 dark:text-slate-300 hover:bg-theme-primary/5 dark:hover:bg-slate-800 hover:text-theme-primary transition-colors text-left cursor-pointer"
-                    >
-                      <FiPlus className="size-4 shrink-0" />
-                      Create a Company
-                    </button>
-                  </>
-                )}
               </div>
 
               <div className="my-1.5 border-t border-gray-100 dark:border-slate-800/80" />

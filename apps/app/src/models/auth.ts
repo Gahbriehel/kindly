@@ -11,7 +11,6 @@ export interface ILoginPayload {
 export interface ILoginResponse extends IBaseResponse {
   data: {
     accessToken: string;
-    accountType?: string;
     individual: IIndividualData;
   };
 }
@@ -43,20 +42,13 @@ export interface IIndividualData {
 export interface ISignUpResponse extends IBaseResponse {
   data: {
     accessToken: string;
-    accountType?: string;
-    user: IUserData;
+    individual: IIndividualData;
   };
 }
 
-export interface IProfileResponse extends IBaseResponse {
+export interface IIndividualProfileResponse extends IBaseResponse {
   data: {
-    user: IUserData;
-  };
-}
-
-export interface ICompanyProfileResponse extends IBaseResponse {
-  data: {
-    company: IUserData;
+    individual: IUserData;
   };
 }
 
@@ -80,23 +72,13 @@ export interface IUserData {
   description?: string | null;
 }
 
-export interface IUpdateProfilePayload {
+export interface IUpdateIndividualProfilePayload {
   firstName: string;
   lastName: string;
   phoneNumber: string | null;
   address: string | null;
   city: string | null;
   country: string | null;
-}
-
-export interface IUpdateCompanyProfilePayload {
-  companyName: string;
-  phoneNumber: string | null;
-  address: string | null;
-  city: string | null;
-  country: string | null;
-  website: string | null;
-  description: string | null;
 }
 
 export interface IRefreshResponse extends IBaseResponse {
