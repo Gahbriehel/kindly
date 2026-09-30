@@ -40,7 +40,7 @@ export const whoItsForData = {
       headline:
         "Every client has a history, when they started, what you've built together. Remembering it is how small agencies compete with big ones.",
       image: "/images/persona-small-agency.jpg",
-      alt: "A small team collaborating around a desk in their office",
+      alt: "A small team of Black professionals collaborating around a table in their office",
     },
     {
       id: "real-estate",
@@ -60,7 +60,7 @@ export const whoItsForData = {
       headline:
         "Portfolios get reviewed once a year, at most. A message before the renewal date is what makes a client renew with you, not a competitor.",
       image: "/images/persona-financial-advisor.jpg",
-      alt: "A couple reviewing financial paperwork together at home",
+      alt: "A Black couple reviewing financial paperwork together at their kitchen table",
     },
     {
       id: "salons-clinics",
@@ -80,7 +80,7 @@ export const whoItsForData = {
       headline:
         "Today's placement is tomorrow's referral. A work anniversary note keeps you top of mind for when they're ready to move again.",
       image: "/images/persona-recruiter.jpg",
-      alt: "Two professionals shaking hands after a successful placement",
+      alt: "Two Black professionals shaking hands after a successful placement",
     },
   ] satisfies AudienceTab[],
 };
