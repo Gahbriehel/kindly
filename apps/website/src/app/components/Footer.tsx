@@ -141,7 +141,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative overflow-hidden bg-[#12131C] dark:bg-gray-950 text-white/60 px-8 md:px-20 transition-colors duration-300">
+    <footer className="relative overflow-hidden bg-[#111827] text-white/60 px-8 md:px-20 transition-colors duration-300">
       <div className="w-full mx-auto pt-16 md:pt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand + newsletter */}
