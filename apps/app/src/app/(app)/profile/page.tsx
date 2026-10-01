@@ -3,6 +3,7 @@
 import { JSX, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ProfileView } from "@/src/components/Forms/ProfileView";
+import { BusinessView } from "@/src/components/Forms/BusinessView";
 import { NotificationsForm } from "@/src/components/Forms/NotificationsForm";
 import { SecurityForm } from "@/src/components/Forms/SecurityForm";
 import { CategoryForm } from "@/src/components/Forms/CategoryForm";
@@ -26,9 +27,9 @@ export default function ProfilePage(): JSX.Element {
       </div>
 
       {/* Two-column layout */}
-      <div className="mt-8 flex flex-col gap-8 md:flex-row">
+      <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-start">
         {/* Sidebar */}
-        <aside className="w-full md:w-64 shrink-0 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 pr-0 md:pr-6 custom-scrollbar">
+        <aside className="w-full md:w-64 shrink-0 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 pr-0 md:pr-6 custom-scrollbar sticky top-0 md:top-2 md:self-start bg-gray-50/95 dark:bg-slate-900/95 md:bg-transparent dark:md:bg-transparent backdrop-blur-xs md:backdrop-blur-none z-10">
           {PROFILE_TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -84,16 +85,7 @@ export default function ProfilePage(): JSX.Element {
               className="space-y-6"
             >
               {activeTab === "profile" && <ProfileView />}
-              {activeTab === "business" && (
-                <div className="rounded-3xl border border-gray-200/80 bg-white p-8 shadow-xs dark:border-slate-700/60 dark:bg-slate-800">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">
-                    Business Information
-                  </h2>
-                  <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-                    Company profile, timezone, and business preferences
-                  </p>
-                </div>
-              )}
+              {activeTab === "business" && <BusinessView />}
               {activeTab === "notifications" && <NotificationsForm />}
               {activeTab === "security" && <SecurityForm />}
               {activeTab === "categories" && <CategoryForm />}

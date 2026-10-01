@@ -72,6 +72,17 @@ export const auth = createSlice({
         state.user.company.subscriptionTier = payload;
       }
     },
+    updateCompany: (
+      state,
+      { payload }: PayloadAction<Partial<IUserData["company"]>>,
+    ) => {
+      if (state.user && state.user.company) {
+        state.user.company = {
+          ...state.user.company,
+          ...payload,
+        };
+      }
+    },
   },
 });
 
@@ -84,5 +95,6 @@ export const {
   setRedirectUrl,
   clearRedirectUrl,
   updateSubscriptionTier,
+  updateCompany,
 } = auth.actions;
 export default auth.reducer;

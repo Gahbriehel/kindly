@@ -9,6 +9,11 @@ import { useMemo, useState } from "react";
 import { AuthLayout } from "../../../components/UI/AuthLayout";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ISignUpPayload } from "../../../models/auth";
+import { FALLBACK_COUNTRIES } from "../../../models/locations";
+import {
+  INDUSTRY_OPTIONS,
+  CLIENT_COUNT_OPTIONS,
+} from "../../../models/business";
 import { useSignupMutation } from "../../../hooks/useAuthQuery";
 import { useCountriesQuery } from "../../../hooks/useLocationQuery";
 import { RiArrowRightLine } from "react-icons/ri";
@@ -29,43 +34,6 @@ interface SignUpFormValues {
   industry: ISelect;
   estimatedClientCount: ISelect;
 }
-
-const FALLBACK_COUNTRIES = [
-  { name: "Nigeria", phoneCode: "234" },
-  { name: "United States", phoneCode: "1" },
-  { name: "United Kingdom", phoneCode: "44" },
-  { name: "Canada", phoneCode: "1" },
-  { name: "South Africa", phoneCode: "27" },
-  { name: "Kenya", phoneCode: "254" },
-  { name: "Ghana", phoneCode: "233" },
-  { name: "Australia", phoneCode: "61" },
-  { name: "Germany", phoneCode: "49" },
-  { name: "France", phoneCode: "33" },
-  { name: "United Arab Emirates", phoneCode: "971" },
-  { name: "India", phoneCode: "91" },
-];
-
-const INDUSTRY_OPTIONS = [
-  "Professional services",
-  "Photography / Videography",
-  "Events & Wedding Planning",
-  "Beauty & Wellness",
-  "Creative & Design",
-  "Consulting / Coaching",
-  "Real Estate",
-  "Financial & Accounting",
-  "Legal Services",
-  "Health & Fitness",
-  "Other",
-];
-
-const CLIENT_COUNT_OPTIONS = [
-  { label: "1 - 5 clients", value: "5" },
-  { label: "6 - 15 clients", value: "15" },
-  { label: "16 - 50 clients", value: "50" },
-  { label: "51 - 100 clients", value: "100" },
-  { label: "100+ clients", value: "200" },
-];
 
 export default function RegisterPage() {
   const signupMutation = useSignupMutation();
@@ -480,7 +448,7 @@ export default function RegisterPage() {
                   value={field.value}
                   onChange={field.onChange}
                   label="Country"
-                  placeholder="Select country"
+                  placeholder="Search country"
                   options={countryOptions}
                   loading={countriesQuery.isLoading}
                   validationError={fieldState.error?.message}

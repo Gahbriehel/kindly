@@ -6,6 +6,7 @@ import {
   logout,
   signup,
   updateIndividualProfile,
+  updateCompanyProfile,
 } from "@/src/services/auth";
 import { IUpdatePasswordPayload, IUserData } from "@/src/models/auth";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
@@ -112,6 +113,41 @@ export function useUpdateProfileMutation() {
     onError: (error: AxiosError<{ message: string }>) => {
       customToast.error(
         error.response?.data.message ?? "Failed to update profile",
+      );
+    },
+  });
+}
+
+export function useUpdateCompanyProfileMutation() {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+
+  return useMutation({
+    mutationFn: updateCompanyProfile,
+    onSuccess: (response) => {
+      customToast.success(
+        response.message || "Business profile updated successfully",
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const responseData = response.data as any;
+      const updatedCompany =
+        responseData?.company || responseData?.user?.company || responseData;
+
+      if (updatedCompany && user) {
+        dispatch(
+          setUser({
+            ...user,
+            company: {
+              ...user.company,
+              ...updatedCompany,
+            },
+          } as IUserData),
+        );
+      }
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      customToast.error(
+        error.response?.data?.message ?? "Failed to update business profile",
       );
     },
   });

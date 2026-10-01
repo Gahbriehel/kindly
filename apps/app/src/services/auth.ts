@@ -7,7 +7,9 @@ import type {
   IRefreshResponse,
   IUpdatePasswordPayload,
   IUpdateProfilePayload,
+  IUpdateCompanyPayload,
   IProfileResponse,
+  ICompanyProfileResponse,
 } from "../models/auth";
 import { IBaseResponse } from "../models/base";
 
@@ -51,5 +53,12 @@ export async function changePassword(payload: IUpdatePasswordPayload) {
 
 export async function updateIndividualProfile(payload: IUpdateProfilePayload) {
   const response = await axios.patch<IProfileResponse>(`/auth/me`, payload);
+  return response.data;
+}
+
+export async function updateCompanyProfile(payload: IUpdateCompanyPayload) {
+  const response = await axios.patch<
+    ICompanyProfileResponse | IProfileResponse
+  >(`/auth/company/me`, payload);
   return response.data;
 }

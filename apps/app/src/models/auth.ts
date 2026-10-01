@@ -107,3 +107,28 @@ export interface ICompanyData {
   subscriptionEndAt: string;
   subscriptionActive: boolean;
 }
+
+export interface IUpdateCompanyPayload {
+  businessName?: string;
+  industry?: string;
+  estimatedClientCount?: number;
+  phoneNumber?: string | null;
+  address?: string | null;
+  country?: string | null;
+  website?: string | null;
+  description?: string | null;
+  billingAddress?: string | null;
+  registrationNumber?: string | null;
+  taxId?: string | null;
+  bankAccountName?: string | null;
+  bankAccountNumber?: string | null;
+  bankName?: string | null;
+  nextInvoiceNumber?: number;
+  logoUrl?: string | null;
+}
+
+export interface ICompanyProfileResponse extends IBaseResponse {
+  data: {
+    company: ICompanyData;
+  };
+}
