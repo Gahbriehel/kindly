@@ -69,6 +69,7 @@ interface Props {
   defaultLimit?: number;
   optionsClassName?: string;
   className?: string;
+  inputClassName?: string;
 }
 export const Select = forwardRef<HTMLInputElement, Props>(function Select(
   {
@@ -92,6 +93,7 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
     transformData,
     optionsClassName,
     className,
+    inputClassName,
   }: Props,
   ref,
 ): JSX.Element {
@@ -178,9 +180,14 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
               ref={ref}
               disabled={disabled}
               className={cn(
-                "h-10 w-full rounded-xl border bg-gray-100 px-4 py-2 text-sm font-medium capitalize text-gray-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
+                "h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 outline-none transition-all placeholder-gray-400",
+                "focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20",
+                "dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500",
                 disabled &&
                   "pointer-events-none cursor-not-allowed bg-gray-50 opacity-60 dark:bg-slate-900",
+                validationError &&
+                  "border-red-500 dark:border-red-500/50 focus:border-red-500",
+                inputClassName,
               )}
               onChange={(event) => {
                 if (disabled) return;
