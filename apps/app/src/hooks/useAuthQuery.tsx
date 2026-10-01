@@ -22,24 +22,24 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      const { accessToken, individual } = response.data;
+      const { accessToken, user } = response.data;
       dispatch(setToken(accessToken));
       dispatch(
         setUser({
-          id: individual.id,
-          firstName: individual.firstName,
-          lastName: individual.lastName,
-          email: individual.email,
-          phoneNumber: individual.phoneNumber,
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
           companyName: null,
-          address: individual.address,
-          city: individual.city,
-          country: individual.country,
-          avatarUrl: individual.avatarUrl,
-          isActive: individual.isActive,
-          subscriptionTier: individual.subscriptionTier,
-          createdAt: individual.createdAt,
-          updatedAt: individual.updatedAt,
+          address: user.address,
+          city: user.city,
+          country: user.country,
+          avatarUrl: user.avatarUrl,
+          isActive: user.isActive,
+          subscriptionTier: user.subscriptionTier,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         }),
       );
       customToast.success(response.message);
@@ -60,24 +60,24 @@ export function useSignupMutation() {
   return useMutation({
     mutationFn: signup,
     onSuccess: (response) => {
-      const { accessToken, individual } = response.data;
+      const { accessToken, user } = response.data;
       dispatch(setToken(accessToken));
       dispatch(
         setUser({
-          id: individual.id,
-          firstName: individual.firstName,
-          lastName: individual.lastName,
-          email: individual.email,
-          phoneNumber: individual.phoneNumber,
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
           companyName: null,
-          address: individual.address,
-          city: individual.city,
-          country: individual.country,
-          avatarUrl: individual.avatarUrl,
-          isActive: individual.isActive,
-          subscriptionTier: individual.subscriptionTier,
-          createdAt: individual.createdAt,
-          updatedAt: individual.updatedAt,
+          address: user.address,
+          city: user.city,
+          country: user.country,
+          avatarUrl: user.avatarUrl,
+          isActive: user.isActive,
+          subscriptionTier: user.subscriptionTier,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         }),
       );
       customToast.success(response.message);
@@ -139,7 +139,7 @@ export function useUpdateProfileMutation() {
       dispatch(
         setUser({
           ...user,
-          ...response.data.individual,
+          ...response.data.user,
         } as IUserData),
       );
     },

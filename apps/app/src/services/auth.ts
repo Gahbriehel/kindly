@@ -6,29 +6,23 @@ import type {
   ISignUpResponse,
   IRefreshResponse,
   IUpdatePasswordPayload,
-  IUpdateIndividualProfilePayload,
-  IIndividualProfileResponse,
+  IUpdateProfilePayload,
+  IProfileResponse,
 } from "../models/auth";
 import { IBaseResponse } from "../models/base";
 
 export async function login(payload: ILoginPayload) {
-  const response = await axios.post<ILoginResponse>(
-    `/auth/individual/login`,
-    payload,
-  );
+  const response = await axios.post<ILoginResponse>(`/auth/login`, payload);
   return response.data;
 }
 
 export async function signup(payload: ISignUpPayload) {
-  const response = await axios.post<ISignUpResponse>(
-    `/auth/individual/signup`,
-    payload,
-  );
+  const response = await axios.post<ISignUpResponse>(`/auth/signup`, payload);
   return response.data;
 }
 
 export async function logout() {
-  const response = await axios.post(`/auth/individual/logout`);
+  const response = await axios.post(`/auth//logout`);
   return response.data;
 }
 
@@ -49,18 +43,13 @@ export async function forgotPassword(payload: { email: string }) {
 
 export async function changePassword(payload: IUpdatePasswordPayload) {
   const response = await axios.post<IBaseResponse>(
-    `/auth/individual/reset-password`,
+    `/auth/reset-password`,
     payload,
   );
   return response.data;
 }
 
-export async function updateIndividualProfile(
-  payload: IUpdateIndividualProfilePayload,
-) {
-  const response = await axios.patch<IIndividualProfileResponse>(
-    `/auth/individual/me`,
-    payload,
-  );
+export async function updateIndividualProfile(payload: IUpdateProfilePayload) {
+  const response = await axios.patch<IProfileResponse>(`/auth/me`, payload);
   return response.data;
 }
