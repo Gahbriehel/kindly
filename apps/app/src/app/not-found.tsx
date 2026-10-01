@@ -5,7 +5,14 @@ import { BaseButton } from "@/src/components/UI/Buttons";
 import { BsLayers, BsHouseDoor } from "react-icons/bs";
 import type { JSX } from "react";
 
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
+
 export default function AppNotFound(): JSX.Element {
+  const router = useRouter();
+  const { accessToken } = useAppSelector((state) => state.auth);
+  const destination = accessToken ? "/dashboard" : "/";
+  const buttonText = accessToken ? "Back to Dashboard" : "Back to Home";
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center relative overflow-hidden text-[#3D3530] dark:text-gray-100 bg-white dark:bg-gray-900">
       {/* Background decoration */}
@@ -57,13 +64,13 @@ export default function AppNotFound(): JSX.Element {
           <BaseButton
             type="button"
             onClick={() => {
-              window.location.href = "/dashboard";
+              router.push(destination);
             }}
             color="primary"
             icon={<BsHouseDoor className="w-4 h-4" />}
             position="icon-first"
             className="w-full sm:w-auto bg-[#3D3530] hover:bg-[#2A2320] text-white border-none"
-            text="Back to Dashboard"
+            text={buttonText}
           />
         </motion.div>
 

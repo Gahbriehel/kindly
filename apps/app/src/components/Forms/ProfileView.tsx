@@ -14,9 +14,7 @@ interface ProfileFormValues {
   firstName: string;
   lastName: string;
   phone: string;
-  address: string;
-  city: string;
-  country: string;
+  avatarUrl?: string;
 }
 
 export function ProfileView(): JSX.Element {
@@ -31,9 +29,7 @@ export function ProfileView(): JSX.Element {
       firstName: userObj?.firstName ?? "",
       lastName: userObj?.lastName ?? "",
       phone: userObj?.phoneNumber ?? "",
-      address: userObj?.address ?? "",
-      city: userObj?.city ?? "",
-      country: userObj?.country ?? "",
+      avatarUrl: userObj?.avatarUrl ?? "",
     },
   });
 
@@ -44,9 +40,7 @@ export function ProfileView(): JSX.Element {
         firstName: userObj.firstName ?? "",
         lastName: userObj.lastName ?? "",
         phone: userObj.phoneNumber ?? "",
-        address: userObj.address ?? "",
-        city: userObj.city ?? "",
-        country: userObj.country ?? "",
+        avatarUrl: userObj.avatarUrl ?? "",
       });
     }
   }, [userObj, reset]);
@@ -95,9 +89,7 @@ export function ProfileView(): JSX.Element {
         firstName: userObj.firstName ?? "",
         lastName: userObj.lastName ?? "",
         phone: userObj.phoneNumber ?? "",
-        address: userObj.address ?? "",
-        city: userObj.city ?? "",
-        country: userObj.country ?? "",
+        avatarUrl: userObj.avatarUrl ?? "",
       });
     }
     setIsEditing(false);
@@ -109,9 +101,7 @@ export function ProfileView(): JSX.Element {
         firstName: data.firstName,
         lastName: data.lastName,
         phoneNumber: data.phone || null,
-        address: data.address || null,
-        city: data.city || null,
-        country: data.country || null,
+        avatarUrl: data.avatarUrl || "",
       },
       {
         onSuccess: () => {
@@ -319,52 +309,6 @@ export function ProfileView(): JSX.Element {
             )}
           </div>
         </div>
-
-        {/* Additional Address Details in Edit Mode */}
-        {isEditing && (
-          <>
-            <div className="py-4.5 flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-              <span className="text-sm font-medium text-gray-500 dark:text-slate-400 sm:w-48 shrink-0 sm:pt-2.5">
-                Street address
-              </span>
-              <div className="w-full sm:max-w-xl">
-                <Controller
-                  name="address"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="address"
-                      placeholder="123 Kindly Street"
-                    />
-                  )}
-                />
-              </div>
-            </div>
-
-            <div className="py-4.5 flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-              <span className="text-sm font-medium text-gray-500 dark:text-slate-400 sm:w-48 shrink-0 sm:pt-2.5">
-                City & Country
-              </span>
-              <div className="w-full sm:max-w-xl grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Controller
-                  name="city"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} id="city" placeholder="City" />
-                  )}
-                />
-                <Controller
-                  name="country"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} id="country" placeholder="Country" />
-                  )}
-                />
-              </div>
-            </div>
-          </>
-        )}
       </form>
 
       {/* Bottom Action Buttons in Edit Mode */}

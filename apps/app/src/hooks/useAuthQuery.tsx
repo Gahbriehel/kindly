@@ -23,27 +23,9 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      const { accessToken, accountType, individual } = response.data;
+      const { accessToken, user } = response.data;
       dispatch(setToken(accessToken));
-      dispatch(
-        setUser({
-          id: individual.id,
-          firstName: individual.firstName,
-          lastName: individual.lastName,
-          email: individual.email,
-          phoneNumber: individual.phoneNumber,
-          companyName: null,
-          address: individual.address,
-          city: individual.city,
-          country: individual.country,
-          avatarUrl: individual.avatarUrl,
-          isActive: individual.isActive,
-          subscriptionTier: individual.subscriptionTier,
-          createdAt: individual.createdAt,
-          updatedAt: individual.updatedAt,
-          accountType,
-        }),
-      );
+      dispatch(setUser(user));
       customToast.success(response.message);
       router.push("/dashboard");
     },
@@ -62,27 +44,9 @@ export function useSignupMutation() {
   return useMutation({
     mutationFn: signup,
     onSuccess: (response) => {
-      const { accessToken, accountType, individual } = response.data;
+      const { accessToken, user } = response.data;
       dispatch(setToken(accessToken));
-      dispatch(
-        setUser({
-          id: individual.id,
-          firstName: individual.firstName,
-          lastName: individual.lastName,
-          email: individual.email,
-          phoneNumber: individual.phoneNumber,
-          companyName: null,
-          address: individual.address,
-          city: individual.city,
-          country: individual.country,
-          avatarUrl: individual.avatarUrl,
-          isActive: individual.isActive,
-          subscriptionTier: individual.subscriptionTier,
-          createdAt: individual.createdAt,
-          updatedAt: individual.updatedAt,
-          accountType,
-        }),
-      );
+      dispatch(setUser(user));
       customToast.success(response.message);
       router.push("/dashboard");
     },
@@ -111,15 +75,12 @@ export function useForgotPasswordMutation() {
 export function useChangePasswordMutation() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { accessToken, accountType } = useAppSelector((state) => state.auth);
+  const { accessToken } = useAppSelector((state) => state.auth);
   return useMutation({
-    mutationFn: (
-      data: Omit<IUpdatePasswordPayload, "token" | "isOrganization">,
-    ) =>
+    mutationFn: (data: Omit<IUpdatePasswordPayload, "token">) =>
       changePassword({
         ...data,
         token: accessToken ?? "",
-        isOrganization: accountType === "ORGANIZATION",
       }),
     onSuccess: (response) => {
       customToast.success(response.message);
@@ -145,7 +106,7 @@ export function useUpdateProfileMutation() {
       dispatch(
         setUser({
           ...user,
-          ...response.data.individual,
+          ...response.data.user,
         } as IUserData),
       );
     },
@@ -164,17 +125,29 @@ export function useUpdateCompanyProfileMutation() {
   return useMutation({
     mutationFn: updateCompanyProfile,
     onSuccess: (response) => {
-      customToast.success(response.message || "Profile updated successfully");
-      dispatch(
-        setUser({
-          ...user,
-          ...response.data.company,
-        } as IUserData),
+      customToast.success(
+        response.message || "Business profile updated successfully",
       );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const responseData = response.data as any;
+      const updatedCompany =
+        responseData?.company || responseData?.user?.company || responseData;
+
+      if (updatedCompany && user) {
+        dispatch(
+          setUser({
+            ...user,
+            company: {
+              ...user.company,
+              ...updatedCompany,
+            },
+          } as IUserData),
+        );
+      }
     },
     onError: (error: AxiosError<{ message: string }>) => {
       customToast.error(
-        error.response?.data.message ?? "Failed to update profile",
+        error.response?.data?.message ?? "Failed to update business profile",
       );
     },
   });
@@ -183,10 +156,9 @@ export function useUpdateCompanyProfileMutation() {
 export function useLogoutMutation() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { accountType } = useAppSelector((state) => state.auth);
 
   return useMutation({
-    mutationFn: () => logout(accountType === "ORGANIZATION"),
+    mutationFn: () => logout(),
     onSuccess: (response) => {
       dispatch(logOut());
       queryClient.clear();

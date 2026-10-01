@@ -11,13 +11,19 @@ interface Props {
   subtext: string;
   children: ReactNode;
   footer?: ReactNode;
+  headerContent?: ReactNode;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  handleSubmit: any;
+  handleSubmit?: any;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  onSubmit: (data: any) => void | Promise<void>;
+  onSubmit?: (data: any) => void | Promise<void>;
+  onFormSubmit?: (e: React.FormEvent) => void;
   backButton?: boolean;
   backHref?: string;
+  onBack?: () => void;
   loading: boolean;
+  submitButtonText?: string;
+  submitButtonIcon?: ReactNode;
+  showSubmitButton?: boolean;
 }
 
 export function AuthLayout({
@@ -25,15 +31,22 @@ export function AuthLayout({
   children,
   handleSubmit,
   onSubmit,
+  onFormSubmit,
   subtext,
   loading,
   footer,
+  headerContent,
   backButton,
   backHref = "/",
+  onBack,
+  submitButtonText,
+  submitButtonIcon,
+  showSubmitButton = true,
 }: Props): JSX.Element {
   const router = useRouter();
 
   const getSubmitText = () => {
+    if (submitButtonText) return submitButtonText;
     if (title === "Welcome back") return "Sign in";
     if (title === "Create account" || title === "Create your account")
       return "Create Account";
@@ -41,14 +54,31 @@ export function AuthLayout({
     return "Continue";
   };
 
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      router.push(backHref);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    if (onFormSubmit) {
+      onFormSubmit(e);
+    } else if (handleSubmit && onSubmit) {
+      handleSubmit(onSubmit)(e);
+    }
+  };
+
   return (
     <div className="relative w-full max-w-[600px] mx-auto py-8">
       {/* Title & Subtext Centered Outside the Card */}
-      <div className="text-center space-y-2 mb-8">
+      <div className="text-center space-y-2 mb-6">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
           {title ?? "Welcome back"}
         </h1>
         <p className="text-base font-medium text-slate-200">{subtext}</p>
+        {headerContent && <div className="pt-2">{headerContent}</div>}
       </div>
 
       <motion.form
@@ -58,32 +88,35 @@ export function AuthLayout({
           duration: 0.5,
           ease: [0.23, 1, 0.32, 1],
         }}
-        onSubmit={handleSubmit(onSubmit)}
-        className="relative overflow-visible rounded-[2rem] border-0 bg-white dark:bg-slate-900 w-full p-8 sm:p-10 transition-colors duration-200"
+        onSubmit={handleFormSubmit}
+        className="relative overflow-visible rounded-[2rem] border-0 bg-white dark:bg-slate-900 w-full p-8 sm:p-10 transition-colors duration-200 shadow-2xl"
       >
         {/* Circular Back Button on top-left / left of the card */}
         {backButton && (
           <button
             type="button"
-            onClick={() => router.push(backHref)}
-            className="absolute left-4 top-4 lg:left-[-60px] lg:top-2 w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors z-20 group border border-gray-100 dark:border-slate-700"
+            onClick={handleBack}
+            className="absolute left-4 top-4 lg:left-[-60px] lg:top-2 w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors z-20 group border border-gray-100 dark:border-slate-700 shadow-sm cursor-pointer"
           >
             <RiArrowLeftLine className="h-5 w-5 text-gray-600 dark:text-slate-300 group-hover:text-gray-800 dark:group-hover:text-white" />
           </button>
         )}
 
-        <div className="space-y-6 mb-8">{children}</div>
+        <div className="space-y-5 mb-8">{children}</div>
 
-        <div className="pt-2">
-          <BaseButton
-            text={loading ? "Processing..." : getSubmitText()}
-            type="submit"
-            className="w-full !h-14 font-bold rounded-2xl"
-            color="primary"
-            loading={loading}
-            disabled={loading}
-          />
-        </div>
+        {showSubmitButton && (
+          <div className="pt-2">
+            <BaseButton
+              text={loading ? "Processing..." : getSubmitText()}
+              icon={!loading ? submitButtonIcon : undefined}
+              type="submit"
+              className="w-full !h-14 font-bold rounded-2xl text-base shadow-lg shadow-theme-primary/25"
+              color="primary"
+              loading={loading}
+              disabled={loading}
+            />
+          </div>
+        )}
 
         {footer && (
           <div className="mt-8 text-center text-sm font-medium">{footer}</div>
