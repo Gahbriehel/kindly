@@ -22,7 +22,7 @@ export async function signup(payload: ISignUpPayload) {
 }
 
 export async function logout() {
-  const response = await axios.post(`/auth//logout`);
+  const response = await axios.post(`/auth/logout`);
   return response.data;
 }
 
