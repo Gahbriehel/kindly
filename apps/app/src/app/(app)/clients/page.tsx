@@ -8,7 +8,7 @@ import { UpgradeModal } from "@/src/components/Modals/UpgradeModal";
 
 export default function ClientsPage(): JSX.Element {
   const { user } = useAppSelector((state) => state.auth);
-  const tier = user?.subscriptionTier?.toUpperCase() || "BASIC";
+  const tier = user?.company?.subscriptionTier?.toUpperCase() || "BASIC";
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
 
   return (

@@ -68,8 +68,8 @@ export const auth = createSlice({
       state.redirectUrl = null;
     },
     updateSubscriptionTier: (state, { payload }: PayloadAction<string>) => {
-      if (state.user) {
-        state.user.subscriptionTier = payload;
+      if (state.user && state.user.company) {
+        state.user.company.subscriptionTier = payload;
       }
     },
   },

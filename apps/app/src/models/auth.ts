@@ -1,4 +1,5 @@
 import { IBaseResponse } from "./base";
+import { Permission } from "./permission";
 
 export type UserRole = "admin" | "moderator";
 
@@ -21,6 +22,12 @@ export interface ISignUpPayload {
   lastName: string;
   password: string;
   confirmPassword: string;
+
+  businessName: string;
+  address: string;
+  country: string;
+  industry: string;
+  estimatedClientCount: number;
 }
 
 export interface ISignUpResponse extends IBaseResponse {
@@ -41,28 +48,22 @@ export interface IUserData {
   email: string;
   firstName: string;
   lastName: string;
-  isActive: boolean;
   phoneNumber: string | null;
-  companyName: string | null;
-  address: string | null;
-  city: string | null;
-  country: string | null;
   avatarUrl: string | null;
-  subscriptionTier: string;
+  role?: string;
+  companyId: string;
+  company: ICompanyData;
+  permissions?: Permission[];
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  role?: string;
-  website?: string | null;
-  description?: string | null;
 }
 
 export interface IUpdateProfilePayload {
   firstName: string;
   lastName: string;
   phoneNumber: string | null;
-  address: string | null;
-  city: string | null;
-  country: string | null;
+  avatarUrl: string;
 }
 
 export interface IRefreshResponse extends IBaseResponse {
@@ -88,19 +89,19 @@ export interface ICompanyData {
   businessName: string;
   industry: string;
   estimatedClientCount: number;
-  phoneNumber: string;
-  address: string;
-  country: string;
-  logoUrl: string;
-  website: string;
-  description: string;
-  billingAddress: string;
-  registrationNumber: string;
-  taxId: string;
-  bankAccountName: string;
-  bankAccountNumber: string;
-  bankName: string;
-  nextInvoiceNumber: number;
+  phoneNumber?: string | null;
+  address?: string | null;
+  country?: string | null;
+  logoUrl?: string | null;
+  website?: string | null;
+  description?: string | null;
+  billingAddress?: string | null;
+  registrationNumber?: string | null;
+  taxId?: string | null;
+  bankAccountName?: string | null;
+  bankAccountNumber?: string | null;
+  bankName?: string | null;
+  nextInvoiceNumber?: number;
   subscriptionTier: string;
   subscriptionStartAt: string;
   subscriptionEndAt: string;

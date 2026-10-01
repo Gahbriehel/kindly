@@ -24,24 +24,7 @@ export function useLoginMutation() {
     onSuccess: (response) => {
       const { accessToken, user } = response.data;
       dispatch(setToken(accessToken));
-      dispatch(
-        setUser({
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          companyName: null,
-          address: user.address,
-          city: user.city,
-          country: user.country,
-          avatarUrl: user.avatarUrl,
-          isActive: user.isActive,
-          subscriptionTier: user.subscriptionTier,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        }),
-      );
+      dispatch(setUser(user));
       customToast.success(response.message);
       router.push("/dashboard");
     },
@@ -62,24 +45,7 @@ export function useSignupMutation() {
     onSuccess: (response) => {
       const { accessToken, user } = response.data;
       dispatch(setToken(accessToken));
-      dispatch(
-        setUser({
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          companyName: null,
-          address: user.address,
-          city: user.city,
-          country: user.country,
-          avatarUrl: user.avatarUrl,
-          isActive: user.isActive,
-          subscriptionTier: user.subscriptionTier,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        }),
-      );
+      dispatch(setUser(user));
       customToast.success(response.message);
       router.push("/dashboard");
     },

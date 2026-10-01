@@ -118,7 +118,7 @@ const statusConfig: Record<
 
 export default function StaffPage(): JSX.Element {
   const { user } = useAppSelector((state) => state.auth);
-  const tier = user?.subscriptionTier?.toUpperCase() || "BASIC";
+  const tier = user?.company?.subscriptionTier?.toUpperCase() || "BASIC";
 
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");

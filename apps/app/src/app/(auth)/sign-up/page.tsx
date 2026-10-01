@@ -20,6 +20,15 @@ export default function RegisterPage() {
     firstName: yup.string().required("Enter First name"),
     lastName: yup.string().required("Enter Last name"),
     email: yup.string().email("Invalid email").required("Enter Email"),
+    businessName: yup.string().required("Enter Business name"),
+    industry: yup.string().required("Enter Industry"),
+    estimatedClientCount: yup
+      .number()
+      .typeError("Enter a valid number")
+      .min(1, "Must be at least 1")
+      .required("Enter estimated client count"),
+    address: yup.string().required("Enter Address"),
+    country: yup.string().required("Enter Country"),
     password: yup
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -34,15 +43,21 @@ export default function RegisterPage() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<ISignUpPayload>({
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
+      businessName: "",
+      industry: "",
+      estimatedClientCount: 1,
+      address: "",
+      country: "",
       password: "",
       confirmPassword: "",
     },
-    resolver: yupResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: yupResolver(schema) as any,
   });
 
   async function onSubmit(data: ISignUpPayload) {
@@ -51,6 +66,11 @@ export default function RegisterPage() {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
+        businessName: data.businessName,
+        industry: data.industry,
+        estimatedClientCount: Number(data.estimatedClientCount) || 1,
+        address: data.address,
+        country: data.country,
         password: data.password,
         confirmPassword: data.confirmPassword,
       };
@@ -81,35 +101,37 @@ export default function RegisterPage() {
         </p>
       }
     >
-      <Controller
-        name="firstName"
-        control={control}
-        render={({ field, fieldState }) => (
-          <Input
-            {...field}
-            label="First Name"
-            placeholder="John"
-            type="text"
-            error={fieldState.error?.message}
-            required
-          />
-        )}
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Controller
+          name="firstName"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              label="First Name"
+              placeholder="John"
+              type="text"
+              error={fieldState.error?.message}
+              required
+            />
+          )}
+        />
 
-      <Controller
-        name="lastName"
-        control={control}
-        render={({ field, fieldState }) => (
-          <Input
-            {...field}
-            label="Last Name"
-            placeholder="Doe"
-            type="text"
-            error={fieldState.error?.message}
-            required
-          />
-        )}
-      />
+        <Controller
+          name="lastName"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              label="Last Name"
+              placeholder="Doe"
+              type="text"
+              error={fieldState.error?.message}
+              required
+            />
+          )}
+        />
+      </div>
 
       <Controller
         name="email"
@@ -126,47 +148,129 @@ export default function RegisterPage() {
         )}
       />
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Controller
+          name="businessName"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              label="Business Name"
+              placeholder="Acme Studio"
+              type="text"
+              error={fieldState.error?.message}
+              required
+            />
+          )}
+        />
+
+        <Controller
+          name="industry"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              label="Industry"
+              placeholder="Photography / Events"
+              type="text"
+              error={fieldState.error?.message}
+              required
+            />
+          )}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Controller
+          name="address"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              label="Address"
+              placeholder="123 Studio Ave"
+              type="text"
+              error={fieldState.error?.message}
+              required
+            />
+          )}
+        />
+
+        <Controller
+          name="country"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              label="Country"
+              placeholder="United States"
+              type="text"
+              error={fieldState.error?.message}
+              required
+            />
+          )}
+        />
+      </div>
+
       <Controller
-        name="password"
+        name="estimatedClientCount"
         control={control}
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <Input
             {...field}
-            label="Password"
-            type={showPassword}
-            error={errors.password?.message}
-            hidePassword={() => {
-              setShowPassword("password");
-            }}
-            showPassword={() => {
-              setShowPassword("text");
-            }}
-            password
+            label="Estimated Clients"
+            placeholder="10"
+            type="number"
+            min={1}
+            error={fieldState.error?.message}
             required
           />
         )}
       />
 
-      <Controller
-        name="confirmPassword"
-        control={control}
-        render={({ field }) => (
-          <Input
-            {...field}
-            label="Confirm Password"
-            type={showPassword}
-            error={errors.confirmPassword?.message}
-            hidePassword={() => {
-              setShowPassword("password");
-            }}
-            showPassword={() => {
-              setShowPassword("text");
-            }}
-            password
-            required
-          />
-        )}
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Password"
+              type={showPassword}
+              error={errors.password?.message}
+              hidePassword={() => {
+                setShowPassword("password");
+              }}
+              showPassword={() => {
+                setShowPassword("text");
+              }}
+              password
+              required
+            />
+          )}
+        />
+
+        <Controller
+          name="confirmPassword"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Confirm Password"
+              type={showPassword}
+              error={errors.confirmPassword?.message}
+              hidePassword={() => {
+                setShowPassword("password");
+              }}
+              showPassword={() => {
+                setShowPassword("text");
+              }}
+              password
+              required
+            />
+          )}
+        />
+      </div>
 
       <p className="text-xs text-gray-500 mt-2">
         By clicking continue, you agree to our{" "}

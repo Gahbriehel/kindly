@@ -17,7 +17,7 @@ export async function login(payload: ILoginPayload) {
 }
 
 export async function signup(payload: ISignUpPayload) {
-  const response = await axios.post<ISignUpResponse>(`/auth/signup`, payload);
+  const response = await axios.post<ISignUpResponse>(`/auth/register`, payload);
   return response.data;
 }
 

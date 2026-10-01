@@ -19,7 +19,7 @@ export function UpgradeModal({
 }: UpgradeModalProps): JSX.Element | null {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
-  const currentTier = user?.subscriptionTier?.toUpperCase() || "BASIC";
+  const currentTier = user?.company?.subscriptionTier?.toUpperCase() || "BASIC";
 
   if (!isOpen) return null;
 

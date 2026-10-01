@@ -185,7 +185,7 @@ export function SideNav({
 
         {/* Upgrade CTA */}
         {!collapsed &&
-          user?.subscriptionTier?.toUpperCase() !== "PLATINUM" &&
+          user?.company?.subscriptionTier?.toUpperCase() !== "PLATINUM" &&
           !isUpgradeDismissed && (
             <div className="mx-4 mb-4 relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-slate-800/80 to-slate-900/80 p-4 text-white">
               {/* Subtle ambient glow, brand-colored not purple/amber */}
@@ -214,7 +214,7 @@ export function SideNav({
               </div>
 
               <p className="text-[0.75rem] leading-snug text-white/60 mb-3 font-medium">
-                {user?.subscriptionTier?.toUpperCase() === "PREMIUM"
+                {user?.company?.subscriptionTier?.toUpperCase() === "PREMIUM"
                   ? "Unlock staff directory, team collaboration, and priority features."
                   : "Unlock more clients, staff collaboration, and advanced features."}
               </p>

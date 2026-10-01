@@ -108,9 +108,9 @@ export const TopNav = memo(function TopNav({
                 <p className="text-xs text-gray-500 dark:text-slate-400 truncate">
                   {user?.email}
                 </p>
-                {user?.subscriptionTier && (
+                {user?.company?.subscriptionTier && (
                   <span className="mt-1.5 inline-block rounded-full bg-gradient-to-r from-theme-primary/10 to-indigo-500/10 dark:from-theme-primary/20 dark:to-indigo-500/20 px-2.5 py-0.5 text-[0.65rem] font-bold text-theme-primary uppercase">
-                    {user.subscriptionTier} Plan
+                    {user.company.subscriptionTier} Plan
                   </span>
                 )}
               </div>
