@@ -40,27 +40,29 @@ function NavItem({
         onClick={collapsed ? onCollapsedClick : undefined}
         className={clsx(
           "group relative flex items-center transition-colors duration-200",
-          "h-12 px-7 text-md mr-2",
+          "h-11 px-5 text-[15px] font-medium mr-2 rounded-xl",
           collapsed ? "cursor-e-resize justify-center" : "cursor-pointer",
           isActive
-            ? "bg-theme-primary/15 text-theme-primary text-gray-700 rounded-xl"
-            : "text-gray-600 hover:text-gray-500",
+            ? "bg-theme-primary/15 text-theme-primary font-semibold"
+            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/70 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/50",
         )}
       >
         <div
           className={clsx(
-            "flex shrink-0 items-center justify-center transition-transform group-hover:scale-110",
-            isActive ? "text-theme-primary" : "text-gray-500",
-            !collapsed && "mr-4",
+            "flex shrink-0 items-center justify-center text-[1.15rem] transition-transform group-hover:scale-110",
+            isActive
+              ? "text-theme-primary"
+              : "text-gray-500 dark:text-slate-400",
+            !collapsed && "mr-3.5",
           )}
         >
           {icon}
         </div>
-        {!collapsed && <span className="truncate ">{title}</span>}
+        {!collapsed && <span className="truncate">{title}</span>}
         {isActive && (
           <motion.div
             layoutId="active-nav-indicator"
-            className="absolute left-0 top-0 h-full w-1 bg-theme-primary"
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-theme-primary"
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           />
         )}
@@ -102,7 +104,7 @@ export function SideNav({
     <>
       <motion.aside
         initial={false}
-        animate={{ width: collapsed ? 80 : 256 }}
+        animate={{ width: collapsed ? 80 : 264 }}
         transition={{ type: "spring", bounce: 0, duration: 0.3 }}
         onClick={collapsed ? onToggle : undefined}
         onMouseEnter={() => setIsHovered(true)}
@@ -168,7 +170,7 @@ export function SideNav({
 
         {/* Navigation Links */}
         <div className="custom-scrollbar flex-1 overflow-y-auto overflow-x-hidden py-4">
-          <ul className="flex flex-col gap-1">
+          <ul className="flex flex-col gap-1.5">
             {filteredNavLinks.map((link) => (
               <NavItem
                 key={link.title}

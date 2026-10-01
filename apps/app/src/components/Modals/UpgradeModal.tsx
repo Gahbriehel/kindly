@@ -95,7 +95,7 @@ export function UpgradeModal({
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-theme-primary/10 text-theme-primary mb-4">
             <FiZap className="size-6" />
           </div>
-          <h2 className="text-3xl font-serif text-gray-900 dark:text-slate-100">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
             Choose Your Plan
           </h2>
           <p className="text-sm text-gray-500 dark:text-slate-400 mt-2 max-w-md mx-auto">
@@ -111,23 +111,23 @@ export function UpgradeModal({
             return (
               <div
                 key={plan.name}
-                className={`relative flex flex-col rounded-3xl border p-6 md:p-8 transition-all duration-200 ${plan.color}`}
+                className={`relative flex flex-col rounded-2xl border p-6 transition-all duration-200 ${plan.color}`}
               >
                 {plan.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-theme-primary to-indigo-500 px-4 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-white">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-theme-primary to-indigo-500 px-3.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-white">
                     Most Popular
                   </span>
                 )}
 
                 <div className="mb-6">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 font-geist">
                     {plan.name}
                   </h3>
                   <p className="mt-2 text-xs text-gray-400 dark:text-slate-500 min-h-[32px]">
                     {plan.description}
                   </p>
                   <div className="mt-4 flex items-baseline">
-                    <span className="text-4xl font-serif font-bold text-gray-900 dark:text-slate-100">
+                    <span className="text-3xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
                       {plan.price}
                     </span>
                     <span className="ml-1 text-xs text-gray-400 dark:text-slate-500 font-medium">

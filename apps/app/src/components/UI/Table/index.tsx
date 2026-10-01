@@ -89,7 +89,7 @@ export function Table<T>({
     <div className="flex w-full flex-col gap-6">
       {/* Title block if present (above the toolbar) */}
       {title && (
-        <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-slate-100">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
           {title}
         </h2>
       )}
@@ -113,7 +113,7 @@ export function Table<T>({
           {onFilterClick && (
             <button
               onClick={onFilterClick}
-              className="flex h-12 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer"
+              className="flex h-10 items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 text-sm font-medium text-gray-600 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer"
             >
               <FiFilter className="size-4 text-gray-400 dark:text-slate-500 animate-pulse" />
               <span>Filter</span>
@@ -122,12 +122,12 @@ export function Table<T>({
 
           {/* Grid Columns Selector — only shown in grid mode */}
           {view === "grid" && (
-            <div className="flex h-12 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
+            <div className="flex h-10 items-center gap-1 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
               {([2, 3, 4] as const).map((cols) => (
                 <button
                   key={cols}
                   onClick={() => setGridColumns(cols)}
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     gridColumns === cols
                       ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400"
                       : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
@@ -142,31 +142,31 @@ export function Table<T>({
 
           {/* View Mode Toggle — only rendered when both views are supported */}
           {showToggle && (
-            <div className="flex h-12 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
+            <div className="flex h-10 items-center gap-1 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
               {supportedViews.includes("list") && (
                 <button
                   onClick={() => setView("list")}
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all cursor-pointer ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all cursor-pointer ${
                     view === "list"
                       ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400"
                       : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
                   }`}
                   title="List View"
                 >
-                  <FiList size={20} />
+                  <FiList size={18} />
                 </button>
               )}
               {supportedViews.includes("grid") && (
                 <button
                   onClick={() => setView("grid")}
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all cursor-pointer ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all cursor-pointer ${
                     view === "grid"
                       ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400"
                       : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
                   }`}
                   title="Grid View"
                 >
-                  <FiGrid size={20} />
+                  <FiGrid size={18} />
                 </button>
               )}
             </div>
@@ -183,7 +183,7 @@ export function Table<T>({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 p-2 border border-gray-50 dark:border-slate-800 transition-colors duration-200"
+            className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 transition-colors duration-200"
           >
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -196,7 +196,7 @@ export function Table<T>({
                       {headerGroup.headers.map((header) => (
                         <th
                           key={uuidv4()}
-                          className="px-6 py-4.5 text-left text-[0.8rem] font-semibold text-gray-500 dark:text-slate-400 capitalize whitespace-nowrap"
+                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400 whitespace-nowrap"
                         >
                           {header.isPlaceholder
                             ? null
@@ -247,12 +247,12 @@ export function Table<T>({
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.02 }}
-                        className="group border-b border-gray-50 dark:border-slate-800/30 transition-colors last:border-0 hover:bg-gray-50/30 dark:hover:bg-slate-800/30"
+                        className="group border-b border-gray-100/70 dark:border-slate-800/30 transition-colors last:border-0 hover:bg-gray-50/50 dark:hover:bg-slate-800/30"
                       >
                         {row.getVisibleCells().map((cell) => (
                           <td
                             key={uuidv4()}
-                            className="px-6 py-5 text-[0.85rem] font-normal text-gray-600 dark:text-slate-300 whitespace-nowrap"
+                            className="px-4 py-3.5 text-sm font-normal text-gray-600 dark:text-slate-300 whitespace-nowrap"
                           >
                             {/* Only show NotAvailable for accessor-backed columns with an empty value.
                                 Display-only columns (no accessorKey/accessorFn) always render their cell. */}

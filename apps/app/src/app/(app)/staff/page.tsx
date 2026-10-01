@@ -298,7 +298,7 @@ export default function StaffPage(): JSX.Element {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-serif text-gray-900 dark:text-slate-100">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
           Staff Directory
         </h1>
         <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">

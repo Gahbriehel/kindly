@@ -10,10 +10,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        inter: ["var(--font-inter)"],
-        manrope: ["var(--font-manrope)"],
-        SpaceGrotesk: ["var(--font-space-grotesk)"],
-        jakarta: ["var(--font-jakarta)"],
+        inter: ["var(--font-inter)", "sans-serif"],
+        geist: ["var(--font-geist)", "sans-serif"],
+        manrope: ["var(--font-manrope)", "sans-serif"],
+        SpaceGrotesk: ["var(--font-space-grotesk)", "monospace"],
+        jakarta: ["var(--font-jakarta)", "sans-serif"],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

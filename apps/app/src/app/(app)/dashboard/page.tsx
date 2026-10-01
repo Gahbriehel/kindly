@@ -99,7 +99,7 @@ export default function DashboardPage(): JSX.Element {
         {/* Left Column - Milestones */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-100 font-serif">
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
               Milestones
             </h2>
             <div className="w-full sm:w-72">
@@ -111,7 +111,7 @@ export default function DashboardPage(): JSX.Element {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+          <div className="rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
             {isLoading ? (
               <div className="p-6 space-y-4">
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -194,10 +194,10 @@ export default function DashboardPage(): JSX.Element {
         <div className="space-y-8">
           {/* Today's Events */}
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-100 font-serif">
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
               Today's events
             </h2>
-            <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
               {isLoading ? (
                 <div className="p-5 space-y-4">
                   {[1, 2].map((n) => (
@@ -273,10 +273,10 @@ export default function DashboardPage(): JSX.Element {
 
           {/* Recent Activity */}
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-100 font-serif">
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
               Recent Activity
             </h2>
-            <div className="rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div className="rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
               {isLoading ? (
                 <div className="space-y-5 animate-pulse">
                   {[1, 2, 3, 4].map((n) => (

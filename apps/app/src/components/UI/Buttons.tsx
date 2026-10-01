@@ -79,7 +79,7 @@ export const BaseButton = forwardRef<
   const content = children || text;
 
   const classNames = clsx(
-    "relative flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-3 py-2 text-sm font-semibold xs:text-base sm:h-12 sm:px-6 sm:py-3 disabled:cursor-not-allowed [&>span]:hover:opacity-100 transition-all",
+    "relative flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-4 py-2 text-sm font-medium font-geist disabled:cursor-not-allowed [&>span]:hover:opacity-100 transition-all",
     {
       "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:dark:bg-slate-800 disabled:dark:border-slate-800 disabled:dark:text-slate-500":
         color === "outline",

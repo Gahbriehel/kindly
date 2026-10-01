@@ -1,9 +1,17 @@
 import "@/src/styles/globals.css";
-import { Inter } from "next/font/google";
+import { Geist, Inter } from "next/font/google";
 import { Providers } from "../utils/ProvidersWrapper";
 import NextTopLoader from "nextjs-toploader";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 export const metadata = {
   title: "Kindly App",
@@ -20,7 +28,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body
+        className={`${geist.variable} ${inter.variable} font-inter antialiased`}
+      >
         <NextTopLoader color="#3D3530" height={4} showSpinner={false} />
         <Providers>{children}</Providers>
       </body>

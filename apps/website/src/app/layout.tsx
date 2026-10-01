@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Geist, Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "@/src/styles/globals.css";
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +34,7 @@ export default function MarketingLayout({
   return (
     <html
       lang="en"
-      className={`marketing-theme scroll-smooth ${inter.variable} ${jakarta.variable}`}
+      className={`marketing-theme scroll-smooth ${geist.variable} ${inter.variable} ${jakarta.variable}`}
     >
       <body className="antialiased bg-cream-50 text-gray-900">
         <header></header>
