@@ -13,6 +13,7 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import Link from "next/link";
+import { capitalizeFirstLetter } from "@/src/helpers/capitalizeFirstLetter";
 
 export const TopNav = memo(function TopNav({
   onMenuClick,
@@ -84,7 +85,7 @@ export const TopNav = memo(function TopNav({
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-theme-primary/20 text-theme-primary transition-transform duration-200 group-hover:scale-105">
               <p className="text-sm font-bold uppercase">
-                {mounted && user?.firstName ? user.firstName.charAt(0) : "U"}
+                {mounted && user?.firstName ? user.firstName.charAt(0) : ""}
               </p>
             </div>
             <div className="hidden sm:flex flex-col items-start">
@@ -93,7 +94,11 @@ export const TopNav = memo(function TopNav({
                   ? `${user?.firstName || ""} ${user?.lastName || ""}`
                   : ""}
               </p>
+              <p className="text-xs text-gray-900 dark:text-slate-100">
+                {capitalizeFirstLetter(mounted ? `${user?.role || ""}` : "")}
+              </p>
             </div>
+            <div className="hidden sm:flex flex-col items-start"></div>
             <FiChevronDown className="hidden sm:block size-4 text-gray-400 dark:text-slate-500 transition-transform duration-200 group-hover:text-gray-600 dark:group-hover:text-slate-400" />
           </button>
 

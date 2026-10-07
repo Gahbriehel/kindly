@@ -6,7 +6,6 @@ export type UserRole = "admin" | "moderator";
 export interface ILoginPayload {
   email: string;
   password: string;
-  forceLogout?: boolean;
 }
 
 export interface ILoginResponse extends IBaseResponse {

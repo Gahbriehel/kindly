@@ -10,8 +10,6 @@ import { useLoginMutation } from "@/src/hooks/useAuthQuery";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ILoginPayload } from "../../../models/auth";
-import { ConfirmActionModal } from "../../../components/Modals/ConfirmActionModal";
-import { AxiosError } from "axios";
 
 interface Inputs {
   email: string;
@@ -24,12 +22,6 @@ export default function Login() {
   const { user } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState<"password" | "text">(
     "password",
-  );
-
-  // Session conflict modal states
-  const [showSessionModal, setShowSessionModal] = useState(false);
-  const [pendingPayload, setPendingPayload] = useState<ILoginPayload | null>(
-    null,
   );
 
   const schema = yup.object({
@@ -61,40 +53,13 @@ export default function Login() {
       const payload: ILoginPayload = {
         email: data.email,
         password: data.password,
-        forceLogout: false,
       };
 
-      loginMutation.mutate(payload, {
-        onError: (error: AxiosError<{ message: string }>) => {
-          const message = error.response?.data?.message;
-          if (
-            message === "You already have an active session on another device."
-          ) {
-            setPendingPayload(payload);
-            setShowSessionModal(true);
-          }
-        },
-      });
+      loginMutation.mutate(payload, {});
     } catch (error) {
       throw error;
     }
   }
-
-  const handleForceLogoutConfirm = () => {
-    if (pendingPayload) {
-      loginMutation.mutate(
-        {
-          ...pendingPayload,
-          forceLogout: true,
-        },
-        {
-          onSettled: () => {
-            setShowSessionModal(false);
-          },
-        },
-      );
-    }
-  };
 
   return (
     <AuthLayout
@@ -180,17 +145,6 @@ export default function Login() {
           Forgot your password?
         </Link>
       </div>
-
-      {/* Active Session Confirmation Modal */}
-      <ConfirmActionModal
-        display={showSessionModal}
-        actionName="Log Out Other Device"
-        title="Active Session Found"
-        message="You already have an active session on another device. Would you like to log out of all other devices and sign in here?"
-        fn={handleForceLogoutConfirm}
-        loading={loginMutation.isPending}
-        close={() => setShowSessionModal(false)}
-      />
     </AuthLayout>
   );
 }
