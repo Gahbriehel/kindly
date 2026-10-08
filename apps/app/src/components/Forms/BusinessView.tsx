@@ -6,10 +6,16 @@ import { FiPhone, FiGlobe, FiMapPin, FiBriefcase } from "react-icons/fi";
 import { LuPencil } from "react-icons/lu";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { IUserData } from "@/src/models/auth";
-import { FALLBACK_COUNTRIES } from "@/src/models/locations";
-import { INDUSTRY_OPTIONS, CLIENT_COUNT_OPTIONS } from "@/src/models/business";
+import {
+  FALLBACK_COUNTRIES,
+  FALLBACK_INDUSTRIES,
+} from "@/src/models/locations";
+import { CLIENT_COUNT_OPTIONS } from "@/src/models/business";
 import { useUpdateCompanyProfileMutation } from "@/src/hooks/useAuthQuery";
-import { useCountriesQuery } from "@/src/hooks/useLocationQuery";
+import {
+  useCountriesQuery,
+  useIndustriesQuery,
+} from "@/src/hooks/useLocationQuery";
 import { Input } from "@/src/components/FormElements/Input";
 import { Select, ISelect } from "@/src/components/FormElements/Select";
 import { BaseButton } from "@/src/components/UI/Buttons";
@@ -39,6 +45,7 @@ export function BusinessView(): JSX.Element {
 
   const updateCompanyMutation = useUpdateCompanyProfileMutation();
   const countriesQuery = useCountriesQuery();
+  const industriesQuery = useIndustriesQuery();
 
   const countryOptions: ISelect[] = useMemo(() => {
     const list = countriesQuery.data?.data?.countries?.length
@@ -51,14 +58,16 @@ export function BusinessView(): JSX.Element {
     }));
   }, [countriesQuery.data]);
 
-  const industryOptions: ISelect[] = useMemo(
-    () =>
-      INDUSTRY_OPTIONS.map((ind) => ({
-        value: { _id: ind },
-        label: ind,
-      })),
-    [],
-  );
+  const industryOptions: ISelect[] = useMemo(() => {
+    const list = industriesQuery.data?.data?.industries?.length
+      ? industriesQuery.data.data.industries
+      : FALLBACK_INDUSTRIES;
+
+    return list.map((ind) => ({
+      value: { _id: ind.name, ...ind },
+      label: ind.name,
+    }));
+  }, [industriesQuery.data]);
 
   const clientCountOptions: ISelect[] = useMemo(
     () =>
@@ -76,12 +85,24 @@ export function BusinessView(): JSX.Element {
     const matchedCount = CLIENT_COUNT_OPTIONS.find(
       (opt) => opt.value === countValue,
     );
+    const currentInd = company?.industry;
+    const industriesList = industriesQuery.data?.data?.industries?.length
+      ? industriesQuery.data.data.industries
+      : FALLBACK_INDUSTRIES;
+    const matchedInd = industriesList.find(
+      (ind) =>
+        ind.name.toLowerCase() === currentInd?.toLowerCase() ||
+        ind.code.toLowerCase() === currentInd?.toLowerCase(),
+    );
+    const indLabel = matchedInd?.name ?? currentInd ?? "Events";
 
     return {
       businessName: company?.businessName ?? "",
       industry: {
-        value: { _id: company?.industry ?? "Professional services" },
-        label: company?.industry ?? "Professional services",
+        value: matchedInd
+          ? { _id: matchedInd.name, ...matchedInd }
+          : { _id: indLabel },
+        label: indLabel,
       },
       estimatedClientCount: {
         value: { _id: countValue },
@@ -113,7 +134,7 @@ export function BusinessView(): JSX.Element {
     if (company) {
       reset(getInitialValues());
     }
-  }, [company, reset]);
+  }, [company, reset, industriesQuery.data]);
 
   // Live preview watch
   const watchedBusinessName = useWatch({ control, name: "businessName" });
@@ -127,8 +148,8 @@ export function BusinessView(): JSX.Element {
     : company?.businessName || "My Business";
 
   const currentIndustry = isEditing
-    ? watchedIndustry?.label || company?.industry || "Professional services"
-    : company?.industry || "Professional services";
+    ? watchedIndustry?.label || company?.industry || "Events"
+    : company?.industry || "Events";
 
   const currentCountry = isEditing
     ? watchedCountry?.label || company?.country || ""
@@ -169,9 +190,10 @@ export function BusinessView(): JSX.Element {
       {
         businessName: data.businessName.trim(),
         industry:
+          data.industry?.value?.name ||
           data.industry?.value?._id ||
           data.industry?.label ||
-          "Professional services",
+          "Events",
         estimatedClientCount: clientCount,
         phoneNumber: data.phoneNumber.trim() || null,
         address: data.address.trim() || null,
@@ -364,6 +386,7 @@ export function BusinessView(): JSX.Element {
                     value={field.value}
                     onChange={field.onChange}
                     options={industryOptions}
+                    loading={industriesQuery.isLoading}
                     placeholder="Select industry"
                   />
                 )}

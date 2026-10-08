@@ -9,13 +9,16 @@ import { useMemo, useState } from "react";
 import { AuthLayout } from "../../../components/UI/AuthLayout";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ISignUpPayload } from "../../../models/auth";
-import { FALLBACK_COUNTRIES } from "../../../models/locations";
 import {
-  INDUSTRY_OPTIONS,
-  CLIENT_COUNT_OPTIONS,
-} from "../../../models/business";
+  FALLBACK_COUNTRIES,
+  FALLBACK_INDUSTRIES,
+} from "../../../models/locations";
+import { CLIENT_COUNT_OPTIONS } from "../../../models/business";
 import { useSignupMutation } from "../../../hooks/useAuthQuery";
-import { useCountriesQuery } from "../../../hooks/useLocationQuery";
+import {
+  useCountriesQuery,
+  useIndustriesQuery,
+} from "../../../hooks/useLocationQuery";
 import { RiArrowRightLine } from "react-icons/ri";
 import { cn } from "@/src/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,6 +41,7 @@ interface SignUpFormValues {
 export default function RegisterPage() {
   const signupMutation = useSignupMutation();
   const countriesQuery = useCountriesQuery();
+  const industriesQuery = useIndustriesQuery();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [showPassword, setShowPassword] = useState<"password" | "text">(
@@ -55,14 +59,16 @@ export default function RegisterPage() {
     }));
   }, [countriesQuery.data]);
 
-  const industryOptions: ISelect[] = useMemo(
-    () =>
-      INDUSTRY_OPTIONS.map((ind) => ({
-        value: { _id: ind },
-        label: ind,
-      })),
-    [],
-  );
+  const industryOptions: ISelect[] = useMemo(() => {
+    const list = industriesQuery.data?.data?.industries?.length
+      ? industriesQuery.data.data.industries
+      : FALLBACK_INDUSTRIES;
+
+    return list.map((ind) => ({
+      value: { _id: ind.name, ...ind },
+      label: ind.name,
+    }));
+  }, [industriesQuery.data]);
 
   const clientCountOptions: ISelect[] = useMemo(
     () =>
@@ -126,8 +132,8 @@ export default function RegisterPage() {
         label: "",
       },
       industry: {
-        value: { _id: "Professional services" },
-        label: "Professional services",
+        value: { _id: "Events" },
+        label: "Events",
       },
       estimatedClientCount: {
         value: { _id: "5" },
@@ -178,9 +184,10 @@ export default function RegisterPage() {
           address: data.address.trim(),
           country: data.country?.value?._id || data.country?.label || "Nigeria",
           industry:
+            data.industry?.value?.name ||
             data.industry?.value?._id ||
             data.industry?.label ||
-            "Professional services",
+            "Events",
           estimatedClientCount: clientCount,
         };
 
@@ -473,6 +480,7 @@ export default function RegisterPage() {
                     label="Industry"
                     placeholder="Select industry"
                     options={industryOptions}
+                    loading={industriesQuery.isLoading}
                     validationError={fieldState.error?.message}
                   />
                 )}
