@@ -59,6 +59,6 @@ export async function updateIndividualProfile(payload: IUpdateProfilePayload) {
 export async function updateCompanyProfile(payload: IUpdateCompanyPayload) {
   const response = await axios.patch<
     ICompanyProfileResponse | IProfileResponse
-  >(`/auth/company/me`, payload);
+  >(`/auth/company`, payload);
   return response.data;
 }

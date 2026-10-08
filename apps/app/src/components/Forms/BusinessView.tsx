@@ -2,14 +2,7 @@
 
 import { useEffect, useMemo, useState, type JSX } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
-import {
-  FiPhone,
-  FiGlobe,
-  FiMapPin,
-  FiBriefcase,
-  FiHash,
-  FiLayers,
-} from "react-icons/fi";
+import { FiPhone, FiGlobe, FiMapPin, FiBriefcase } from "react-icons/fi";
 import { LuPencil } from "react-icons/lu";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { IUserData } from "@/src/models/auth";
@@ -794,53 +787,6 @@ export function BusinessView(): JSX.Element {
                 )}
               </p>
             )}
-          </div>
-        </div>
-
-        {/* ── Section: Invoicing & Subscription Status ─────── */}
-        <div className="pb-2 pt-6">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-2">
-            Invoicing &amp; Plan Status
-          </h4>
-        </div>
-
-        {/* Next Invoice # */}
-        <div className="py-4.5 flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-          <div className="sm:w-48 shrink-0 sm:pt-0.5">
-            <span className="text-sm font-medium text-gray-500 dark:text-slate-400">
-              Next Invoice #
-            </span>
-          </div>
-          <div className="w-full sm:max-w-xl flex items-center gap-2">
-            <div className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-              <FiHash className="size-3 text-gray-400" />
-              <span>
-                {company?.nextInvoiceNumber
-                  ? String(company.nextInvoiceNumber).padStart(4, "0")
-                  : "0001"}
-              </span>
-            </div>
-            <span className="text-xs text-gray-400 dark:text-slate-500">
-              (Auto-increments with each issued invoice)
-            </span>
-          </div>
-        </div>
-
-        {/* Plan Tier */}
-        <div className="py-4.5 flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
-          <div className="sm:w-48 shrink-0 sm:pt-0.5">
-            <span className="text-sm font-medium text-gray-500 dark:text-slate-400">
-              Subscription Tier
-            </span>
-          </div>
-          <div className="w-full sm:max-w-xl flex items-center gap-2">
-            <div className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-100 bg-indigo-50/70 px-3 py-1 text-xs font-semibold text-theme-primary dark:border-indigo-900/50 dark:bg-indigo-950/40 dark:text-indigo-300">
-              <FiLayers className="size-3 text-theme-primary" />
-              <span>{company?.subscriptionTier || "Basic"} Plan</span>
-            </div>
-            <span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-950/30 dark:text-emerald-400">
-              {company?.subscriptionActive ? "Active" : "Active"}
-            </span>
           </div>
         </div>
       </form>
