@@ -8,7 +8,8 @@ import {
 } from "@tanstack/react-table";
 import { motion, AnimatePresence } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
-import { useState, type JSX, type ReactNode } from "react";
+import { useState, useEffect, useRef, type JSX, type ReactNode } from "react";
+import * as Popover from "@radix-ui/react-popover";
 import { Pagination } from "./Pagination";
 import { SearchInput } from "./SearchInput";
 import { PageLoader } from "../PageLoader";
@@ -24,6 +25,7 @@ interface Props<T> {
   searchPlaceholder?: string;
   searchQuery?: string;
   onSearchChange?: (val: string) => void;
+  debounceMs?: number;
   pagination?: {
     currentPage: number;
     totalPages: number;
@@ -41,6 +43,8 @@ interface Props<T> {
   onViewModeChange?: (mode: "list" | "grid") => void;
   renderGridItem?: (item: T) => ReactNode;
   onFilterClick?: () => void;
+  filterContent?: ReactNode;
+  filterActiveCount?: number;
   defaultGridColumns?: 2 | 3 | 4;
 }
 
@@ -57,8 +61,9 @@ export function Table<T>({
   loading,
   error,
   searchPlaceholder,
-  searchQuery = "",
+  searchQuery,
   onSearchChange,
+  debounceMs = 300,
   pagination,
   children,
   supportedViews = ["list", "grid"],
@@ -66,6 +71,8 @@ export function Table<T>({
   onViewModeChange,
   renderGridItem,
   onFilterClick,
+  filterContent,
+  filterActiveCount,
   defaultGridColumns = 3,
 }: Props<T>): JSX.Element {
   const defaultView = supportedViews[0] ?? "list";
@@ -78,6 +85,37 @@ export function Table<T>({
 
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(defaultGridColumns);
 
+  // Internal debounced search handling
+  const [searchTerm, setSearchTerm] = useState(searchQuery ?? "");
+  const isInitialMount = useRef(true);
+
+  // Synchronize internal state when external searchQuery prop changes
+  useEffect(() => {
+    if (searchQuery !== undefined && searchQuery !== searchTerm) {
+      setSearchTerm(searchQuery);
+    }
+  }, [searchQuery]);
+
+  // Debounce calling onSearchChange
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (!onSearchChange) return;
+
+    const handler = setTimeout(() => {
+      onSearchChange(searchTerm);
+    }, debounceMs);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm, debounceMs, onSearchChange]);
+
+  const handleSearchInput = (val: string) => {
+    setSearchTerm(val);
+  };
+
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
@@ -86,7 +124,7 @@ export function Table<T>({
   });
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-5">
       {/* Title block if present (above the toolbar) */}
       {title && (
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
@@ -95,41 +133,78 @@ export function Table<T>({
       )}
 
       {/* Toolbar Section */}
-      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row w-full">
+      <div className="flex flex-col items-center justify-between gap-3 sm:flex-row w-full">
         {/* Search input (left-aligned) */}
         <div className="flex flex-1 w-full sm:max-w-md">
           {onSearchChange && (
             <SearchInput
-              value={searchQuery}
-              onChange={onSearchChange}
+              value={searchTerm}
+              onChange={handleSearchInput}
               placeholder={searchPlaceholder}
             />
           )}
         </div>
 
         {/* Action controls (right-aligned) */}
-        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
           {children}
-          {onFilterClick && (
-            <button
-              onClick={onFilterClick}
-              className="flex h-10 items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 text-sm font-medium text-gray-600 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer"
-            >
-              <FiFilter className="size-4 text-gray-400 dark:text-slate-500 animate-pulse" />
-              <span>Filter</span>
-            </button>
+
+          {/* Filter with Popover or Callback */}
+          {filterContent ? (
+            <Popover.Root>
+              <Popover.Trigger asChild>
+                <button
+                  type="button"
+                  className="flex h-11 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-gray-700 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer shadow-xs"
+                >
+                  <FiFilter className="size-4 text-gray-500 dark:text-slate-400" />
+                  <span>Filter</span>
+                  {filterActiveCount !== undefined && filterActiveCount > 0 && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-theme-primary text-[10px] font-bold text-white px-1">
+                      {filterActiveCount}
+                    </span>
+                  )}
+                </button>
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Content
+                  sideOffset={6}
+                  align="end"
+                  className="z-30 w-72 rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xl will-change-[transform,opacity]"
+                >
+                  {filterContent}
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
+          ) : (
+            onFilterClick && (
+              <button
+                type="button"
+                onClick={onFilterClick}
+                className="flex h-11 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-gray-700 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer shadow-xs"
+              >
+                <FiFilter className="size-4 text-gray-500 dark:text-slate-400" />
+                <span>Filter</span>
+                {filterActiveCount !== undefined && filterActiveCount > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-theme-primary text-[10px] font-bold text-white px-1">
+                    {filterActiveCount}
+                  </span>
+                )}
+              </button>
+            )
           )}
 
           {/* Grid Columns Selector — only shown in grid mode */}
           {view === "grid" && (
-            <div className="flex h-10 items-center gap-1 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
+            <div className="flex h-11 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-xs">
               {([2, 3, 4] as const).map((cols) => (
                 <button
                   key={cols}
+                  type="button"
                   onClick={() => setGridColumns(cols)}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     gridColumns === cols
-                      ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400"
+                      ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400 font-bold"
                       : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
                   }`}
                   title={`${cols} Columns`}
@@ -142,13 +217,14 @@ export function Table<T>({
 
           {/* View Mode Toggle — only rendered when both views are supported */}
           {showToggle && (
-            <div className="flex h-10 items-center gap-1 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
+            <div className="flex h-11 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-xs">
               {supportedViews.includes("list") && (
                 <button
+                  type="button"
                   onClick={() => setView("list")}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all cursor-pointer ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all cursor-pointer ${
                     view === "list"
-                      ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400"
+                      ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-2xs"
                       : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
                   }`}
                   title="List View"
@@ -158,10 +234,11 @@ export function Table<T>({
               )}
               {supportedViews.includes("grid") && (
                 <button
+                  type="button"
                   onClick={() => setView("grid")}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all cursor-pointer ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all cursor-pointer ${
                     view === "grid"
-                      ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400"
+                      ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-2xs"
                       : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
                   }`}
                   title="Grid View"
@@ -183,7 +260,7 @@ export function Table<T>({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 transition-colors duration-200"
+            className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-100/90 dark:border-slate-800 shadow-xs transition-colors duration-200"
           >
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -191,12 +268,12 @@ export function Table<T>({
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr
                       key={uuidv4()}
-                      className="bg-gray-50/80 dark:bg-slate-800/40 border-b border-gray-100 dark:border-slate-800/50"
+                      className="bg-gray-50/90 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-800"
                     >
                       {headerGroup.headers.map((header) => (
                         <th
                           key={uuidv4()}
-                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400 whitespace-nowrap"
+                          className="px-5 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 whitespace-nowrap"
                         >
                           {header.isPlaceholder
                             ? null
@@ -247,12 +324,12 @@ export function Table<T>({
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.02 }}
-                        className="group border-b border-gray-100/70 dark:border-slate-800/30 transition-colors last:border-0 hover:bg-gray-50/50 dark:hover:bg-slate-800/30"
+                        className="group border-b border-gray-100/70 dark:border-slate-800/40 transition-colors last:border-0 hover:bg-gray-50/60 dark:hover:bg-slate-800/30"
                       >
                         {row.getVisibleCells().map((cell) => (
                           <td
                             key={uuidv4()}
-                            className="px-4 py-3.5 text-sm font-normal text-gray-600 dark:text-slate-300 whitespace-nowrap"
+                            className="px-5 py-4 text-sm font-normal text-gray-600 dark:text-slate-300 whitespace-nowrap"
                           >
                             {/* Only show NotAvailable for accessor-backed columns with an empty value.
                                 Display-only columns (no accessorKey/accessorFn) always render their cell. */}
@@ -278,7 +355,7 @@ export function Table<T>({
 
             {/* Footer / Pagination */}
             {!loading && !error && data.length > 0 && pagination && (
-              <div className="border-t border-gray-100 dark:border-slate-800 mt-2">
+              <div className="border-t border-gray-100 dark:border-slate-800 mt-1">
                 <Pagination {...pagination} />
               </div>
             )}
@@ -324,7 +401,7 @@ export function Table<T>({
                         renderGridItem(row.original)
                       ) : (
                         // Default Fallback Grid Card
-                        <div className="rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+                        <div className="rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs">
                           <div className="flex flex-col gap-4">
                             {row.getVisibleCells().map((cell) => {
                               const header = cell.column.columnDef.header;

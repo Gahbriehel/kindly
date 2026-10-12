@@ -148,14 +148,14 @@ export default function TemplatesPage(): JSX.Element {
                   setEditingTemplate(item);
                   setIsSidebarOpen(true);
                 }}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-500 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-500 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Edit Template"
               >
                 <FiEdit2 className="size-4" />
               </button>
               <button
                 onClick={() => setDeletingTemplateId(item.id)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                 title="Delete Template"
               >
                 <FiTrash2 className="size-4" />

@@ -5,17 +5,19 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  className?: string;
 }
 
 export function SearchInput({
   value,
   onChange,
   placeholder = "Search",
+  className,
 }: Props): JSX.Element {
   return (
-    <div className="relative flex items-center">
-      <div className="absolute left-4 text-gray-400 dark:text-slate-500">
-        <IoSearchOutline size={20} />
+    <div className={`relative flex items-center w-full ${className ?? ""}`}>
+      <div className="absolute left-4 text-gray-400 dark:text-slate-500 pointer-events-none">
+        <IoSearchOutline size={18} />
       </div>
       <input
         type="text"
@@ -24,14 +26,16 @@ export function SearchInput({
           onChange(e.target.value)
         }
         placeholder={placeholder}
-        className="h-12 w-full rounded-full border border-gray-200 dark:border-slate-700/60 bg-white dark:bg-slate-900 pl-12 pr-12 text-sm text-gray-700 dark:text-slate-200 transition-all outline-none focus:border-gray-300 dark:focus:border-slate-500 focus:ring-2 focus:ring-gray-100 dark:focus:ring-slate-700/50 placeholder:text-gray-300 dark:placeholder:text-slate-600"
+        className="h-11 w-full rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 pl-11 pr-10 text-sm text-gray-800 dark:text-slate-200 transition-all outline-none placeholder:text-gray-400 dark:placeholder:text-slate-500"
       />
       {value && (
         <button
+          type="button"
           onClick={() => onChange("")}
-          className="cursor-pointer absolute right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
+          className="cursor-pointer absolute right-3.5 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors p-1"
+          title="Clear search"
         >
-          <IoClose size={20} />
+          <IoClose size={18} />
         </button>
       )}
     </div>
