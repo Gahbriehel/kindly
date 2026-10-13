@@ -56,9 +56,9 @@ export interface IUserData {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  staffCount?: number;
-  hasStaff?: boolean;
-  client_limit?: IClientLimit;
+  staffCount: number;
+  hasStaff: boolean;
+  client_limit: IClientLimit;
 }
 
 export interface IClientLimit {
