@@ -1,0 +1,186 @@
+"use client";
+
+import type { JSX, ReactNode } from "react";
+import dayjs from "dayjs";
+import { FiCalendar, FiClock, FiGift, FiMail, FiPhone } from "react-icons/fi";
+import { SidebarModal } from "@/src/components/UI/SidebarModal";
+import { BaseButton } from "@/src/components/UI/Buttons";
+import { NotAvailable } from "@/src/components/UI/NotAvailable";
+import { getInitials } from "@/src/helpers/stringHelpers";
+import { formatDate } from "@/src/helpers/formatDate";
+import type { IClient } from "@/src/models/client";
+
+interface Props {
+  client: IClient | null;
+  close: () => void;
+  onEdit: (client: IClient) => void;
+  onDelete: (client: IClient) => void;
+}
+
+/** Next occurrence (today or later) of the month/day in `date`. */
+function nextOccurrence(date: string): dayjs.Dayjs {
+  const today = dayjs().startOf("day");
+  const source = dayjs(date);
+  let next = source.year(today.year());
+  if (next.isBefore(today, "day")) next = next.add(1, "year");
+  return next;
+}
+
+function daysLabel(days: number): string {
+  if (days === 0) return "Today";
+  return `in ${days} day${days === 1 ? "" : "s"}`;
+}
+
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}): JSX.Element {
+  return (
+    <section className="space-y-2">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
+function tagStyle(tag: string): string {
+  return tag.toLowerCase() === "vip"
+    ? "bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-800/40"
+    : "bg-gray-100 text-gray-700 border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
+}
+
+export function ClientViewModal({
+  client,
+  close,
+  onEdit,
+  onDelete,
+}: Props): JSX.Element {
+  const birthday = client?.birthDate ? nextOccurrence(client.birthDate) : null;
+  const daysAway = birthday?.diff(dayjs().startOf("day"), "day") ?? 0;
+  const tags = [
+    ...(client?.tags ?? []),
+    ...(client?.groups?.map((g) => g.name) ?? []),
+  ];
+
+  return (
+    <SidebarModal
+      display={!!client}
+      close={close}
+      title="Client Details"
+      footer={
+        client && (
+          <>
+            <BaseButton
+              type="button"
+              color="danger"
+              text="Delete"
+              onClick={() => onDelete(client)}
+              className="h-12 flex-1 rounded-2xl"
+            />
+            <BaseButton
+              type="button"
+              color="primary"
+              text="Edit"
+              onClick={() => onEdit(client)}
+              className="h-12 flex-1 rounded-2xl"
+            />
+          </>
+        )
+      }
+    >
+      {client && (
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-semibold text-indigo-600 dark:bg-slate-800 dark:text-indigo-400">
+              {getInitials(client.fullName) || "CL"}
+            </div>
+            <div className="min-w-0">
+              <h2 className="truncate font-manrope text-lg font-bold text-gray-900 dark:text-slate-100">
+                {client.fullName}
+              </h2>
+              {tags.length > 0 && (
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tagStyle(tag)}`}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {birthday && (
+            <div className="rounded-2xl bg-indigo-50 p-4 dark:bg-indigo-950/30">
+              <span className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">
+                <FiGift className="size-4" /> Birthday
+              </span>
+              <p className="mt-1 font-manrope text-xl font-bold text-gray-900 dark:text-slate-100">
+                {birthday.format("MMMM D, YYYY")}
+              </p>
+              <span className="mt-1 flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400">
+                <FiClock className="size-3.5" /> {daysLabel(daysAway)}
+              </span>
+            </div>
+          )}
+
+          <Section title="Contact">
+            {client.phoneNumber || client.email ? (
+              <div className="flex flex-col gap-2 rounded-2xl border border-gray-100 p-4 text-sm dark:border-slate-800">
+                {client.email && (
+                  <span className="flex items-center gap-2 break-all text-gray-700 dark:text-slate-300">
+                    <FiMail className="size-4 shrink-0 text-gray-400" />
+                    {client.email}
+                  </span>
+                )}
+                {client.phoneNumber && (
+                  <span className="flex items-center gap-2 text-gray-700 dark:text-slate-300">
+                    <FiPhone className="size-4 shrink-0 text-gray-400" />
+                    {client.phoneNumber}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <NotAvailable />
+            )}
+          </Section>
+
+          <Section title="Events">
+            {client.events && client.events.length > 0 ? (
+              <ul className="divide-y divide-gray-100 rounded-2xl border border-gray-100 dark:divide-slate-800 dark:border-slate-800">
+                {client.events.map((event) => (
+                  <li
+                    key={event.id}
+                    className="flex items-center justify-between gap-3 px-4 py-3 text-sm"
+                  >
+                    <span className="font-medium text-gray-900 dark:text-slate-100">
+                      {event.title}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-gray-500 dark:text-slate-400">
+                      <FiCalendar className="size-3.5" />
+                      {formatDate({
+                        date: event.date,
+                        showTime: false,
+                        utc: false,
+                      })}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <NotAvailable />
+            )}
+          </Section>
+        </div>
+      )}
+    </SidebarModal>
+  );
+}

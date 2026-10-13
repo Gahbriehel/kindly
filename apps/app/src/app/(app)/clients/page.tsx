@@ -15,6 +15,8 @@ import { BaseButton } from "@/src/components/UI/Buttons";
 import { Table } from "@/src/components/UI/Table";
 import { ActionsList } from "@/src/components/UI/ActionsList";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
+import { ClientViewModal } from "@/src/components/Modals/ClientViewModal";
+import { ClientFormModal } from "@/src/components/Forms/ClientFormModal";
 import { useClientsQuery, useDeleteClient } from "@/src/hooks/useClientQuery";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatRelativeTime } from "@/src/helpers/dateHelpers";
@@ -58,15 +60,13 @@ function ClientContactInfo({ client }: { client: IClient }) {
 
 function ClientEventInfo({ client }: { client: IClient }) {
   const primaryEvent = client.events?.[0];
-  const hasEvent = Boolean(primaryEvent);
-  const hasBirthDate = Boolean(client.birthDate);
 
-  if (!hasEvent && !hasBirthDate) {
+  if (!primaryEvent) {
     return <NotAvailable />;
   }
 
-  const title = primaryEvent?.title || "Birthday";
-  const rawDate = primaryEvent?.date || client.birthDate;
+  const title = primaryEvent.title;
+  const rawDate = primaryEvent.date;
   const isAnniversary = title.toLowerCase().includes("anniversary");
   const formattedDate = rawDate
     ? formatDate({ date: rawDate, showTime: false, utc: false })
@@ -112,14 +112,20 @@ function ClientTagBadge({ client }: { client: IClient }) {
 
 function ClientActions({
   client,
+  onView,
+  onEdit,
   onDelete,
 }: {
   client: IClient;
+  onView: (client: IClient) => void;
+  onEdit: (client: IClient) => void;
   onDelete: (id: string) => void;
 }) {
   return (
     <ActionsList
       actions={[
+        { title: "View Client", fn: () => onView(client) },
+        { title: "Edit Client", fn: () => onEdit(client) },
         {
           title: "Delete Client",
           fn: () => onDelete(client.id),
@@ -145,6 +151,23 @@ export default function ClientsPage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
+  const [viewingClient, setViewingClient] = useState<IClient | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingClient, setEditingClient] = useState<IClient | null>(null);
+
+  const openAdd = () => {
+    setEditingClient(null);
+    setFormOpen(true);
+  };
+  const openEdit = (client: IClient) => {
+    setViewingClient(null);
+    setEditingClient(client);
+    setFormOpen(true);
+  };
+  const closeForm = () => {
+    setFormOpen(false);
+    setEditingClient(null);
+  };
 
   const { data, isLoading, error } = useClientsQuery({
     page: currentPage,
@@ -156,6 +179,7 @@ export default function ClientsPage(): JSX.Element {
     onSuccess: () => {
       customToast.success("Client deleted successfully");
       setDeletingClientId(null);
+      setViewingClient(null);
     },
   });
 
@@ -193,14 +217,18 @@ export default function ClientsPage(): JSX.Element {
           const initials = getInitials(client.fullName) || "CL";
 
           return (
-            <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setViewingClient(client)}
+              className="flex items-center gap-3 text-left cursor-pointer"
+            >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 dark:bg-slate-800 text-[0.8rem] font-semibold text-indigo-600 dark:text-indigo-400">
                 {initials}
               </div>
-              <span className="font-semibold text-gray-900 dark:text-slate-100 text-[0.9rem] leading-tight">
+              <span className="font-semibold text-gray-900 dark:text-slate-100 text-[0.9rem] leading-tight hover:underline">
                 {client.fullName}
               </span>
-            </div>
+            </button>
           );
         },
       },
@@ -238,7 +266,12 @@ export default function ClientsPage(): JSX.Element {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <ClientActions client={row.original} onDelete={setDeletingClientId} />
+          <ClientActions
+            client={row.original}
+            onView={setViewingClient}
+            onEdit={openEdit}
+            onDelete={setDeletingClientId}
+          />
         ),
       },
     ],
@@ -258,11 +291,15 @@ export default function ClientsPage(): JSX.Element {
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-indigo-50 dark:bg-slate-800 text-sm font-semibold text-indigo-600 dark:text-indigo-400">
                 {initials}
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-slate-100 text-[0.95rem] line-clamp-1">
+              <button
+                type="button"
+                onClick={() => setViewingClient(client)}
+                className="text-left cursor-pointer"
+              >
+                <h3 className="font-semibold text-gray-900 dark:text-slate-100 text-[0.95rem] line-clamp-1 hover:underline">
                   {client.fullName}
                 </h3>
-              </div>
+              </button>
             </div>
             <ClientTagBadge client={client} />
           </div>
@@ -281,7 +318,12 @@ export default function ClientsPage(): JSX.Element {
         {/* Card Footer */}
         <div className="mt-4 flex items-center justify-between border-t border-gray-50 dark:border-slate-800/50 pt-3 text-xs text-gray-400 dark:text-slate-500">
           <span>{lastDate ? formatRelativeTime(lastDate) : "—"}</span>
-          <ClientActions client={client} onDelete={setDeletingClientId} />
+          <ClientActions
+            client={client}
+            onView={setViewingClient}
+            onEdit={openEdit}
+            onDelete={setDeletingClientId}
+          />
         </div>
       </div>
     );
@@ -348,7 +390,7 @@ export default function ClientsPage(): JSX.Element {
         </div>
         <BaseButton
           type="button"
-          onClick={() => {}}
+          onClick={openAdd}
           color="primary"
           icon={<FiPlus className="size-4" />}
           position="icon-first"
@@ -385,6 +427,15 @@ export default function ClientsPage(): JSX.Element {
           },
         }}
       />
+
+      <ClientViewModal
+        client={viewingClient}
+        close={() => setViewingClient(null)}
+        onEdit={openEdit}
+        onDelete={(client) => setDeletingClientId(client.id)}
+      />
+
+      {formOpen && <ClientFormModal close={closeForm} client={editingClient} />}
 
       {/* Delete Confirmation Modal */}
       <ConfirmActionModal
