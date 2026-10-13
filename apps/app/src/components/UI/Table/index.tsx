@@ -48,11 +48,8 @@ interface Props<T> {
   defaultGridColumns?: 2 | 3 | 4;
 }
 
-const gridColsMap = {
-  2: "grid-cols-1 md:grid-cols-2",
-  3: "grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
-  4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4",
-};
+const MIN_CARD_WIDTH = 280;
+const GRID_GAP = 24;
 
 export function Table<T>({
   data,
@@ -79,11 +76,33 @@ export function Table<T>({
   const [internalViewMode, setInternalViewMode] = useState<"list" | "grid">(
     defaultView,
   );
-  const view = viewMode ?? internalViewMode;
+  const requestedView = viewMode ?? internalViewMode;
   const setView = onViewModeChange ?? setInternalViewMode;
   const showToggle = supportedViews.length > 1;
 
+  const view = requestedView;
+
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(defaultGridColumns);
+
+  // Cap columns by the width actually available (accounts for sidebar, not just viewport)
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [maxColumns, setMaxColumns] = useState(4);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const update = () => {
+      const fit = Math.floor(
+        (el.clientWidth + GRID_GAP) / (MIN_CARD_WIDTH + GRID_GAP),
+      );
+      setMaxColumns(Math.max(1, fit));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const effectiveColumns = Math.min(gridColumns, maxColumns);
+  const columnOptions = ([2, 3, 4] as const).filter((c) => c <= maxColumns);
 
   // Internal debounced search handling
   const [searchTerm, setSearchTerm] = useState(searchQuery ?? "");
@@ -125,7 +144,7 @@ export function Table<T>({
   });
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div ref={rootRef} className="flex w-full flex-col gap-5">
       {/* Title block if present (above the toolbar) */}
       {title && (
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
@@ -196,15 +215,15 @@ export function Table<T>({
           )}
 
           {/* Grid Columns Selector — only shown in grid mode */}
-          {view === "grid" && (
+          {view === "grid" && columnOptions.length > 0 && (
             <div className="flex h-11 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-xs">
-              {([2, 3, 4] as const).map((cols) => (
+              {columnOptions.map((cols) => (
                 <button
                   key={cols}
                   type="button"
                   onClick={() => setGridColumns(cols)}
                   className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    gridColumns === cols
+                    effectiveColumns === cols
                       ? "bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-sky-400 font-bold"
                       : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
                   }`}
@@ -390,7 +409,12 @@ export function Table<T>({
               </div>
             ) : (
               <>
-                <div className={`grid gap-6 ${gridColsMap[gridColumns]}`}>
+                <div
+                  className="grid gap-6"
+                  style={{
+                    gridTemplateColumns: `repeat(${effectiveColumns}, minmax(0, 1fr))`,
+                  }}
+                >
                   {table.getRowModel().rows.map((row, index) => (
                     <motion.div
                       key={uuidv4()}
