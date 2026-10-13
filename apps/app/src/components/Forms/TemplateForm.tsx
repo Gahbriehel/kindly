@@ -7,6 +7,7 @@ import { BaseButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
 import { Select, ISelect } from "@/src/components/FormElements/Select";
 import { RichTextEditor } from "@/src/components/FormElements/RichTextEditor";
+import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import {
   useAddTemplate,
@@ -41,7 +42,7 @@ export function TemplateForm({
     control,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty },
   } = useForm<TemplateFormValues>({
     defaultValues: {
       title: "",
@@ -105,11 +106,16 @@ export function TemplateForm({
   };
 
   const isPending = addMutation.isPending || updateMutation.isPending;
+  const { requestClose, prompt } = useUnsavedChangesGuard(
+    isDirty,
+    onClose,
+    isOpen,
+  );
 
   return (
     <SidebarModal
       display={isOpen}
-      close={onClose}
+      close={requestClose}
       title={editingTemplate ? "Edit Template" : "New Template"}
       footer={
         <div className="w-full flex justify-end gap-3">
@@ -117,7 +123,7 @@ export function TemplateForm({
             type="button"
             color="outline"
             text="Cancel"
-            onClick={onClose}
+            onClick={requestClose}
           />
           <BaseButton
             type="button"
@@ -220,6 +226,7 @@ export function TemplateForm({
           )}
         />
       </form>
+      {prompt}
     </SidebarModal>
   );
 }

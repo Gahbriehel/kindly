@@ -29,6 +29,7 @@ import {
 } from "@/src/components/FormElements/Select";
 import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 import { useAddClient, useUpdateClient } from "@/src/hooks/useClientQuery";
+import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { customToast } from "@/src/helpers/customToast";
 import { formatDateToInputType } from "@/src/helpers/formatDate";
 import type {
@@ -139,7 +140,12 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
   const [eventOpen, setEventOpen] = useState(false);
   const [tagInput, setTagInput] = useState("");
 
-  const { control, handleSubmit, setValue } = useForm<ClientFormValues>({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { isDirty },
+  } = useForm<ClientFormValues>({
     defaultValues: getDefaultValues(client),
   });
 
@@ -148,9 +154,11 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
     name: "persons",
   });
 
-  const handleClose = () => {
-    close();
-  };
+  const handleClose = close;
+  const { requestClose, prompt } = useUnsavedChangesGuard(
+    isDirty || tagInput.trim() !== "",
+    close,
+  );
 
   const addMutation = useAddClient({
     onSuccess: () => {
@@ -237,7 +245,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
   return (
     <SidebarModal
       display
-      close={handleClose}
+      close={requestClose}
       title={isEdit ? "Edit Client" : "Add New Client"}
       footer={
         <>
@@ -245,7 +253,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
             type="button"
             color="outline"
             text="Cancel"
-            onClick={handleClose}
+            onClick={requestClose}
             disabled={isSubmitting}
             className="h-12 flex-1 rounded-2xl"
           />
@@ -481,6 +489,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
           </div>
         )}
       </form>
+      {prompt}
     </SidebarModal>
   );
 }

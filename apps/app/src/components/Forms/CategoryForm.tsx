@@ -7,6 +7,7 @@ import { BaseButton, DeleteButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
 import { Table } from "@/src/components/UI/Table";
 import { ActionsList } from "@/src/components/UI/ActionsList";
+import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import {
   useAddCategory,
@@ -55,7 +56,12 @@ export function CategoryForm(): JSX.Element {
     null,
   );
 
-  const { control, handleSubmit, reset } = useForm<CategoryFormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useForm<CategoryFormValues>({
     defaultValues: { name: "" },
   });
 
@@ -64,6 +70,12 @@ export function CategoryForm(): JSX.Element {
     setEditingCategory(null);
     reset({ name: "" });
   };
+
+  const { requestClose, prompt } = useUnsavedChangesGuard(
+    isDirty,
+    closeDrawer,
+    isDrawerOpen,
+  );
 
   const addMutation = useAddCategory({ onSuccess: closeDrawer });
   const updateMutation = useUpdateCategory({ onSuccess: closeDrawer });
@@ -222,7 +234,7 @@ export function CategoryForm(): JSX.Element {
 
       <SidebarModal
         display={isDrawerOpen}
-        close={closeDrawer}
+        close={requestClose}
         title={editingCategory ? "Edit Category" : "Add Template Category"}
         footer={
           <fieldset className="w-full grid grid-cols-2 gap-6 py-4 px-0">
@@ -245,7 +257,7 @@ export function CategoryForm(): JSX.Element {
             ) : (
               <>
                 <BaseButton
-                  onClick={closeDrawer}
+                  onClick={requestClose}
                   color="outline"
                   text="Cancel"
                   className="px-5 py-2.5 rounded-xl text-sm"
@@ -293,6 +305,7 @@ export function CategoryForm(): JSX.Element {
           )}
         </form>
       </SidebarModal>
+      {prompt}
     </>
   );
 }
