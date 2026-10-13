@@ -94,6 +94,7 @@ export function Table<T>({
     if (searchQuery !== undefined && searchQuery !== searchTerm) {
       setSearchTerm(searchQuery);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   // Debounce calling onSearchChange

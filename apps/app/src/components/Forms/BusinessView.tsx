@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type JSX } from "react";
+import { useCallback, useEffect, useMemo, useState, type JSX } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { FiPhone, FiGlobe, FiMapPin, FiBriefcase } from "react-icons/fi";
 import { LuPencil } from "react-icons/lu";
@@ -78,7 +78,7 @@ export function BusinessView(): JSX.Element {
     [],
   );
 
-  const getInitialValues = (): BusinessFormValues => {
+  const getInitialValues = useCallback((): BusinessFormValues => {
     const countValue = company?.estimatedClientCount
       ? String(company.estimatedClientCount)
       : "5";
@@ -123,7 +123,8 @@ export function BusinessView(): JSX.Element {
       bankAccountName: company?.bankAccountName ?? "",
       bankAccountNumber: company?.bankAccountNumber ?? "",
     };
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [company, industriesQuery.data]);
 
   const { control, handleSubmit, reset } = useForm<BusinessFormValues>({
     defaultValues: getInitialValues(),
@@ -134,7 +135,7 @@ export function BusinessView(): JSX.Element {
     if (company) {
       reset(getInitialValues());
     }
-  }, [company, reset, industriesQuery.data]);
+  }, [company, reset, industriesQuery.data, getInitialValues]);
 
   // Live preview watch
   const watchedBusinessName = useWatch({ control, name: "businessName" });
