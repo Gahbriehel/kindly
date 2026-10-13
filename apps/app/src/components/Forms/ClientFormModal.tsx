@@ -265,7 +265,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
         noValidate
         className="flex flex-col gap-6"
       >
-        <h3 className="font-semibold text-gray-900 dark:text-slate-100">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
           Client Details
         </h3>
 
@@ -426,7 +426,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
               aria-expanded={eventOpen}
               className="flex w-full cursor-pointer items-center justify-between text-left"
             >
-              <span className="font-semibold text-gray-900 dark:text-slate-100">
+              <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">
                 Event / Milestone{" "}
                 <span className="text-xs font-normal text-gray-500 dark:text-slate-400">
                   (optional)

@@ -69,7 +69,7 @@ export const SidebarModal = ({
             <div className="h-1.5 w-full bg-theme-primary shrink-0" />
 
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-slate-800">
-              <h2 className="font-manrope text-xl font-bold text-gray-900 dark:text-slate-100">
+              <h2 className="font-manrope text-base font-bold text-gray-900 dark:text-slate-100">
                 {title}
               </h2>
               <button

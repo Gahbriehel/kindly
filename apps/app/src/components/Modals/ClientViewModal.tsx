@@ -100,7 +100,7 @@ export function ClientViewModal({
               {getInitials(client.fullName) || "CL"}
             </div>
             <div className="min-w-0">
-              <h2 className="truncate font-manrope text-lg font-bold text-gray-900 dark:text-slate-100">
+              <h2 className="truncate font-manrope text-base font-bold text-gray-900 dark:text-slate-100">
                 {client.fullName}
               </h2>
               {tags.length > 0 && (
@@ -123,7 +123,7 @@ export function ClientViewModal({
               <span className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">
                 <FiGift className="size-4" /> Birthday
               </span>
-              <p className="mt-1 font-manrope text-xl font-bold text-gray-900 dark:text-slate-100">
+              <p className="mt-1 font-manrope text-base font-bold text-gray-900 dark:text-slate-100">
                 {birthday.format("MMMM D, YYYY")}
               </p>
               <span className="mt-1 flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400">
