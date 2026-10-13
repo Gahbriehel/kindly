@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { FiArrowRight, FiX } from "react-icons/fi";
 import { UpgradeModal } from "../Modals/UpgradeModal";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
@@ -71,10 +72,13 @@ export function SubscriptionBadge({
         </button>
       </div>
 
-      <UpgradeModal
-        isOpen={upgradeModalOpen}
-        onClose={() => setUpgradeModalOpen(false)}
-      />
+      {createPortal(
+        <UpgradeModal
+          isOpen={upgradeModalOpen}
+          onClose={() => setUpgradeModalOpen(false)}
+        />,
+        document.body,
+      )}
     </>
   );
 }

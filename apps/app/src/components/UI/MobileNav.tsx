@@ -8,6 +8,7 @@ import { clsx } from "clsx";
 import { Logo } from "./Logo";
 import { navLinks } from "@/src/helpers/navLinks";
 import { IoClose } from "react-icons/io5";
+import { SubscriptionBadge } from "./SubscriptionBadge";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -86,6 +87,8 @@ export const MobileNav = memo(function MobileNav({
                 })}
               </ul>
             </nav>
+
+            <SubscriptionBadge collapsed={false} />
 
             <div className="border-t border-gray-100 dark:border-slate-800 p-6 space-y-4">
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-slate-500 ">
