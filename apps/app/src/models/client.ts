@@ -1,7 +1,6 @@
 import type { IBaseResponse } from "./base";
 
 export type ClientType = "INDIVIDUAL" | "MULTIPLE";
-export type ClientEventType = "BIRTHDAY" | "WEDDING" | "ANNIVERSARY";
 
 export interface ICreateClientItem {
   clientId?: string;
@@ -15,7 +14,7 @@ export interface ICreateClientPayload {
   type: ClientType;
   eventName?: string;
   eventDate?: string;
-  eventType?: ClientEventType;
+  categoryId?: string;
   individual?: ICreateClientItem | null;
   multiple?: ICreateClientItem[] | null;
 }
@@ -36,6 +35,7 @@ export interface IClientEvent {
   date: string;
   isRecurring: boolean;
   categoryId?: string;
+  category?: { id: string; name: string } | null;
   notes?: string;
   createdAt?: string;
   updatedAt?: string;

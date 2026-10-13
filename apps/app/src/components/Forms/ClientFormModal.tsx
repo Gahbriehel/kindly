@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentProps, type JSX } from "react";
+import { useMemo, useState, type ComponentProps, type JSX } from "react";
 import {
   useFieldArray,
   useForm,
@@ -22,20 +22,20 @@ import { clsx } from "clsx";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
+import {
+  Select,
+  emptySelect,
+  type ISelect,
+} from "@/src/components/FormElements/Select";
+import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 import { useAddClient, useUpdateClient } from "@/src/hooks/useClientQuery";
 import { customToast } from "@/src/helpers/customToast";
 import { formatDateToInputType } from "@/src/helpers/formatDate";
 import type {
-  ClientEventType,
   IClient,
   ICreateClientItem,
   ICreateClientPayload,
 } from "@/src/models/client";
-
-const EVENT_OPTIONS: { value: ClientEventType; label: string }[] = [
-  { value: "WEDDING", label: "Wedding" },
-  { value: "ANNIVERSARY", label: "Anniversary" },
-];
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -48,7 +48,8 @@ interface PersonValues {
 
 interface ClientFormValues {
   persons: PersonValues[];
-  eventType: ClientEventType | "";
+  category: ISelect;
+  eventName: string;
   eventDate: string;
   birthDate: string;
   tags: string[];
@@ -65,7 +66,8 @@ function getDefaultValues(client: IClient | null): ClientFormValues {
   if (!client) {
     return {
       persons: [emptyPerson()],
-      eventType: "",
+      category: emptySelect(),
+      eventName: "",
       eventDate: "",
       birthDate: "",
       tags: [],
@@ -80,7 +82,8 @@ function getDefaultValues(client: IClient | null): ClientFormValues {
         birthDate: "",
       },
     ],
-    eventType: "",
+    category: emptySelect(),
+    eventName: "",
     eventDate: "",
     birthDate: client.birthDate ? formatDateToInputType(client.birthDate) : "",
     tags: client.tags ?? [],
@@ -164,7 +167,22 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
 
   const isSubmitting = addMutation.isPending || updateMutation.isPending;
   const tags = useWatch({ control, name: "tags" });
-  const eventType = useWatch({ control, name: "eventType" });
+  const eventName = useWatch({ control, name: "eventName" });
+  const anyBirthDate = useWatch({ control, name: "persons" }).some(
+    (p) => p.birthDate,
+  );
+
+  const { data: categoriesData, isLoading: loadingCategories } =
+    useCategoriesQuery();
+  // The backend creates the Birthday event itself when a birth date is given.
+  const availableCategories = useMemo(() => {
+    const categories = categoriesData?.data.categories ?? [];
+    return (
+      anyBirthDate
+        ? categories.filter((c) => c.name.toLowerCase() !== "birthday")
+        : categories
+    ).map((c): ISelect => ({ value: { _id: c.id }, label: c.name }));
+  }, [categoriesData, anyBirthDate]);
 
   const addTag = () => {
     const value = tagInput.trim();
@@ -193,18 +211,17 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
     }
 
     const isMultiple = values.persons.length > 1;
-    const eventLabel = EVENT_OPTIONS.find(
-      (o) => o.value === values.eventType,
-    )?.label;
     const payload: ICreateClientPayload = {
       type: isMultiple ? "MULTIPLE" : "INDIVIDUAL",
       individual: isMultiple ? null : toItem(first),
       multiple: isMultiple ? values.persons.map(toItem) : null,
-      ...(values.eventType &&
+      ...(values.eventName.trim() &&
         values.eventDate && {
-          eventType: values.eventType,
-          eventName: eventLabel,
+          eventName: values.eventName.trim(),
           eventDate: values.eventDate,
+          ...(values.category.value._id && {
+            categoryId: values.category.value._id,
+          }),
         }),
     };
     addMutation.mutate(payload);
@@ -425,38 +442,35 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
 
             {eventOpen && (
               <div className="mt-5 flex flex-col gap-6">
-                <fieldset className="relative space-y-2">
-                  <label
-                    htmlFor="client-event-type"
-                    className="block text-sm font-semibold text-gray-600 dark:text-slate-400"
-                  >
-                    Event Type
-                  </label>
-                  <Controller
-                    name="eventType"
-                    control={control}
-                    render={({ field }) => (
-                      <select
-                        {...field}
-                        id="client-event-type"
-                        className="h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm font-medium text-gray-700 outline-none transition-all focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200"
-                      >
-                        <option value="">Select event type</option>
-                        {EVENT_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  />
-                </fieldset>
+                <ControlledInput
+                  control={control}
+                  name="eventName"
+                  id="client-event-name"
+                  label="Event Name"
+                  placeholder="e.g. Grace's Wedding"
+                />
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      ref={field.ref}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      label="Milestone Category"
+                      placeholder="Select category"
+                      options={availableCategories}
+                      loading={loadingCategories}
+                    />
+                  )}
+                />
                 <ControlledInput
                   control={control}
                   name="eventDate"
                   rules={{
                     validate: (v) =>
-                      !eventType || !!v || "Event date is required",
+                      !eventName.trim() || !!v || "Event date is required",
                   }}
                   id="client-event-date"
                   label="Event Date"

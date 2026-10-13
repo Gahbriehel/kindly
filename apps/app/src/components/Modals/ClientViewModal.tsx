@@ -161,8 +161,20 @@ export function ClientViewModal({
                     key={event.id}
                     className="flex items-center justify-between gap-3 px-4 py-3 text-sm"
                   >
-                    <span className="font-medium text-gray-900 dark:text-slate-100">
-                      {event.title}
+                    <span className="flex min-w-0 flex-wrap items-center gap-1.5">
+                      <span className="font-medium text-gray-900 dark:text-slate-100">
+                        {event.title}
+                      </span>
+                      {event.category && (
+                        <span className="rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                          {event.category.name}
+                        </span>
+                      )}
+                      {event.isRecurring && (
+                        <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-600 dark:border-indigo-800/40 dark:bg-indigo-950/40 dark:text-indigo-400">
+                          Annual
+                        </span>
+                      )}
                     </span>
                     <span className="flex items-center gap-1.5 text-gray-500 dark:text-slate-400">
                       <FiCalendar className="size-3.5" />
