@@ -56,6 +56,18 @@ export interface IUserData {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  staffCount?: number;
+  hasStaff?: boolean;
+  client_limit?: IClientLimit;
+}
+
+export interface IClientLimit {
+  used: number;
+  max: number;
+  percentage: number;
+  remaining: number;
+  is_nearing_limit: boolean;
+  is_reached: boolean;
 }
 
 export interface IUpdateProfilePayload {
