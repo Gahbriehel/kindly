@@ -5,14 +5,20 @@ import { useAppDispatch } from "../hooks/useAppDispatch";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { logOut, setRedirectUrl, setTokens } from "../store/slices/auth";
+import { logOut, setRedirectUrl } from "../store/slices/auth";
 import { customToast } from "../helpers/customToast";
 import { persistor, store } from "../store";
 import { Toaster } from "react-hot-toast";
 import { axiosErrorToast } from "../helpers/axiosErrorToast";
-import { type ReactNode, type JSX, useEffect } from "react";
+import {
+  type ReactNode,
+  type JSX,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { type IBaseResponse } from "../models/base";
-import { refreshTokenRequest } from "../services/auth";
+import { refreshAccessToken } from "./session";
 
 interface Props {
   children: ReactNode;
@@ -34,31 +40,36 @@ export function QueryProvider({ children }: Props): JSX.Element {
 // Configure axios defaults
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_PROD_SERVER;
 axios.defaults.headers.post["Content-Type"] = "application/json";
-
-let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (tokens: { accessToken: string; refreshToken: string }) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  reject: (error: any) => void;
-}> = [];
-
-const processQueue = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: any,
-  tokens: { accessToken: string; refreshToken: string } | null = null,
-) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(tokens!);
-    }
-  });
-  failedQueue = [];
-};
+axios.defaults.withCredentials = true;
 
 export function AxiosProvider({ children }: Props): JSX.Element {
   const dispatch = useAppDispatch();
+  const [ready, setReady] = useState(() => {
+    const { user, accessToken } = store.getState().auth;
+    return !user || !!accessToken;
+  });
+
+  const expireSession = useCallback(() => {
+    customToast.error("Session has expired");
+    if (typeof window !== "undefined") {
+      const currentUrl = window.location.pathname + window.location.search;
+      dispatch(setRedirectUrl(currentUrl));
+    }
+    dispatch(logOut());
+    queryClient.clear();
+  }, [dispatch]);
+
+  // The access token is memory-only, so after a reload restore it from the
+  // refresh cookie before rendering anything that makes authenticated calls.
+  useEffect(() => {
+    if (ready) return;
+    refreshAccessToken()
+      .catch(() => {
+        dispatch(logOut());
+        queryClient.clear();
+      })
+      .finally(() => setReady(true));
+  }, [dispatch, ready]);
 
   useEffect(() => {
     const requestInterceptor = axios.interceptors.request.use(
@@ -94,58 +105,14 @@ export function AxiosProvider({ children }: Props): JSX.Element {
           !isRefreshRequest &&
           !originalRequest._retry
         ) {
-          if (isRefreshing) {
-            return (
-              new Promise((resolve, reject) => {
-                failedQueue.push({ resolve, reject });
-              })
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .then((tokens: any) => {
-                  originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
-                  return axios(originalRequest);
-                })
-                .catch((err) => Promise.reject(err))
-            );
-          }
-
           originalRequest._retry = true;
-          isRefreshing = true;
-
-          const state = store.getState();
-          const refreshToken = state.auth.refreshToken;
-
-          if (refreshToken) {
-            try {
-              const response = await refreshTokenRequest(refreshToken);
-              const { tokens } = response.data;
-              dispatch(setTokens(tokens));
-              processQueue(null, tokens);
-              originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
-              return axios(originalRequest);
-            } catch (refreshError) {
-              processQueue(refreshError, null);
-              customToast.error("Session has expired");
-              if (typeof window !== "undefined") {
-                const currentUrl =
-                  window.location.pathname + window.location.search;
-                dispatch(setRedirectUrl(currentUrl));
-              }
-              dispatch(logOut());
-              queryClient.clear();
-              return Promise.reject(refreshError);
-            } finally {
-              isRefreshing = false;
-            }
-          } else {
-            customToast.error("Session has expired");
-            if (typeof window !== "undefined") {
-              const currentUrl =
-                window.location.pathname + window.location.search;
-              dispatch(setRedirectUrl(currentUrl));
-            }
-            dispatch(logOut());
-            queryClient.clear();
-            return Promise.reject(error);
+          try {
+            const accessToken = await refreshAccessToken();
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            return axios(originalRequest);
+          } catch (refreshError) {
+            expireSession();
+            return Promise.reject(refreshError);
           }
         }
 
@@ -185,9 +152,9 @@ export function AxiosProvider({ children }: Props): JSX.Element {
       axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, [dispatch]);
+  }, [dispatch, expireSession]);
 
-  return <>{children}</>;
+  return ready ? <>{children}</> : <></>;
 }
 
 export function ReduxProvider({ children }: Props): JSX.Element {

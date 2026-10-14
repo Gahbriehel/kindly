@@ -7,6 +7,8 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
+  createTransform,
+  type PersistConfig,
 } from "redux-persist";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./slices/auth";
@@ -31,15 +33,24 @@ const storage =
     ? createWebStorage("local")
     : createNoopStorage();
 
-const persistConfig = {
-  key: "kindly-v1",
-  storage,
-  whitelist: ["auth"],
-};
-
 const rootReducer = combineReducers({
   auth: authSlice,
 });
+
+// The access token lives in memory only. Strip it on write, and on read so a
+// token persisted by an older version is dropped.
+const dropAccessToken = createTransform(
+  (state: Record<string, unknown>) => ({ ...state, accessToken: null }),
+  (state: Record<string, unknown>) => ({ ...state, accessToken: null }),
+  { whitelist: ["auth"] },
+);
+
+const persistConfig: PersistConfig<ReturnType<typeof rootReducer>> = {
+  key: "kindly-v1",
+  storage,
+  whitelist: ["auth"],
+  transforms: [dropAccessToken],
+};
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

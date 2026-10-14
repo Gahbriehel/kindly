@@ -79,10 +79,7 @@ export interface IUpdateProfilePayload {
 
 export interface IRefreshResponse extends IBaseResponse {
   data: {
-    tokens: {
-      accessToken: string;
-      refreshToken: string;
-    };
+    accessToken: string;
   };
 }
 

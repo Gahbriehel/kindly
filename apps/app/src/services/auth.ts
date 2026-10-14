@@ -28,10 +28,8 @@ export async function logout() {
   return response.data;
 }
 
-export async function refreshTokenRequest(refreshToken: string) {
-  const response = await axios.post<IRefreshResponse>(`/auth/refresh`, {
-    refreshToken,
-  });
+export async function refreshTokenRequest() {
+  const response = await axios.post<IRefreshResponse>(`/auth/refresh`);
   return response.data;
 }
 
