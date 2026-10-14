@@ -6,6 +6,7 @@ import type {
   ISingleClientResponse,
   ICreateClientPayload,
   IUpdateClientPayload,
+  ITagResponse,
 } from "../models/client";
 
 export async function getClients(
@@ -45,5 +46,14 @@ export async function updateClient(
 
 export async function deleteClient(id: string): Promise<IBaseResponse> {
   const response = await axios.delete<IBaseResponse>(`/clients/${id}`);
+  return response.data;
+}
+
+export async function getTags(
+  params: IQueryParams = {},
+): Promise<ITagResponse> {
+  const response = await axios.get<ITagResponse>("/clients/tags", {
+    params: cleanObject(params),
+  });
   return response.data;
 }

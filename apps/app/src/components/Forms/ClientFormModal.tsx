@@ -10,12 +10,13 @@ import {
   type Path,
   type RegisterOptions,
 } from "react-hook-form";
-import { FiChevronDown, FiMail, FiPlus, FiTag, FiX } from "react-icons/fi";
+import { FiChevronDown, FiMail, FiPlus, FiX } from "react-icons/fi";
 import { clsx } from "clsx";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
 import { PhoneInput } from "@/src/components/FormElements/PhoneInput";
+import { TagInput } from "@/src/components/FormElements/TagInput";
 import {
   Select,
   emptySelect,
@@ -132,7 +133,7 @@ interface Props {
 export function ClientFormModal({ close, client = null }: Props): JSX.Element {
   const isEdit = !!client;
   const [eventOpen, setEventOpen] = useState(false);
-  const [tagInput, setTagInput] = useState("");
+  const [hasTagDraft, setHasTagDraft] = useState(false);
 
   const {
     control,
@@ -150,7 +151,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
 
   const handleClose = close;
   const { requestClose, prompt } = useUnsavedChangesGuard(
-    isDirty || tagInput.trim() !== "",
+    isDirty || hasTagDraft,
     close,
   );
 
@@ -186,15 +187,6 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
     ).map((c): ISelect => ({ value: { _id: c.id }, label: c.name }));
   }, [categoriesData, anyBirthDate]);
 
-  const addTag = () => {
-    const value = tagInput.trim();
-    if (!value) return;
-    if (!tags.some((t) => t.toLowerCase() === value.toLowerCase())) {
-      setValue("tags", [...tags, value]);
-    }
-    setTagInput("");
-  };
-
   const onSubmit = (values: ClientFormValues) => {
     const [first] = values.persons;
 
@@ -217,6 +209,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
       type: isMultiple ? "MULTIPLE" : "INDIVIDUAL",
       individual: isMultiple ? null : toItem(first),
       multiple: isMultiple ? values.persons.map(toItem) : null,
+      ...(values.tags.length > 0 && { tags: values.tags }),
       ...(values.eventName.trim() &&
         values.eventDate && {
           eventName: values.eventName.trim(),
@@ -354,6 +347,12 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
           </button>
         )}
 
+        <TagInput
+          value={tags}
+          onChange={(next) => setValue("tags", next, { shouldDirty: true })}
+          onDraftChange={setHasTagDraft}
+        />
+
         {isEdit && (
           <>
             <ControlledInput
@@ -363,64 +362,6 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
               label="Birth Date"
               type="date"
             />
-            <div className="space-y-2">
-              <label
-                htmlFor="client-tag"
-                className="block text-sm font-semibold text-gray-600 dark:text-slate-400"
-              >
-                Tags (Optional)
-              </label>
-              <div className="flex gap-3">
-                <div className="relative flex-1">
-                  <FiTag className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
-                  <input
-                    id="client-tag"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addTag();
-                      }
-                    }}
-                    placeholder="e.g. VIP, Referral..."
-                    className="h-10 w-full rounded-xl border border-gray-200 bg-gray-50 pl-10 pr-4 text-sm font-medium text-gray-700 outline-none transition-all placeholder-gray-400 focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500"
-                  />
-                </div>
-                <BaseButton
-                  type="button"
-                  color="primary"
-                  text="Add"
-                  onClick={addTag}
-                  className="rounded-xl px-5"
-                />
-              </div>
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                    >
-                      {tag}
-                      <button
-                        type="button"
-                        aria-label={`Remove ${tag}`}
-                        onClick={() =>
-                          setValue(
-                            "tags",
-                            tags.filter((t) => t !== tag),
-                          )
-                        }
-                        className="cursor-pointer text-gray-400 hover:text-red-500"
-                      >
-                        <FiX className="size-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
           </>
         )}
 

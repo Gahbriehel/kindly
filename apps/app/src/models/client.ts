@@ -1,4 +1,4 @@
-import type { IBaseResponse } from "./base";
+import type { IBaseResponse, IPagination } from "./base";
 
 export type ClientType = "INDIVIDUAL" | "MULTIPLE";
 
@@ -15,6 +15,8 @@ export interface ICreateClientPayload {
   eventName?: string;
   eventDate?: string;
   categoryId?: string;
+  /** Applied to everyone in the submission; the backend saves new ones. */
+  tags?: string[];
   individual?: ICreateClientItem | null;
   multiple?: ICreateClientItem[] | null;
 }
@@ -66,24 +68,20 @@ export interface IClient {
 
 export interface IClientResponse extends IBaseResponse {
   data: IClient[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-    nextPage: number | null;
-    prevPage: number | null;
-    links: {
-      first: string;
-      prev: string | null;
-      next: string | null;
-      last: string;
-    };
-  };
+  pagination: IPagination;
 }
 
 export interface ISingleClientResponse extends IBaseResponse {
   data: IClient;
+}
+
+export interface ITag {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface ITagResponse extends IBaseResponse {
+  data: ITag[];
+  pagination: IPagination;
 }

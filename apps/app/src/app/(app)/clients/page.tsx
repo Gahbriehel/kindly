@@ -17,13 +17,30 @@ import { ActionsList } from "@/src/components/UI/ActionsList";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { ClientViewModal } from "@/src/components/Modals/ClientViewModal";
 import { ClientFormModal } from "@/src/components/Forms/ClientFormModal";
-import { useClientsQuery, useDeleteClient } from "@/src/hooks/useClientQuery";
+import {
+  useClientsQuery,
+  useDeleteClient,
+  useTagsQuery,
+} from "@/src/hooks/useClientQuery";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatRelativeTime } from "@/src/helpers/dateHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
 import { customToast } from "@/src/helpers/customToast";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { IClient } from "@/src/models/client";
+
+const SAVED_TAGS_LIMIT = 50;
+
+type ClientFilter =
+  | { type: "tag"; name: string }
+  | { type: "group"; id: string; name: string };
+
+const sameFilter = (a: ClientFilter | null, b: ClientFilter): boolean =>
+  !!a &&
+  a.type === b.type &&
+  (a.type === "group" && b.type === "group"
+    ? a.id === b.id
+    : a.name.toLowerCase() === b.name.toLowerCase());
 
 function getTagBadgeStyle(tag: string) {
   const lower = tag.toLowerCase();
@@ -147,7 +164,7 @@ function ClientActions({
 
 export default function ClientsPage(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState("");
-  const [tagFilter, setTagFilter] = useState<string>("ALL");
+  const [filter, setFilterState] = useState<ClientFilter | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
@@ -169,10 +186,17 @@ export default function ClientsPage(): JSX.Element {
     setEditingClient(null);
   };
 
+  const setFilter = (next: ClientFilter | null) => {
+    setFilterState(next);
+    setCurrentPage(1);
+  };
+
   const { data, isLoading, error } = useClientsQuery({
     page: currentPage,
     limit: pageSize,
     search: searchQuery || undefined,
+    tag: filter?.type === "tag" ? filter.name : undefined,
+    groupId: filter?.type === "group" ? filter.id : undefined,
   });
 
   const deleteMutation = useDeleteClient({
@@ -185,24 +209,47 @@ export default function ClientsPage(): JSX.Element {
 
   const rawClients = useMemo(() => data?.data ?? [], [data?.data]);
 
-  const availableTags = useMemo(() => {
-    const tagsSet = new Set<string>();
-    rawClients.forEach((client) => {
-      client.tags?.forEach((t) => t && tagsSet.add(t));
-      client.groups?.forEach((g) => g.name && tagsSet.add(g.name));
-    });
-    return Array.from(tagsSet);
-  }, [rawClients]);
+  const { data: savedTags } = useTagsQuery({ limit: SAVED_TAGS_LIMIT });
 
-  const clients = useMemo(() => {
-    if (tagFilter === "ALL") return rawClients;
-    const lowerFilter = tagFilter.toLowerCase();
-    return rawClients.filter(
-      (client) =>
-        client.tags?.some((t) => t.toLowerCase() === lowerFilter) ||
-        client.groups?.some((g) => g.name.toLowerCase() === lowerFilter),
+  // There is no group list endpoint, and a filtered page only contains the
+  // filtered group/tag, so remember every tag and group seen on loaded clients
+  // (deleting a saved tag leaves it on existing clients).
+  const [seen, setSeen] = useState<{
+    source: IClient[];
+    tags: string[];
+    groups: Record<string, string>;
+  }>({ source: [], tags: [], groups: {} });
+
+  if (seen.source !== rawClients) {
+    const tags = new Set(seen.tags);
+    const groups = { ...seen.groups };
+    rawClients.forEach((c) => {
+      c.tags?.forEach((t) => t && tags.add(t));
+      c.groups?.forEach((g) => g.id && g.name && (groups[g.id] = g.name));
+    });
+    setSeen({ source: rawClients, tags: Array.from(tags), groups });
+  }
+  const { tags: seenTags, groups: seenGroups } = seen;
+
+  const filterOptions = useMemo<ClientFilter[]>(() => {
+    const names = new Map<string, string>();
+    [...(savedTags?.data.map((t) => t.name) ?? []), ...seenTags].forEach(
+      (name) =>
+        name &&
+        !names.has(name.toLowerCase()) &&
+        names.set(name.toLowerCase(), name),
     );
-  }, [rawClients, tagFilter]);
+    return [
+      ...Array.from(names.values()).map(
+        (name): ClientFilter => ({ type: "tag", name }),
+      ),
+      ...Object.entries(seenGroups).map(
+        ([id, name]): ClientFilter => ({ type: "group", id, name }),
+      ),
+    ];
+  }, [savedTags, seenTags, seenGroups]);
+
+  const clients = rawClients;
 
   const totalClientsCount = data?.pagination?.total ?? rawClients.length;
 
@@ -335,10 +382,10 @@ export default function ClientsPage(): JSX.Element {
         <span className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-wider">
           Filter by Tag
         </span>
-        {tagFilter !== "ALL" && (
+        {filter && (
           <button
             type="button"
-            onClick={() => setTagFilter("ALL")}
+            onClick={() => setFilter(null)}
             className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
           >
             Reset
@@ -348,27 +395,31 @@ export default function ClientsPage(): JSX.Element {
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={() => setTagFilter("ALL")}
+          onClick={() => setFilter(null)}
           className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-            tagFilter === "ALL"
+            !filter
               ? "bg-theme-primary text-white"
               : "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700"
           }`}
         >
           All
         </button>
-        {availableTags.map((tag) => (
+        {filterOptions.map((option) => (
           <button
-            key={tag}
+            key={
+              option.type === "group"
+                ? `group:${option.id}`
+                : `tag:${option.name}`
+            }
             type="button"
-            onClick={() => setTagFilter(tag)}
+            onClick={() => setFilter(option)}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-              tagFilter === tag
+              sameFilter(filter, option)
                 ? "bg-theme-primary text-white"
                 : "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700"
             }`}
           >
-            {tag}
+            {option.name}
           </button>
         ))}
       </div>
@@ -412,13 +463,12 @@ export default function ClientsPage(): JSX.Element {
           setCurrentPage(1);
         }}
         filterContent={filterPopoverContent}
-        filterActiveCount={tagFilter !== "ALL" ? 1 : 0}
+        filterActiveCount={filter ? 1 : 0}
         renderGridItem={renderGridItem}
         pagination={{
           currentPage,
           totalPages: data?.pagination?.totalPages ?? 1,
-          totalResults:
-            tagFilter !== "ALL" ? clients.length : totalClientsCount,
+          totalResults: totalClientsCount,
           pageSize,
           onPageChange: (page: number) => setCurrentPage(page),
           onPageSizeChange: (size) => {

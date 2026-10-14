@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { IQueryParams } from "../models/base";
 import {
   getClients,
@@ -6,6 +11,7 @@ import {
   createClient,
   updateClient,
   deleteClient,
+  getTags,
 } from "../services/clients";
 import type {
   ICreateClientPayload,
@@ -13,6 +19,7 @@ import type {
 } from "../models/client";
 
 const CLIENTS_KEY = "clients";
+const TAGS_KEY = "client-tags";
 
 export function useClientsQuery(params: IQueryParams = {}) {
   return useQuery({
@@ -29,6 +36,14 @@ export function useClientQuery(id: string) {
   });
 }
 
+export function useTagsQuery(params: IQueryParams = {}) {
+  return useQuery({
+    queryKey: [TAGS_KEY, { ...params }],
+    queryFn: async () => await getTags(params),
+    placeholderData: keepPreviousData,
+  });
+}
+
 interface MutationProps {
   onSuccess?: () => void;
 }
@@ -39,6 +54,7 @@ export function useAddClient({ onSuccess }: MutationProps = {}) {
     mutationFn: (payload: ICreateClientPayload) => createClient(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
+      queryClient.invalidateQueries({ queryKey: [TAGS_KEY] });
       onSuccess?.();
     },
   });
@@ -56,6 +72,7 @@ export function useUpdateClient({ onSuccess }: MutationProps = {}) {
     }) => updateClient(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
+      queryClient.invalidateQueries({ queryKey: [TAGS_KEY] });
       onSuccess?.();
     },
   });

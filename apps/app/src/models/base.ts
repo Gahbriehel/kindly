@@ -20,6 +20,8 @@ export interface IQueryParams {
   enabled?: boolean;
   type?: string;
   search?: string;
+  tag?: string;
+  groupId?: string;
 
   page?: number;
   limit?: number;
@@ -30,4 +32,21 @@ export interface IQueryParams {
   purchaseRef?: string;
   viewed?: boolean;
   paymentType?: string;
+}
+
+export interface IPagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  nextPage: number | null;
+  prevPage: number | null;
+  links: {
+    first: string;
+    prev: string | null;
+    next: string | null;
+    last: string;
+  };
 }
