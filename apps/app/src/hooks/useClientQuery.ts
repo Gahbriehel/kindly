@@ -73,6 +73,9 @@ export function useUpdateClient({ onSuccess }: MutationProps = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
       queryClient.invalidateQueries({ queryKey: [TAGS_KEY] });
+      // An event may have been created or merged, so refresh event-backed views.
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       onSuccess?.();
     },
   });

@@ -99,6 +99,18 @@ function toItem(person: PersonValues): ICreateClientItem {
   };
 }
 
+function eventFields(values: ClientFormValues) {
+  const name = values.eventName.trim();
+  if (!name || !values.eventDate) return {};
+  return {
+    eventName: name,
+    eventDate: values.eventDate,
+    ...(values.category.value._id && {
+      categoryId: values.category.value._id,
+    }),
+  };
+}
+
 type InputProps = Omit<ComponentProps<typeof Input>, "name" | "defaultValue">;
 
 function ControlledInput({
@@ -175,6 +187,11 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
   const isSubmitting = addMutation.isPending || updateMutation.isPending;
   const tags = useWatch({ control, name: "tags" });
   const eventName = useWatch({ control, name: "eventName" });
+  const eventDate = useWatch({ control, name: "eventDate" });
+  const eventCategory = useWatch({ control, name: "category" });
+  // Name and date must be supplied together as soon as any event field is used.
+  const hasEventInput =
+    !!eventName.trim() || !!eventDate || !!eventCategory.value._id;
   const anyBirthDate = useWatch({ control, name: "persons" }).some(
     (p) => p.birthDate,
   );
@@ -203,6 +220,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
           phoneNumber: first.phone.trim(),
           ...(values.birthDate && { birthDate: values.birthDate }),
           tags: values.tags,
+          ...eventFields(values),
         },
       });
       return;
@@ -214,14 +232,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
       individual: isMultiple ? null : toItem(first),
       multiple: isMultiple ? values.persons.map(toItem) : null,
       ...(values.tags.length > 0 && { tags: values.tags }),
-      ...(values.eventName.trim() &&
-        values.eventDate && {
-          eventName: values.eventName.trim(),
-          eventDate: values.eventDate,
-          ...(values.category.value._id && {
-            categoryId: values.category.value._id,
-          }),
-        }),
+      ...eventFields(values),
     };
     addMutation.mutate(payload);
   };
@@ -385,68 +396,72 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
           </>
         )}
 
-        {!isEdit && (
-          <div className="border-t border-gray-100 pt-4 dark:border-slate-800">
-            <button
-              type="button"
-              onClick={() => setEventOpen((o) => !o)}
-              aria-expanded={eventOpen}
-              className="flex w-full cursor-pointer items-center justify-between text-left"
-            >
-              <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">
-                Event / Milestone{" "}
-                <span className="text-xs font-normal text-gray-500 dark:text-slate-400">
-                  (optional)
-                </span>
+        <div className="border-t border-gray-100 pt-4 dark:border-slate-800">
+          <button
+            type="button"
+            onClick={() => setEventOpen((o) => !o)}
+            aria-expanded={eventOpen}
+            className="flex w-full cursor-pointer items-center justify-between text-left"
+          >
+            <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+              Event / Milestone{" "}
+              <span className="text-xs font-normal text-gray-500 dark:text-slate-400">
+                (optional)
               </span>
-              <FiChevronDown
-                className={clsx(
-                  "size-5 text-gray-400 transition-transform",
-                  eventOpen && "rotate-180",
+            </span>
+            <FiChevronDown
+              className={clsx(
+                "size-5 text-gray-400 transition-transform",
+                eventOpen && "rotate-180",
+              )}
+            />
+          </button>
+
+          {eventOpen && (
+            <div className="mt-5 flex flex-col gap-6">
+              <ControlledInput
+                control={control}
+                name="eventName"
+                rules={{
+                  validate: (v) =>
+                    !hasEventInput ||
+                    !!(v as string).trim() ||
+                    "Event name is required",
+                }}
+                id="client-event-name"
+                label="Event Name"
+                placeholder="e.g. Grace's Wedding"
+              />
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    ref={field.ref}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    label="Milestone Category"
+                    placeholder="Select category"
+                    options={availableCategories}
+                    loading={loadingCategories}
+                  />
                 )}
               />
-            </button>
-
-            {eventOpen && (
-              <div className="mt-5 flex flex-col gap-6">
-                <ControlledInput
-                  control={control}
-                  name="eventName"
-                  id="client-event-name"
-                  label="Event Name"
-                  placeholder="e.g. Grace's Wedding"
-                />
-                <Controller
-                  name="category"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      ref={field.ref}
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      label="Milestone Category"
-                      placeholder="Select category"
-                      options={availableCategories}
-                      loading={loadingCategories}
-                    />
-                  )}
-                />
-                <ControlledInput
-                  control={control}
-                  name="eventDate"
-                  rules={{
-                    validate: (v) =>
-                      !eventName.trim() || !!v || "Event date is required",
-                  }}
-                  id="client-event-date"
-                  label="Event Date"
-                  type="date"
-                />
-              </div>
-            )}
-          </div>
-        )}
+              <ControlledInput
+                control={control}
+                name="eventDate"
+                rules={{
+                  validate: (v) =>
+                    !hasEventInput || !!v || "Event date is required",
+                }}
+                id="client-event-date"
+                label="Event Date"
+                type="date"
+              />
+            </div>
+          )}
+        </div>
       </form>
       {prompt}
     </SidebarModal>

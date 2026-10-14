@@ -27,6 +27,10 @@ export interface IUpdateClientPayload {
   phoneNumber?: string;
   birthDate?: string;
   tags?: string[];
+  /** Event fields must be sent together: eventName and eventDate. */
+  eventName?: string;
+  eventDate?: string;
+  categoryId?: string;
 }
 
 export type IClientPayload = ICreateClientPayload;
