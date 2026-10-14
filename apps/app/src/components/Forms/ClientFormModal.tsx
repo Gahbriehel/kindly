@@ -309,10 +309,15 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
               <Controller
                 name={`persons.${index}.phone`}
                 control={control}
+                rules={{
+                  validate: (v) =>
+                    !!(v as string).trim() || "Phone is required",
+                }}
                 render={({ field, fieldState }) => (
                   <PhoneInput
                     id={`person-${index}-phone`}
                     label="Phone"
+                    required
                     placeholder="801 234 5678"
                     name={field.name}
                     ref={field.ref}
@@ -328,13 +333,16 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
                 name={`persons.${index}.email`}
                 rules={{
                   validate: (v) =>
-                    !(v as string).trim() ||
-                    EMAIL_REGEX.test((v as string).trim()) ||
-                    "Invalid email",
+                    !!(v as string).trim() || "Email is required",
+                  pattern: {
+                    value: EMAIL_REGEX,
+                    message: "Invalid email",
+                  },
                 }}
                 id={`person-${index}-email`}
                 label="Email"
                 type="email"
+                required
                 placeholder="email@example.com"
                 className="pl-10"
                 icon={mailIcon}

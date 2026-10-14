@@ -65,6 +65,7 @@ export function SecurityForm(): JSX.Element {
                 {...field}
                 id="password"
                 label="Change Password"
+                required
                 type="password"
                 placeholder="Enter a new password"
                 error={fieldState.error?.message}
@@ -80,6 +81,7 @@ export function SecurityForm(): JSX.Element {
                 {...field}
                 id="confirm-password"
                 label="Confirm New Password"
+                required
                 type="password"
                 placeholder="Confirm your new password"
                 error={fieldState.error?.message}

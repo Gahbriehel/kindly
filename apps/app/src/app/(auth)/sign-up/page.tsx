@@ -313,6 +313,7 @@ export default function RegisterPage() {
                   <Input
                     {...field}
                     label="First Name"
+                    required
                     placeholder="John"
                     type="text"
                     error={fieldState.error?.message}
@@ -327,6 +328,7 @@ export default function RegisterPage() {
                   <Input
                     {...field}
                     label="Last Name"
+                    required
                     placeholder="Doe"
                     type="text"
                     error={fieldState.error?.message}
@@ -342,6 +344,7 @@ export default function RegisterPage() {
                 <Input
                   {...field}
                   label="Email"
+                  required
                   placeholder="johndoe@gmail.com"
                   type="email"
                   error={fieldState.error?.message}
@@ -356,6 +359,7 @@ export default function RegisterPage() {
                 <Input
                   {...field}
                   label="Password"
+                  required
                   placeholder="At least 8 characters"
                   type={showPassword}
                   error={errors.password?.message}
@@ -426,6 +430,7 @@ export default function RegisterPage() {
                 <Input
                   {...field}
                   label="Business name"
+                  required
                   placeholder="Kindly Studio"
                   type="text"
                   error={fieldState.error?.message}
@@ -440,6 +445,7 @@ export default function RegisterPage() {
                 <Input
                   {...field}
                   label="Address"
+                  required
                   placeholder="No 1, adegbola street"
                   type="text"
                   error={fieldState.error?.message}
@@ -455,6 +461,7 @@ export default function RegisterPage() {
                   value={field.value}
                   onChange={field.onChange}
                   label="Country"
+                  required
                   placeholder="Search country"
                   options={countryOptions}
                   loading={countriesQuery.isLoading}
@@ -478,6 +485,7 @@ export default function RegisterPage() {
                     value={field.value}
                     onChange={field.onChange}
                     label="Industry"
+                    required
                     placeholder="Select industry"
                     options={industryOptions}
                     loading={industriesQuery.isLoading}
@@ -494,6 +502,7 @@ export default function RegisterPage() {
                     value={field.value}
                     onChange={field.onChange}
                     label="How many clients?"
+                    required
                     placeholder="Select clients"
                     options={clientCountOptions}
                     validationError={fieldState.error?.message}
