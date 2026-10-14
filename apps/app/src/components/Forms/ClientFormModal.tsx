@@ -26,6 +26,10 @@ import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 import { useAddClient, useUpdateClient } from "@/src/hooks/useClientQuery";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { customToast } from "@/src/helpers/customToast";
+import {
+  todayInputValue,
+  validateNotFutureDate,
+} from "@/src/helpers/dateHelpers";
 import { formatDateToInputType } from "@/src/helpers/formatDate";
 import type {
   IClient,
@@ -329,6 +333,14 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
               <ControlledInput
                 control={control}
                 name={`persons.${index}.birthDate`}
+                rules={{
+                  validate: (v) =>
+                    validateNotFutureDate(
+                      v,
+                      "Birth date cannot be in the future",
+                    ),
+                }}
+                max={todayInputValue()}
                 id={`person-${index}-birth-date`}
                 label="Birth Date (Optional)"
                 type="date"
@@ -358,6 +370,14 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
             <ControlledInput
               control={control}
               name="birthDate"
+              rules={{
+                validate: (v) =>
+                  validateNotFutureDate(
+                    v,
+                    "Birth date cannot be in the future",
+                  ),
+              }}
+              max={todayInputValue()}
               id="client-birth-date"
               label="Birth Date"
               type="date"

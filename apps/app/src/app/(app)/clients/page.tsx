@@ -10,6 +10,7 @@ import {
   FiHeart,
   FiGift,
 } from "react-icons/fi";
+import { CopyButton } from "@/src/components/UI/CopyButton";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Table } from "@/src/components/UI/Table";
@@ -63,12 +64,14 @@ function ClientContactInfo({ client }: { client: IClient }) {
         <span className="flex items-center gap-1.5 text-gray-500 dark:text-slate-400">
           <FiPhone className="size-3.5 text-gray-400 dark:text-slate-500 shrink-0" />
           {client.phoneNumber}
+          <CopyButton text={client.phoneNumber} label="Phone number" />
         </span>
       )}
       {client.email && (
         <span className="flex items-center gap-1.5 text-gray-400 dark:text-slate-500 truncate">
           <FiMail className="size-3.5 text-gray-400 dark:text-slate-500 shrink-0" />
           {client.email}
+          <CopyButton text={client.email} label="Email" />
         </span>
       )}
     </div>

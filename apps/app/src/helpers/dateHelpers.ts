@@ -39,3 +39,16 @@ export function formatRelativeTime(dateStr: string): string {
   if (diffInDays < 7) return `${diffInDays} days ago`;
   return date.format("MMM DD, YYYY");
 }
+
+/** Today's date as a `YYYY-MM-DD` string, for `<input type="date" max>`. */
+export function todayInputValue(): string {
+  return dayjs().format("YYYY-MM-DD");
+}
+
+/** Form validator: passes for empty values or dates that are not in the future. */
+export function validateNotFutureDate(
+  value: unknown,
+  message = "Date cannot be in the future",
+): true | string {
+  return !value || (value as string) <= todayInputValue() || message;
+}
