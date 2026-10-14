@@ -264,18 +264,14 @@ export default function ClientsPage(): JSX.Element {
           const initials = getInitials(client.fullName) || "CL";
 
           return (
-            <button
-              type="button"
-              onClick={() => setViewingClient(client)}
-              className="flex items-center gap-3 text-left cursor-pointer"
-            >
+            <div className="flex items-center gap-3 text-left">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 dark:bg-slate-800 text-[0.8rem] font-semibold text-indigo-600 dark:text-indigo-400">
                 {initials}
               </div>
-              <span className="font-semibold text-gray-900 dark:text-slate-100 text-[0.9rem] leading-tight hover:underline">
+              <span className="font-semibold text-gray-900 dark:text-slate-100 text-[0.9rem] leading-tight">
                 {client.fullName}
               </span>
-            </button>
+            </div>
           );
         },
       },
@@ -456,6 +452,7 @@ export default function ClientsPage(): JSX.Element {
         columns={columns}
         loading={isLoading}
         error={!!error}
+        onRowClick={setViewingClient}
         searchPlaceholder="Search"
         searchQuery={searchQuery}
         onSearchChange={(query) => {

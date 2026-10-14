@@ -35,6 +35,8 @@ interface Props<T> {
     onPageSizeChange?: (size: number) => void;
   };
   children?: ReactNode;
+  /** Called when a list row is clicked (not when an inner button/link/menu is clicked). */
+  onRowClick?: (item: T) => void;
 
   // Custom props for list/grid toggle & filter
   /** Which views to support. Defaults to both. Pass a single-element array to lock to that view (hides the toggle). */
@@ -63,6 +65,7 @@ export function Table<T>({
   debounceMs = 300,
   pagination,
   children,
+  onRowClick,
   supportedViews = ["list", "grid"],
   viewMode,
   onViewModeChange,
@@ -344,7 +347,20 @@ export function Table<T>({
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.02 }}
-                        className="group border-b border-gray-100/70 dark:border-slate-800/40 transition-colors last:border-0 hover:bg-gray-50/60 dark:hover:bg-slate-800/30"
+                        onClick={(e) => {
+                          if (!onRowClick) return;
+                          const target = e.target as HTMLElement;
+                          // Ignore portaled content (e.g. action menus) and interactive children
+                          if (!e.currentTarget.contains(target)) return;
+                          if (
+                            target.closest("button, a, input, select, textarea")
+                          )
+                            return;
+                          onRowClick(row.original);
+                        }}
+                        className={`group border-b border-gray-100/70 dark:border-slate-800/40 transition-colors last:border-0 hover:bg-gray-50/60 dark:hover:bg-slate-800/30 ${
+                          onRowClick ? "cursor-pointer" : ""
+                        }`}
                       >
                         {row.getVisibleCells().map((cell) => (
                           <td
