@@ -17,6 +17,7 @@ import {
 } from "@/src/hooks/useCategoryQuery";
 import type { ICategory } from "@/src/models/categories";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { capitalizeFirstLetter } from "@/src/helpers/capitalizeFirstLetter";
 
 interface CategoryFormValues {
   name: string;
@@ -115,7 +116,7 @@ export function CategoryForm(): JSX.Element {
               {item.name.substring(0, 2).toUpperCase()}
             </div>
             <span className="font-semibold text-gray-900 dark:text-slate-100 text-[0.9rem]">
-              {item.name}
+              {capitalizeFirstLetter(item.name)}
             </span>
           </div>
         );
@@ -191,11 +192,8 @@ export function CategoryForm(): JSX.Element {
       <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-8 ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-            Template Categories
+            Categories
           </h2>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-            Group templates and trigger logic under specific categories
-          </p>
         </div>
 
         <Table
@@ -235,7 +233,7 @@ export function CategoryForm(): JSX.Element {
       <SidebarModal
         display={isDrawerOpen}
         close={requestClose}
-        title={editingCategory ? "Edit Category" : "Add Template Category"}
+        title={editingCategory ? "Edit Category" : "Add Category"}
         footer={
           <fieldset className="w-full grid grid-cols-2 gap-6 py-4 px-0">
             {editingCategory ? (

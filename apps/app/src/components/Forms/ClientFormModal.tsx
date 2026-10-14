@@ -10,18 +10,12 @@ import {
   type Path,
   type RegisterOptions,
 } from "react-hook-form";
-import {
-  FiChevronDown,
-  FiMail,
-  FiPhone,
-  FiPlus,
-  FiTag,
-  FiX,
-} from "react-icons/fi";
+import { FiChevronDown, FiMail, FiPlus, FiTag, FiX } from "react-icons/fi";
 import { clsx } from "clsx";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
+import { PhoneInput } from "@/src/components/FormElements/PhoneInput";
 import {
   Select,
   emptySelect,
@@ -235,9 +229,6 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
     addMutation.mutate(payload);
   };
 
-  const phoneIcon = (
-    <FiPhone className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
-  );
   const mailIcon = (
     <FiMail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
   );
@@ -307,15 +298,22 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
               autoFocus={index === 0}
             />
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <ControlledInput
-                control={control}
+              <Controller
                 name={`persons.${index}.phone`}
-                id={`person-${index}-phone`}
-                label="Phone"
-                type="tel"
-                placeholder="+1 234 567 8900"
-                className="pl-10"
-                icon={phoneIcon}
+                control={control}
+                render={({ field, fieldState }) => (
+                  <PhoneInput
+                    id={`person-${index}-phone`}
+                    label="Phone"
+                    placeholder="801 234 5678"
+                    name={field.name}
+                    ref={field.ref}
+                    onBlur={field.onBlur}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={fieldState.error?.message}
+                  />
+                )}
               />
               <ControlledInput
                 control={control}

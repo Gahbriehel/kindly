@@ -52,8 +52,8 @@ export const PROFILE_TABS: ProfileTabConfig[] = [
   },
   {
     id: "categories",
-    name: "Template Categories",
-    desc: "Manage custom categories",
+    name: "Categories",
+    desc: "Manage your categories",
     icon: FiFolder,
   },
   {
