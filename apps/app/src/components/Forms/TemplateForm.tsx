@@ -36,7 +36,7 @@ export function TemplateForm({
   editingTemplate,
 }: TemplateFormProps): JSX.Element {
   const { data: catData } = useCategoriesQuery();
-  const categories = catData?.data?.categories ?? [];
+  const categories = catData?.data ?? [];
 
   const {
     control,

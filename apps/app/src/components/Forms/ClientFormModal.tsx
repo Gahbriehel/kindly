@@ -200,7 +200,7 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
     useCategoriesQuery();
   // The backend creates the Birthday event itself when a birth date is given.
   const availableCategories = useMemo(() => {
-    const categories = categoriesData?.data.categories ?? [];
+    const categories = categoriesData?.data ?? [];
     return (
       anyBirthDate
         ? categories.filter((c) => c.name.toLowerCase() !== "birthday")

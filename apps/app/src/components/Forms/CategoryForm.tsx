@@ -26,8 +26,8 @@ interface CategoryFormValues {
 export function CategoryForm(): JSX.Element {
   const { data: apiData, isLoading, error } = useCategoriesQuery();
   const categories: ICategory[] = useMemo(
-    () => apiData?.data?.categories ?? [],
-    [apiData?.data?.categories],
+    () => apiData?.data ?? [],
+    [apiData?.data],
   );
 
   // Search & Pagination (client-side filtering over API results)

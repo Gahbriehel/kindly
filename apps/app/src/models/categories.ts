@@ -1,10 +1,7 @@
 import type { IBaseResponse } from "./base";
 
 export interface ICategoryResponse extends IBaseResponse {
-  data: {
-    total: number;
-    categories: ICategory[];
-  };
+  data: ICategory[];
 }
 
 export interface ICategory {
