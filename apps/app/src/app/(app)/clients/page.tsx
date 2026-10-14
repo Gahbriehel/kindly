@@ -168,7 +168,9 @@ export default function ClientsPage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
-  const [viewingClient, setViewingClient] = useState<IClient | null>(null);
+  const [viewingSnapshot, setViewingClient] = useState<IClient | null>(null);
+  // When the edit form was opened from the view modal, closing it returns there.
+  const [returnToView, setReturnToView] = useState<IClient | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<IClient | null>(null);
 
@@ -177,6 +179,12 @@ export default function ClientsPage(): JSX.Element {
     setFormOpen(true);
   };
   const openEdit = (client: IClient) => {
+    setReturnToView(null);
+    setEditingClient(client);
+    setFormOpen(true);
+  };
+  const openEditFromView = (client: IClient) => {
+    setReturnToView(client);
     setViewingClient(null);
     setEditingClient(client);
     setFormOpen(true);
@@ -184,6 +192,10 @@ export default function ClientsPage(): JSX.Element {
   const closeForm = () => {
     setFormOpen(false);
     setEditingClient(null);
+    if (returnToView) {
+      setViewingClient(returnToView);
+      setReturnToView(null);
+    }
   };
 
   const setFilter = (next: ClientFilter | null) => {
@@ -250,6 +262,10 @@ export default function ClientsPage(): JSX.Element {
   }, [savedTags, seenTags, seenGroups]);
 
   const clients = rawClients;
+  // Prefer the freshest copy so the view reflects edits after returning to it.
+  const viewingClient = viewingSnapshot
+    ? (rawClients.find((c) => c.id === viewingSnapshot.id) ?? viewingSnapshot)
+    : null;
 
   const totalClientsCount = data?.pagination?.total ?? rawClients.length;
 
@@ -478,8 +494,7 @@ export default function ClientsPage(): JSX.Element {
       <ClientViewModal
         client={viewingClient}
         close={() => setViewingClient(null)}
-        onEdit={openEdit}
-        onDelete={(client) => setDeletingClientId(client.id)}
+        onEdit={openEditFromView}
       />
 
       {formOpen && <ClientFormModal close={closeForm} client={editingClient} />}

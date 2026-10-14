@@ -14,7 +14,6 @@ interface Props {
   client: IClient | null;
   close: () => void;
   onEdit: (client: IClient) => void;
-  onDelete: (client: IClient) => void;
 }
 
 /** Next occurrence (today or later) of the month/day in `date`. */
@@ -54,12 +53,7 @@ function tagStyle(tag: string): string {
     : "bg-gray-100 text-gray-700 border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
 }
 
-export function ClientViewModal({
-  client,
-  close,
-  onEdit,
-  onDelete,
-}: Props): JSX.Element {
+export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
   const birthday = client?.birthDate ? nextOccurrence(client.birthDate) : null;
   const daysAway = birthday?.diff(dayjs().startOf("day"), "day") ?? 0;
   const tags = [
@@ -77,9 +71,9 @@ export function ClientViewModal({
           <>
             <BaseButton
               type="button"
-              color="danger"
-              text="Delete"
-              onClick={() => onDelete(client)}
+              color="outline"
+              text="Send invoice"
+              onClick={() => {}}
               className="h-12 flex-1 rounded-2xl"
             />
             <BaseButton
@@ -124,10 +118,11 @@ export function ClientViewModal({
                 <FiGift className="size-4" /> Birthday
               </span>
               <p className="mt-1 font-manrope text-base font-bold text-gray-900 dark:text-slate-100">
-                {birthday.format("MMMM D, YYYY")}
+                {birthday.format("MMMM D")}
               </p>
               <span className="mt-1 flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400">
-                <FiClock className="size-3.5" /> {daysLabel(daysAway)}
+                <FiClock className="size-3.5" /> next occurrence{" "}
+                {daysLabel(daysAway)}
               </span>
             </div>
           )}
