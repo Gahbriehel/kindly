@@ -15,6 +15,7 @@ import { clsx } from "clsx";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
+import { SwitchWrapper } from "@/src/components/FormElements/Switch";
 import { PhoneInput } from "@/src/components/FormElements/PhoneInput";
 import { TagInput } from "@/src/components/FormElements/TagInput";
 import {
@@ -51,6 +52,8 @@ interface ClientFormValues {
   category: ISelect;
   eventName: string;
   eventDate: string;
+  isRecurring: boolean;
+  notes: string;
   birthDate: string;
   tags: string[];
 }
@@ -69,6 +72,8 @@ function getDefaultValues(client: IClient | null): ClientFormValues {
       category: emptySelect(),
       eventName: "",
       eventDate: "",
+      isRecurring: false,
+      notes: "",
       birthDate: "",
       tags: [],
     };
@@ -85,6 +90,8 @@ function getDefaultValues(client: IClient | null): ClientFormValues {
     category: emptySelect(),
     eventName: "",
     eventDate: "",
+    isRecurring: false,
+    notes: "",
     birthDate: client.birthDate ? formatDateToInputType(client.birthDate) : "",
     tags: client.tags ?? [],
   };
@@ -105,6 +112,8 @@ function eventFields(values: ClientFormValues) {
   return {
     eventName: name,
     eventDate: values.eventDate,
+    isRecurring: values.isRecurring,
+    ...(values.notes.trim() && { notes: values.notes.trim() }),
     ...(values.category.value._id && {
       categoryId: values.category.value._id,
     }),
@@ -466,6 +475,40 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
                 id="client-event-date"
                 label="Event Date"
                 type="date"
+              />
+              <Controller
+                name="isRecurring"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <SwitchWrapper
+                    label="Recurring (repeats every year)"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    error={fieldState.error}
+                  />
+                )}
+              />
+              <Controller
+                name="notes"
+                control={control}
+                render={({ field }) => (
+                  <fieldset className="space-y-2">
+                    <label
+                      htmlFor="client-event-notes"
+                      className="block text-sm font-semibold text-gray-600 dark:text-slate-400"
+                    >
+                      Notes (Optional)
+                    </label>
+                    <textarea
+                      {...field}
+                      id="client-event-notes"
+                      rows={3}
+                      placeholder="Anything worth remembering about this event..."
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm font-medium text-gray-700 outline-none transition-all placeholder-gray-400 focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-theme-primary dark:focus:bg-theme-surface dark:focus:ring-theme-primary/20"
+                    />
+                  </fieldset>
+                )}
               />
             </div>
           )}

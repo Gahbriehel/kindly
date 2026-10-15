@@ -15,6 +15,8 @@ export interface ICreateClientPayload {
   eventName?: string;
   eventDate?: string;
   categoryId?: string;
+  isRecurring?: boolean;
+  notes?: string;
   /** Applied to everyone in the submission; the backend saves new ones. */
   tags?: string[];
   individual?: ICreateClientItem | null;
@@ -31,6 +33,8 @@ export interface IUpdateClientPayload {
   eventName?: string;
   eventDate?: string;
   categoryId?: string;
+  isRecurring?: boolean;
+  notes?: string;
 }
 
 export type IClientPayload = ICreateClientPayload;
