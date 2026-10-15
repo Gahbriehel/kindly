@@ -8,7 +8,7 @@ import { clsx } from "clsx";
 
 export interface SidebarModalProps {
   children: ReactNode;
-  title: string;
+  title: ReactNode;
   display: boolean;
   close: () => void;
   className?: string;
@@ -69,12 +69,16 @@ export const SidebarModal = ({
             <div className="h-1.5 w-full bg-theme-primary shrink-0" />
 
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-slate-800">
-              <h2 className="font-manrope text-base font-bold text-gray-900 dark:text-slate-100">
-                {title}
-              </h2>
+              {typeof title === "string" ? (
+                <h2 className="font-manrope text-base font-bold text-gray-900 dark:text-slate-100">
+                  {title}
+                </h2>
+              ) : (
+                <div className="min-w-0 flex-1">{title}</div>
+              )}
               <button
                 onClick={close}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-gray-500 hover:bg-theme-primary/10 hover:text-theme-primary dark:text-slate-400 dark:hover:bg-theme-primary/20 dark:hover:text-theme-primary transition-colors"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 hover:bg-theme-primary/10 hover:text-theme-primary dark:text-slate-400 dark:hover:bg-theme-primary/20 dark:hover:text-theme-primary transition-colors"
                 aria-label="Close modal"
               >
                 <IoClose size={24} />

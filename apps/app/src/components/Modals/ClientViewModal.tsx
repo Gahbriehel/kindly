@@ -2,9 +2,19 @@
 
 import type { JSX, ReactNode } from "react";
 import dayjs from "dayjs";
-import { FiCalendar, FiClock, FiGift, FiMail, FiPhone } from "react-icons/fi";
+import {
+  FiClock,
+  FiEdit2,
+  FiFileText,
+  FiGift,
+  FiMail,
+  FiMessageCircle,
+  FiPhone,
+  FiTrash2,
+} from "react-icons/fi";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
+import { CopyButton } from "@/src/components/UI/CopyButton";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
@@ -65,32 +75,10 @@ export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
     <SidebarModal
       display={!!client}
       close={close}
-      title="Client Details"
-      footer={
+      title={
         client && (
-          <>
-            <BaseButton
-              type="button"
-              color="outline"
-              text="Send invoice"
-              onClick={() => {}}
-              className="h-12 flex-1 rounded-2xl"
-            />
-            <BaseButton
-              type="button"
-              color="primary"
-              text="Edit"
-              onClick={() => onEdit(client)}
-              className="h-12 flex-1 rounded-2xl"
-            />
-          </>
-        )
-      }
-    >
-      {client && (
-        <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-semibold text-indigo-600 dark:bg-slate-800 dark:text-indigo-400">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-semibold text-indigo-600 dark:bg-slate-800 dark:text-indigo-400">
               {getInitials(client.fullName) || "CL"}
             </div>
             <div className="min-w-0">
@@ -98,7 +86,7 @@ export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
                 {client.fullName}
               </h2>
               {tags.length > 0 && (
-                <div className="mt-1 flex flex-wrap gap-1.5">
+                <div className="mt-0.5 flex flex-wrap gap-1.5">
                   {tags.map((tag) => (
                     <span
                       key={tag}
@@ -111,7 +99,41 @@ export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
               )}
             </div>
           </div>
-
+        )
+      }
+      footer={
+        client && (
+          <>
+            <BaseButton
+              type="button"
+              color="outline"
+              text="Edit"
+              icon={<FiEdit2 className="size-4" />}
+              onClick={() => onEdit(client)}
+              className="h-12 flex-1 rounded-2xl"
+            />
+            <BaseButton
+              type="button"
+              color="outline"
+              text="Invoice"
+              icon={<FiFileText className="size-4" />}
+              onClick={() => {}}
+              className="h-12 flex-1 rounded-2xl"
+            />
+            <BaseButton
+              type="button"
+              color="primary"
+              text="Send Message"
+              icon={<FiMessageCircle className="size-4" />}
+              onClick={() => {}}
+              className="h-12 flex-1 rounded-2xl"
+            />
+          </>
+        )
+      }
+    >
+      {client && (
+        <div className="flex flex-col gap-6">
           {birthday && (
             <div className="rounded-2xl bg-indigo-50 p-4 dark:bg-indigo-950/30">
               <span className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">
@@ -121,27 +143,51 @@ export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
                 {birthday.format("MMMM D")}
               </p>
               <span className="mt-1 flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400">
-                <FiClock className="size-3.5" /> next occurrence{" "}
-                {daysLabel(daysAway)}
+                <FiClock className="size-3.5" /> {daysLabel(daysAway)}
               </span>
             </div>
           )}
 
           <Section title="Contact">
             {client.phoneNumber || client.email ? (
-              <div className="flex flex-col gap-2 rounded-2xl border border-gray-100 p-4 text-sm dark:border-slate-800">
-                {client.email && (
-                  <span className="flex items-center gap-2 break-all text-gray-700 dark:text-slate-300">
-                    <FiMail className="size-4 shrink-0 text-gray-400" />
-                    {client.email}
+              <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 p-4 text-sm dark:border-slate-800">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-600 dark:bg-slate-800 dark:text-indigo-400">
+                      {getInitials(client.fullName) || "CL"}
+                    </span>
+                    <span className="truncate font-semibold text-gray-900 dark:text-slate-100">
+                      {client.fullName}
+                    </span>
                   </span>
-                )}
-                {client.phoneNumber && (
-                  <span className="flex items-center gap-2 text-gray-700 dark:text-slate-300">
-                    <FiPhone className="size-4 shrink-0 text-gray-400" />
-                    {client.phoneNumber}
-                  </span>
-                )}
+                  <button
+                    type="button"
+                    aria-label="Message client"
+                    onClick={() => {}}
+                    className="shrink-0 cursor-pointer rounded-full p-1.5 text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-slate-800"
+                  >
+                    <FiMessageCircle className="size-5" />
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {client.email && (
+                    <span className="group flex min-w-0 flex-1 items-center gap-2 break-all rounded-lg bg-indigo-50 px-3 py-2 text-xs text-gray-700 dark:bg-slate-800 dark:text-slate-300">
+                      <FiMail className="size-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      {client.email}
+                      <CopyButton text={client.email} label="Email" />
+                    </span>
+                  )}
+                  {client.phoneNumber && (
+                    <span className="group flex flex-1 items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-xs text-gray-700 dark:bg-slate-800 dark:text-slate-300">
+                      <FiPhone className="size-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      {client.phoneNumber}
+                      <CopyButton
+                        text={client.phoneNumber}
+                        label="Phone number"
+                      />
+                    </span>
+                  )}
+                </div>
               </div>
             ) : (
               <NotAvailable />
@@ -154,7 +200,7 @@ export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
                 {client.events.map((event) => (
                   <li
                     key={event.id}
-                    className="flex items-center justify-between gap-3 px-4 py-3 text-sm"
+                    className="group flex items-center justify-between gap-3 overflow-hidden px-4 py-3 text-sm"
                   >
                     <span className="flex min-w-0 flex-wrap items-center gap-1.5">
                       <span className="font-medium text-gray-900 dark:text-slate-100">
@@ -171,13 +217,30 @@ export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
                         </span>
                       )}
                     </span>
-                    <span className="flex items-center gap-1.5 text-gray-500 dark:text-slate-400">
-                      <FiCalendar className="size-3.5" />
+                    <span className="flex shrink-0 items-center gap-2 text-gray-500 dark:text-slate-400">
                       {formatDate({
                         date: event.date,
                         showTime: false,
                         utc: false,
                       })}
+                      <span className="flex w-0 items-center gap-2 overflow-hidden opacity-0 transition-all duration-200 group-hover:w-12 group-hover:opacity-100 group-focus-within:w-12 group-focus-within:opacity-100">
+                        <button
+                          type="button"
+                          aria-label="Edit event"
+                          onClick={() => {}}
+                          className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400"
+                        >
+                          <FiEdit2 className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Delete event"
+                          onClick={() => {}}
+                          className="cursor-pointer hover:text-red-600 dark:hover:text-red-400"
+                        >
+                          <FiTrash2 className="size-4" />
+                        </button>
+                      </span>
                     </span>
                   </li>
                 ))}
