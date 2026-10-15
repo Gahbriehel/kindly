@@ -38,7 +38,7 @@ export default function TemplatesPage(): JSX.Element {
     null,
   );
 
-  const { data, isLoading, error } = useTemplatesQuery({
+  const { data, isLoading, error, refetch, isFetching } = useTemplatesQuery({
     page: currentPage,
     limit: pageSize,
     search: debouncedSearchQuery,
@@ -237,6 +237,8 @@ export default function TemplatesPage(): JSX.Element {
           columns={columns as Array<ColumnDef<ITemplate>>}
           loading={isLoading}
           error={!!error}
+          onRefetch={() => void refetch()}
+          isRefetching={isFetching}
           supportedViews={["grid"]}
           searchPlaceholder="Search template"
           searchQuery={searchQuery}

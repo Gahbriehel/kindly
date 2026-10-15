@@ -206,7 +206,7 @@ export default function ClientsPage(): JSX.Element {
     setCurrentPage(1);
   };
 
-  const { data, isLoading, error } = useClientsQuery({
+  const { data, isLoading, error, refetch, isFetching } = useClientsQuery({
     page: currentPage,
     limit: pageSize,
     search: searchQuery || undefined,
@@ -471,6 +471,8 @@ export default function ClientsPage(): JSX.Element {
         columns={columns}
         loading={isLoading}
         error={!!error}
+        onRefetch={() => void refetch()}
+        isRefetching={isFetching}
         onRowClick={setViewingClient}
         searchPlaceholder="Search"
         searchQuery={searchQuery}

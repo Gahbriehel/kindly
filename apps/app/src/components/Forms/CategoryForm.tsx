@@ -15,7 +15,13 @@ import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { capitalizeFirstLetter } from "@/src/helpers/capitalizeFirstLetter";
 
 export function CategoryForm(): JSX.Element {
-  const { data: apiData, isLoading, error } = useCategoriesQuery();
+  const {
+    data: apiData,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useCategoriesQuery();
   const categories: ICategory[] = useMemo(
     () => apiData?.data ?? [],
     [apiData?.data],
@@ -162,6 +168,8 @@ export function CategoryForm(): JSX.Element {
           columns={columns as Array<ColumnDef<ICategory>>}
           loading={isLoading}
           error={!!error}
+          onRefetch={() => void refetch()}
+          isRefetching={isFetching}
           searchPlaceholder="Search categories..."
           searchQuery={searchQuery}
           onSearchChange={(q) => {

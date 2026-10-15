@@ -14,7 +14,7 @@ import { Pagination } from "./Pagination";
 import { SearchInput } from "./SearchInput";
 import { PageLoader } from "../PageLoader";
 import { NotAvailable } from "../NotAvailable";
-import { FiList, FiGrid, FiFilter } from "react-icons/fi";
+import { FiList, FiGrid, FiFilter, FiRefreshCw } from "react-icons/fi";
 
 interface Props<T> {
   data: T[];
@@ -45,6 +45,10 @@ interface Props<T> {
   onViewModeChange?: (mode: "list" | "grid") => void;
   renderGridItem?: (item: T) => ReactNode;
   onFilterClick?: () => void;
+  /** When provided, shows a refresh button before the filter. */
+  onRefetch?: () => void;
+  /** Spins the refresh icon while a (re)fetch is in flight. */
+  isRefetching?: boolean;
   filterContent?: ReactNode;
   filterActiveCount?: number;
   defaultGridColumns?: 2 | 3 | 4;
@@ -71,6 +75,8 @@ export function Table<T>({
   onViewModeChange,
   renderGridItem,
   onFilterClick,
+  onRefetch,
+  isRefetching,
   filterContent,
   filterActiveCount,
   defaultGridColumns = 3,
@@ -170,6 +176,21 @@ export function Table<T>({
 
         {/* Action controls (right-aligned) */}
         <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+          {onRefetch && (
+            <button
+              type="button"
+              onClick={onRefetch}
+              disabled={isRefetching}
+              title="Refresh"
+              aria-label="Refresh"
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface text-gray-500 dark:text-slate-400 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <FiRefreshCw
+                className={`size-4 ${isRefetching ? "animate-spin" : ""}`}
+              />
+            </button>
+          )}
+
           {children}
 
           {/* Filter with Popover or Callback */}
