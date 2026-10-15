@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo, useState, type ComponentProps, type JSX } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type JSX,
+} from "react";
 import {
   useFieldArray,
   useForm,
@@ -23,6 +30,7 @@ import {
   emptySelect,
   type ISelect,
 } from "@/src/components/FormElements/Select";
+import { CategoryDrawer } from "@/src/components/Forms/CategoryDrawer";
 import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 import { useAddClient, useUpdateClient } from "@/src/hooks/useClientQuery";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
@@ -217,6 +225,21 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
     ).map((c): ISelect => ({ value: { _id: c.id }, label: c.name }));
   }, [categoriesData, anyBirthDate]);
 
+  const [addingCategory, setAddingCategory] = useState(false);
+  const pendingCategoryName = useRef<string | null>(null);
+
+  // Select the newly created category once the refetched list contains it.
+  useEffect(() => {
+    const name = pendingCategoryName.current;
+    if (!name) return;
+    const created = availableCategories.find(
+      (c) => c.label.toLowerCase() === name.toLowerCase(),
+    );
+    if (!created) return;
+    setValue("category", created, { shouldDirty: true });
+    pendingCategoryName.current = null;
+  }, [availableCategories, setValue]);
+
   const onSubmit = (values: ClientFormValues) => {
     const [first] = values.persons;
 
@@ -251,116 +274,154 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
   );
 
   return (
-    <SidebarModal
-      display
-      close={requestClose}
-      title={isEdit ? "Edit Client" : "Add New Client"}
-      footer={
-        <>
-          <BaseButton
-            type="button"
-            color="outline"
-            text="Cancel"
-            onClick={requestClose}
-            disabled={isSubmitting}
-            className="h-12 flex-1 rounded-2xl"
-          />
-          <BaseButton
-            type="button"
-            color="primary"
-            text={isEdit ? "Save Changes" : "Add Client"}
-            onClick={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            className="h-12 flex-1 rounded-2xl"
-          />
-        </>
-      }
-    >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        className="flex flex-col gap-6"
-      >
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
-          Client Details
-        </h3>
-
-        {fields.map((field, index) => (
-          <div key={field.id} className="flex flex-col gap-6">
-            {index > 0 && (
-              <div className="flex items-center justify-between border-t border-gray-100 pt-5 dark:border-slate-800">
-                <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">
-                  Person {index + 1}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="flex cursor-pointer items-center gap-1 text-xs font-medium text-red-600 hover:underline"
-                >
-                  <FiX className="size-3.5" /> Remove
-                </button>
-              </div>
-            )}
-            <ControlledInput
-              control={control}
-              name={`persons.${index}.name`}
-              rules={{
-                validate: (v) =>
-                  !!(v as string).trim() || "Full name is required",
-              }}
-              id={`person-${index}-name`}
-              label="Full Name"
-              placeholder="e.g. Sarah Johnson"
-              required
-              autoFocus={index === 0}
+    <>
+      <SidebarModal
+        display
+        close={requestClose}
+        title={isEdit ? "Edit Client" : "Add New Client"}
+        footer={
+          <>
+            <BaseButton
+              type="button"
+              color="outline"
+              text="Cancel"
+              onClick={requestClose}
+              disabled={isSubmitting}
+              className="h-12 flex-1 rounded-2xl"
             />
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Controller
-                name={`persons.${index}.phone`}
-                control={control}
-                rules={{
-                  validate: (v) =>
-                    !!(v as string).trim() || "Phone is required",
-                }}
-                render={({ field, fieldState }) => (
-                  <PhoneInput
-                    id={`person-${index}-phone`}
-                    label="Phone"
-                    required
-                    placeholder="801 234 5678"
-                    name={field.name}
-                    ref={field.ref}
-                    onBlur={field.onBlur}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={fieldState.error?.message}
-                  />
-                )}
-              />
+            <BaseButton
+              type="button"
+              color="primary"
+              text={isEdit ? "Save Changes" : "Add Client"}
+              onClick={handleSubmit(onSubmit)}
+              loading={isSubmitting}
+              className="h-12 flex-1 rounded-2xl"
+            />
+          </>
+        }
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="flex flex-col gap-6"
+        >
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+            Client Details
+          </h3>
+
+          {fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col gap-6">
+              {index > 0 && (
+                <div className="flex items-center justify-between border-t border-gray-100 pt-5 dark:border-slate-800">
+                  <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">
+                    Person {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="flex cursor-pointer items-center gap-1 text-xs font-medium text-red-600 hover:underline"
+                  >
+                    <FiX className="size-3.5" /> Remove
+                  </button>
+                </div>
+              )}
               <ControlledInput
                 control={control}
-                name={`persons.${index}.email`}
+                name={`persons.${index}.name`}
                 rules={{
                   validate: (v) =>
-                    !!(v as string).trim() || "Email is required",
-                  pattern: {
-                    value: EMAIL_REGEX,
-                    message: "Invalid email",
-                  },
+                    !!(v as string).trim() || "Full name is required",
                 }}
-                id={`person-${index}-email`}
-                label="Email"
-                type="email"
+                id={`person-${index}-name`}
+                label="Full Name"
+                placeholder="e.g. Sarah Johnson"
                 required
-                placeholder="email@example.com"
-                className="pl-10"
-                icon={mailIcon}
+                autoFocus={index === 0}
               />
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <Controller
+                  name={`persons.${index}.phone`}
+                  control={control}
+                  rules={{
+                    validate: (v) =>
+                      !!(v as string).trim() || "Phone is required",
+                  }}
+                  render={({ field, fieldState }) => (
+                    <PhoneInput
+                      id={`person-${index}-phone`}
+                      label="Phone"
+                      required
+                      placeholder="801 234 5678"
+                      name={field.name}
+                      ref={field.ref}
+                      onBlur={field.onBlur}
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={fieldState.error?.message}
+                    />
+                  )}
+                />
+                <ControlledInput
+                  control={control}
+                  name={`persons.${index}.email`}
+                  rules={{
+                    validate: (v) =>
+                      !!(v as string).trim() || "Email is required",
+                    pattern: {
+                      value: EMAIL_REGEX,
+                      message: "Invalid email",
+                    },
+                  }}
+                  id={`person-${index}-email`}
+                  label="Email"
+                  type="email"
+                  required
+                  placeholder="email@example.com"
+                  className="pl-10"
+                  icon={mailIcon}
+                />
+              </div>
+              {!isEdit && (
+                <ControlledInput
+                  control={control}
+                  name={`persons.${index}.birthDate`}
+                  rules={{
+                    validate: (v) =>
+                      validateNotFutureDate(
+                        v,
+                        "Birth date cannot be in the future",
+                      ),
+                  }}
+                  max={todayInputValue()}
+                  id={`person-${index}-birth-date`}
+                  label="Birth Date (Optional)"
+                  type="date"
+                />
+              )}
             </div>
-            {!isEdit && (
+          ))}
+
+          {!isEdit && (
+            <button
+              type="button"
+              onClick={() => append(emptyPerson())}
+              className="flex cursor-pointer items-center gap-1.5 self-end text-sm font-medium text-theme-primary hover:underline"
+            >
+              <FiPlus className="size-4" /> Add Another person
+            </button>
+          )}
+
+          <TagInput
+            value={tags}
+            onChange={(next) => setValue("tags", next, { shouldDirty: true })}
+            onDraftChange={setHasTagDraft}
+          />
+
+          {isEdit && (
+            <>
               <ControlledInput
                 control={control}
-                name={`persons.${index}.birthDate`}
+                name="birthDate"
                 rules={{
                   validate: (v) =>
                     validateNotFutureDate(
@@ -369,152 +430,125 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
                     ),
                 }}
                 max={todayInputValue()}
-                id={`person-${index}-birth-date`}
-                label="Birth Date (Optional)"
+                id="client-birth-date"
+                label="Birth Date"
                 type="date"
               />
+            </>
+          )}
+
+          <div className="border-t border-gray-100 pt-4 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setEventOpen((o) => !o)}
+              aria-expanded={eventOpen}
+              className="flex w-full cursor-pointer items-center justify-between text-left"
+            >
+              <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                Event / Milestone{" "}
+                <span className="text-xs font-normal text-gray-500 dark:text-slate-400">
+                  (optional)
+                </span>
+              </span>
+              <FiChevronDown
+                className={clsx(
+                  "size-5 text-gray-400 transition-transform",
+                  eventOpen && "rotate-180",
+                )}
+              />
+            </button>
+
+            {eventOpen && (
+              <div className="mt-5 flex flex-col gap-6">
+                <ControlledInput
+                  control={control}
+                  name="eventName"
+                  rules={{
+                    validate: (v) =>
+                      !hasEventInput ||
+                      !!(v as string).trim() ||
+                      "Event name is required",
+                  }}
+                  id="client-event-name"
+                  label="Event Name"
+                  placeholder="e.g. Grace's Wedding"
+                />
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      ref={field.ref}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      label="Milestone Category"
+                      placeholder="Select category"
+                      options={availableCategories}
+                      loading={loadingCategories}
+                      addNewOption={() => setAddingCategory(true)}
+                    />
+                  )}
+                />
+                <ControlledInput
+                  control={control}
+                  name="eventDate"
+                  rules={{
+                    validate: (v) =>
+                      !hasEventInput || !!v || "Event date is required",
+                  }}
+                  id="client-event-date"
+                  label="Event Date"
+                  type="date"
+                />
+                <Controller
+                  name="isRecurring"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <SwitchWrapper
+                      label="Recurring (repeats every year)"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      error={fieldState.error}
+                    />
+                  )}
+                />
+                <Controller
+                  name="notes"
+                  control={control}
+                  render={({ field }) => (
+                    <fieldset className="space-y-2">
+                      <label
+                        htmlFor="client-event-notes"
+                        className="block text-sm font-semibold text-gray-600 dark:text-slate-400"
+                      >
+                        Notes (Optional)
+                      </label>
+                      <textarea
+                        {...field}
+                        id="client-event-notes"
+                        rows={3}
+                        placeholder="Anything worth remembering about this event..."
+                        className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm font-medium text-gray-700 outline-none transition-all placeholder-gray-400 focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-theme-primary dark:focus:bg-theme-surface dark:focus:ring-theme-primary/20"
+                      />
+                    </fieldset>
+                  )}
+                />
+              </div>
             )}
           </div>
-        ))}
-
-        {!isEdit && (
-          <button
-            type="button"
-            onClick={() => append(emptyPerson())}
-            className="flex cursor-pointer items-center gap-1.5 self-end text-sm font-medium text-theme-primary hover:underline"
-          >
-            <FiPlus className="size-4" /> Add Another person
-          </button>
-        )}
-
-        <TagInput
-          value={tags}
-          onChange={(next) => setValue("tags", next, { shouldDirty: true })}
-          onDraftChange={setHasTagDraft}
+        </form>
+        {prompt}
+      </SidebarModal>
+      {addingCategory && (
+        <CategoryDrawer
+          close={() => setAddingCategory(false)}
+          onSaved={(name) => {
+            pendingCategoryName.current = name;
+          }}
         />
-
-        {isEdit && (
-          <>
-            <ControlledInput
-              control={control}
-              name="birthDate"
-              rules={{
-                validate: (v) =>
-                  validateNotFutureDate(
-                    v,
-                    "Birth date cannot be in the future",
-                  ),
-              }}
-              max={todayInputValue()}
-              id="client-birth-date"
-              label="Birth Date"
-              type="date"
-            />
-          </>
-        )}
-
-        <div className="border-t border-gray-100 pt-4 dark:border-slate-800">
-          <button
-            type="button"
-            onClick={() => setEventOpen((o) => !o)}
-            aria-expanded={eventOpen}
-            className="flex w-full cursor-pointer items-center justify-between text-left"
-          >
-            <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">
-              Event / Milestone{" "}
-              <span className="text-xs font-normal text-gray-500 dark:text-slate-400">
-                (optional)
-              </span>
-            </span>
-            <FiChevronDown
-              className={clsx(
-                "size-5 text-gray-400 transition-transform",
-                eventOpen && "rotate-180",
-              )}
-            />
-          </button>
-
-          {eventOpen && (
-            <div className="mt-5 flex flex-col gap-6">
-              <ControlledInput
-                control={control}
-                name="eventName"
-                rules={{
-                  validate: (v) =>
-                    !hasEventInput ||
-                    !!(v as string).trim() ||
-                    "Event name is required",
-                }}
-                id="client-event-name"
-                label="Event Name"
-                placeholder="e.g. Grace's Wedding"
-              />
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    ref={field.ref}
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    label="Milestone Category"
-                    placeholder="Select category"
-                    options={availableCategories}
-                    loading={loadingCategories}
-                  />
-                )}
-              />
-              <ControlledInput
-                control={control}
-                name="eventDate"
-                rules={{
-                  validate: (v) =>
-                    !hasEventInput || !!v || "Event date is required",
-                }}
-                id="client-event-date"
-                label="Event Date"
-                type="date"
-              />
-              <Controller
-                name="isRecurring"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <SwitchWrapper
-                    label="Recurring (repeats every year)"
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    error={fieldState.error}
-                  />
-                )}
-              />
-              <Controller
-                name="notes"
-                control={control}
-                render={({ field }) => (
-                  <fieldset className="space-y-2">
-                    <label
-                      htmlFor="client-event-notes"
-                      className="block text-sm font-semibold text-gray-600 dark:text-slate-400"
-                    >
-                      Notes (Optional)
-                    </label>
-                    <textarea
-                      {...field}
-                      id="client-event-notes"
-                      rows={3}
-                      placeholder="Anything worth remembering about this event..."
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm font-medium text-gray-700 outline-none transition-all placeholder-gray-400 focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-theme-primary dark:focus:bg-theme-surface dark:focus:ring-theme-primary/20"
-                    />
-                  </fieldset>
-                )}
-              />
-            </div>
-          )}
-        </div>
-      </form>
-      {prompt}
-    </SidebarModal>
+      )}
+    </>
   );
 }

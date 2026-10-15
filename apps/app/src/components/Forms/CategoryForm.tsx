@@ -1,27 +1,18 @@
 "use client";
 
 import { JSX, useState, useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
 import { FiPlus } from "react-icons/fi";
-import { BaseButton, DeleteButton } from "@/src/components/UI/Buttons";
-import { Input } from "@/src/components/FormElements/Input";
+import { BaseButton } from "@/src/components/UI/Buttons";
 import { Table } from "@/src/components/UI/Table";
 import { ActionsList } from "@/src/components/UI/ActionsList";
-import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
-import { SidebarModal } from "@/src/components/UI/SidebarModal";
+import { CategoryDrawer } from "@/src/components/Forms/CategoryDrawer";
 import {
-  useAddCategory,
   useCategoriesQuery,
   useDeleteCategory,
-  useUpdateCategory,
 } from "@/src/hooks/useCategoryQuery";
 import type { ICategory } from "@/src/models/categories";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { capitalizeFirstLetter } from "@/src/helpers/capitalizeFirstLetter";
-
-interface CategoryFormValues {
-  name: string;
-}
 
 export function CategoryForm(): JSX.Element {
   const { data: apiData, isLoading, error } = useCategoriesQuery();
@@ -57,49 +48,21 @@ export function CategoryForm(): JSX.Element {
     null,
   );
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { isDirty },
-  } = useForm<CategoryFormValues>({
-    defaultValues: { name: "" },
-  });
-
   const closeDrawer = () => {
     setIsDrawerOpen(false);
     setEditingCategory(null);
-    reset({ name: "" });
   };
 
-  const { requestClose, prompt } = useUnsavedChangesGuard(
-    isDirty,
-    closeDrawer,
-    isDrawerOpen,
-  );
-
-  const addMutation = useAddCategory({ onSuccess: closeDrawer });
-  const updateMutation = useUpdateCategory({ onSuccess: closeDrawer });
-  const deleteMutation = useDeleteCategory({ onSuccess: closeDrawer });
+  const deleteMutation = useDeleteCategory({});
 
   const openAddDrawer = () => {
     setEditingCategory(null);
-    reset({ name: "" });
     setIsDrawerOpen(true);
   };
 
   const openEditDrawer = (category: ICategory) => {
     setEditingCategory(category);
-    reset({ name: category.name });
     setIsDrawerOpen(true);
-  };
-
-  const onSubmit = ({ name }: CategoryFormValues) => {
-    if (editingCategory) {
-      updateMutation.mutate({ id: editingCategory.id, payload: { name } });
-    } else {
-      addMutation.mutate({ name });
-    }
   };
 
   const columnHelper = createColumnHelper<ICategory>();
@@ -185,8 +148,6 @@ export function CategoryForm(): JSX.Element {
     }),
   ] as Array<ColumnDef<ICategory>>;
 
-  const isSubmitting = addMutation.isPending || updateMutation.isPending;
-
   return (
     <>
       <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-8 ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
@@ -230,80 +191,9 @@ export function CategoryForm(): JSX.Element {
         </Table>
       </div>
 
-      <SidebarModal
-        display={isDrawerOpen}
-        close={requestClose}
-        title={editingCategory ? "Edit Category" : "Add Category"}
-        footer={
-          <fieldset className="w-full grid grid-cols-2 gap-6 py-4 px-0">
-            {editingCategory ? (
-              <>
-                <DeleteButton
-                  text="Delete"
-                  title="Delete Category"
-                  loading={deleteMutation.isPending}
-                  onClick={() => deleteMutation.mutate(editingCategory.id)}
-                />
-                <BaseButton
-                  onClick={handleSubmit(onSubmit)}
-                  color="primary"
-                  text="Save Changes"
-                  loading={isSubmitting}
-                  className="px-5 py-2.5 rounded-xl text-sm"
-                />
-              </>
-            ) : (
-              <>
-                <BaseButton
-                  onClick={requestClose}
-                  color="outline"
-                  text="Cancel"
-                  className="px-5 py-2.5 rounded-xl text-sm"
-                />
-                <BaseButton
-                  onClick={handleSubmit(onSubmit)}
-                  color="primary"
-                  text="Create Category"
-                  loading={isSubmitting}
-                  className="px-5 py-2.5 rounded-xl text-sm"
-                />
-              </>
-            )}
-          </fieldset>
-        }
-      >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: "Category name is required" }}
-            render={({ field, fieldState }) => (
-              <Input
-                {...field}
-                id="drawer-category-name"
-                label="Category Name"
-                placeholder="e.g. Activity Checkups"
-                error={fieldState.error?.message}
-                required
-                autoFocus
-              />
-            )}
-          />
-
-          {editingCategory && (
-            <div className="p-4 rounded-xl bg-gray-50 dark:bg-slate-800/40 border border-gray-100 dark:border-slate-800/50 text-xs text-gray-500 dark:text-slate-400 space-y-1">
-              <p>
-                <strong>Templates Linked:</strong>{" "}
-                {editingCategory.templateCount}
-              </p>
-              <p>
-                <strong>Events Count:</strong> {editingCategory.eventCount}
-              </p>
-            </div>
-          )}
-        </form>
-      </SidebarModal>
-      {prompt}
+      {isDrawerOpen && (
+        <CategoryDrawer category={editingCategory} close={closeDrawer} />
+      )}
     </>
   );
 }
