@@ -19,6 +19,9 @@ interface Props {
   }>;
 }
 
+const DESTRUCTIVE_KEYWORDS =
+  /\b(delete|remove|deactivate|disable|revoke|terminate|archive)\b/i;
+
 const ConfirmActionModal = dynamic(
   async () =>
     (await import("@/src/components/Modals/ConfirmActionModal"))
@@ -46,70 +49,69 @@ export function ActionsList({
             className="z-10 w-48 space-y-1 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 will-change-[transform,opacity]"
           >
             <>
-              {actions?.map(({ color = "blue", ...action }) => (
-                <Popover.Close
-                  key={action.title}
-                  onClick={() => {
-                    if (action.disabled) {
-                      return;
-                    }
-                    if (action.verifyUser) {
-                      setActionToConfirm(() => action.fn);
-                      // setVerifyUser(true);
-                      return;
-                    }
-                    if (
-                      ["delete", "delete all"].includes(
-                        action.title?.toLowerCase(),
-                      )
-                    ) {
-                      setActionToConfirm(() => action.fn);
-                      setModalDisplay(true);
-                      return;
-                    }
-                    action.fn?.();
-                  }}
-                  className={clsx(
-                    "flex w-full items-center gap-2 rounded-md px-3 py-1 text-sm font-medium",
-                    {
-                      "text-gray-600 dark:text-slate-300": !action.disabled,
-                      "cursor-not-allowed text-gray-400 opacity-50":
-                        action.disabled,
-                      "hover:bg-theme-primary/10 hover:text-theme-primary":
-                        color === "blue" && !action.disabled,
-                      "text-red-500 hover:bg-red-100 dark:hover:bg-red-950/30":
-                        !action.disabled &&
-                        (color === "red" ||
-                          ["delete", "delete all", "deactivate"].includes(
-                            action.title?.toLowerCase(),
-                          )),
-                      "text-red-300":
-                        action.disabled &&
-                        (color === "red" ||
-                          ["delete", "delete all", "deactivate"].includes(
-                            action.title?.toLowerCase(),
-                          )),
-                    },
-                  )}
-                >
-                  {!action.href && (
-                    <>
-                      {action.title}
-                      {action.loading && (
-                        <ClipLoader size={12} color="#aaaaaa" />
-                      )}
-                    </>
-                  )}
-                  {action.href && (
-                    <Link
-                      href={action.href}
-                      className="block size-full text-left"
-                    >
-                      {action.title}
-                    </Link>
-                  )}
-                </Popover.Close>
-              ))}
+              {actions?.map(({ color: colorProp, ...action }) => {
+                const isDestructive =
+                  colorProp === "red" ||
+                  (colorProp === undefined &&
+                    DESTRUCTIVE_KEYWORDS.test(action.title ?? ""));
+                const color = isDestructive ? "red" : "blue";
+                return (
+                  <Popover.Close
+                    key={action.title}
+                    onClick={() => {
+                      if (action.disabled) {
+                        return;
+                      }
+                      if (action.verifyUser) {
+                        setActionToConfirm(() => action.fn);
+                        // setVerifyUser(true);
+                        return;
+                      }
+                      if (
+                        ["delete", "delete all"].includes(
+                          action.title?.toLowerCase(),
+                        )
+                      ) {
+                        setActionToConfirm(() => action.fn);
+                        setModalDisplay(true);
+                        return;
+                      }
+                      action.fn?.();
+                    }}
+                    className={clsx(
+                      "flex w-full items-center gap-2 rounded-md px-3 py-1 text-sm font-medium",
+                      action.disabled ? "cursor-not-allowed" : "cursor-pointer",
+                      {
+                        "text-gray-600 dark:text-slate-300":
+                          !action.disabled && color !== "red",
+                        "text-gray-400 opacity-50": action.disabled,
+                        "hover:bg-theme-primary/10 hover:text-theme-primary":
+                          color === "blue" && !action.disabled,
+                        "text-red-500 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-500/20":
+                          color === "red" && !action.disabled,
+                        "text-red-300": color === "red" && action.disabled,
+                      },
+                    )}
+                  >
+                    {!action.href && (
+                      <>
+                        {action.title}
+                        {action.loading && (
+                          <ClipLoader size={12} color="#aaaaaa" />
+                        )}
+                      </>
+                    )}
+                    {action.href && (
+                      <Link
+                        href={action.href}
+                        className="block size-full cursor-pointer text-left"
+                      >
+                        {action.title}
+                      </Link>
+                    )}
+                  </Popover.Close>
+                );
+              })}
             </>
             <Popover.Arrow className="fill-gray-200 dark:fill-slate-700" />
           </Popover.Content>
