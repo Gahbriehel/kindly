@@ -178,7 +178,7 @@ export function Table<T>({
               <Popover.Trigger asChild>
                 <button
                   type="button"
-                  className="flex h-11 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-gray-700 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer shadow-xs"
+                  className="flex h-11 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface px-4 text-sm font-medium text-gray-700 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer shadow-xs"
                 >
                   <FiFilter className="size-4 text-gray-500 dark:text-slate-400" />
                   <span>Filter</span>
@@ -193,7 +193,7 @@ export function Table<T>({
                 <Popover.Content
                   sideOffset={6}
                   align="end"
-                  className="z-30 w-72 rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xl will-change-[transform,opacity]"
+                  className="z-30 w-72 rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-4 shadow-xl will-change-[transform,opacity]"
                 >
                   {filterContent}
                 </Popover.Content>
@@ -204,7 +204,7 @@ export function Table<T>({
               <button
                 type="button"
                 onClick={onFilterClick}
-                className="flex h-11 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-gray-700 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer shadow-xs"
+                className="flex h-11 items-center gap-2 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface px-4 text-sm font-medium text-gray-700 dark:text-slate-300 transition-all hover:bg-gray-50 dark:hover:bg-slate-800/80 cursor-pointer shadow-xs"
               >
                 <FiFilter className="size-4 text-gray-500 dark:text-slate-400" />
                 <span>Filter</span>
@@ -219,7 +219,7 @@ export function Table<T>({
 
           {/* Grid Columns Selector — only shown in grid mode */}
           {view === "grid" && columnOptions.length > 0 && (
-            <div className="flex h-11 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-xs">
+            <div className="flex h-11 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface p-1 shadow-xs">
               {columnOptions.map((cols) => (
                 <button
                   key={cols}
@@ -240,7 +240,7 @@ export function Table<T>({
 
           {/* View Mode Toggle — only rendered when both views are supported */}
           {showToggle && (
-            <div className="flex h-11 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-xs">
+            <div className="flex h-11 items-center gap-1 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface p-1 shadow-xs">
               {supportedViews.includes("list") && (
                 <button
                   type="button"
@@ -283,7 +283,7 @@ export function Table<T>({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-100/90 dark:border-slate-800 shadow-xs transition-colors duration-200"
+            className="overflow-hidden rounded-2xl bg-white dark:bg-theme-surface border border-gray-100/90 dark:border-slate-800 shadow-xs transition-colors duration-200"
           >
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -406,11 +406,11 @@ export function Table<T>({
             className="flex flex-col gap-6"
           >
             {loading ? (
-              <div className="py-20 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-gray-50 dark:border-slate-800">
+              <div className="py-20 rounded-[2.5rem] bg-white dark:bg-theme-surface border border-gray-50 dark:border-slate-800">
                 <PageLoader text="Fetching records..." />
               </div>
             ) : error ? (
-              <div className="py-20 text-center rounded-[2.5rem] bg-white dark:bg-slate-900 border border-gray-50 dark:border-slate-800">
+              <div className="py-20 text-center rounded-[2.5rem] bg-white dark:bg-theme-surface border border-gray-50 dark:border-slate-800">
                 <div className="flex flex-col items-center gap-2 text-red-500">
                   <span className="text-sm font-medium">
                     Failed to load data
@@ -418,7 +418,7 @@ export function Table<T>({
                 </div>
               </div>
             ) : data.length === 0 ? (
-              <div className="py-20 text-center rounded-[2.5rem] bg-white dark:bg-slate-900 border border-gray-50 dark:border-slate-800">
+              <div className="py-20 text-center rounded-[2.5rem] bg-white dark:bg-theme-surface border border-gray-50 dark:border-slate-800">
                 <span className="text-sm text-gray-400 dark:text-slate-500">
                   No records found
                 </span>
@@ -442,7 +442,7 @@ export function Table<T>({
                         renderGridItem(row.original)
                       ) : (
                         // Default Fallback Grid Card
-                        <div className="rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs">
+                        <div className="rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 shadow-xs">
                           <div className="flex flex-col gap-4">
                             {row.getVisibleCells().map((cell) => {
                               const header = cell.column.columnDef.header;
@@ -476,7 +476,7 @@ export function Table<T>({
 
                 {/* Footer / Pagination */}
                 {!loading && !error && data.length > 0 && pagination && (
-                  <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 border border-gray-50 dark:border-slate-800">
+                  <div className="rounded-[2.5rem] bg-white dark:bg-theme-surface border border-gray-50 dark:border-slate-800">
                     <Pagination {...pagination} />
                   </div>
                 )}

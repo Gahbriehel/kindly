@@ -20,7 +20,7 @@ export function FeatureBlock({
   onCtaClick,
 }: FeatureBlockProps): JSX.Element {
   return (
-    <div className="relative overflow-hidden rounded-[2.5rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[400px] w-full">
+    <div className="relative overflow-hidden rounded-[2.5rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[400px] w-full">
       {/* Decorative background glow */}
       <div className="absolute -left-20 -top-20 h-40 w-40 rounded-full bg-theme-primary/5 blur-3xl pointer-events-none" />
       <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-indigo-500/5 blur-3xl pointer-events-none" />

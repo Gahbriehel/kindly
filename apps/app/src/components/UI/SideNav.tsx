@@ -42,7 +42,7 @@ function NavItem({
           "h-11 px-5 text-[15px] font-medium mr-2 rounded-xl",
           collapsed ? "cursor-e-resize justify-center" : "cursor-pointer",
           isActive
-            ? "bg-theme-primary/15 text-theme-primary font-semibold"
+            ? "bg-theme-primary/10 text-theme-primary font-semibold"
             : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/70 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/50",
         )}
       >
@@ -107,7 +107,7 @@ export function SideNav({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={clsx(
-          "relative isolate z-20 flex h-screen shrink-0 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-colors duration-200",
+          "relative isolate z-20 flex h-screen shrink-0 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface transition-colors duration-200",
           collapsed && "cursor-e-resize",
         )}
       >

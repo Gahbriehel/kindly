@@ -242,7 +242,7 @@ export default function StaffPage(): JSX.Element {
   const renderGridItem = (item: StaffMember) => {
     const cfg = statusConfig[item.status];
     return (
-      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-1">
+      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 transition-all duration-200 hover:-translate-y-1">
         {/* Card Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">

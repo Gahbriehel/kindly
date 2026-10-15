@@ -41,7 +41,7 @@ export const MobileNav = memo(function MobileNav({
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 left-0 z-50 flex w-full max-w-[280px] flex-col bg-white dark:bg-slate-950 sm:hidden"
+            className="fixed inset-y-0 left-0 z-50 flex w-full max-w-[280px] flex-col bg-white dark:bg-theme-surface sm:hidden"
           >
             <div className="flex h-20 items-center justify-between px-6 border-b border-gray-100 dark:border-slate-800">
               <Logo size="medium" className="pr-2" />

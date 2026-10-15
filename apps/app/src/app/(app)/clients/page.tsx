@@ -345,7 +345,7 @@ export default function ClientsPage(): JSX.Element {
     const lastDate = client.updatedAt || client.createdAt;
 
     return (
-      <div className="group relative rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-1 shadow-xs flex flex-col justify-between h-full min-h-[240px]">
+      <div className="group relative rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 transition-all duration-200 hover:-translate-y-1 shadow-xs flex flex-col justify-between h-full min-h-[240px]">
         <div>
           {/* Card Header */}
           <div className="flex items-start justify-between gap-3">

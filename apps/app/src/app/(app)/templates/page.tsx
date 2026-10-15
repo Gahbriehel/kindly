@@ -123,7 +123,7 @@ export default function TemplatesPage(): JSX.Element {
     };
 
     return (
-      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between h-full min-h-[220px]">
+      <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between h-full min-h-[220px]">
         <div>
           {/* Card Header */}
           <div className="flex items-center justify-between gap-3">

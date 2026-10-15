@@ -70,6 +70,8 @@ const config: Config = {
       },
       colors: {
         theme: {
+          surface: "#121622",
+          canvas: "#0A0D16",
           primary: "rgb(var(--color-theme-primary) / <alpha-value>)",
           "primary-hover":
             "rgb(var(--color-theme-primary-hover) / <alpha-value>)",

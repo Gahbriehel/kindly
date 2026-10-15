@@ -24,7 +24,7 @@ export function UnsavedChangesModal({
       aria-labelledby="unsaved-changes-title"
       className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4"
     >
-      <div className="w-full max-w-md min-w-0 rounded-2xl bg-white p-6 dark:bg-gray-800">
+      <div className="w-full max-w-md min-w-0 rounded-2xl bg-white p-6 dark:bg-theme-surface">
         <h3
           id="unsaved-changes-title"
           className="mb-2 text-lg font-semibold dark:text-white"

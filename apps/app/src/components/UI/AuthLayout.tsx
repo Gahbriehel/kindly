@@ -103,7 +103,7 @@ export function AuthLayout({
           ease: [0.23, 1, 0.32, 1],
         }}
         onSubmit={handleFormSubmit}
-        className="relative overflow-visible rounded-[2rem] border-0 bg-white dark:bg-slate-900 w-full p-8 sm:p-10 transition-colors duration-200 shadow-2xl"
+        className="relative overflow-visible rounded-[2rem] border-0 bg-white dark:bg-theme-surface w-full p-8 sm:p-10 transition-colors duration-200 shadow-2xl"
       >
         {/* Desktop Back Button - floating to the left of the card */}
         {backButton && (

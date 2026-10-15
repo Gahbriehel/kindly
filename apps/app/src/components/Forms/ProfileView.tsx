@@ -154,7 +154,7 @@ export function ProfileView(): JSX.Element {
       </div>
 
       {/* User Summary Banner */}
-      <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-5 rounded-2xl border border-gray-200/60 bg-gray-50/80 p-5 sm:p-6 dark:border-slate-700/50 dark:bg-slate-900/60">
+      <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-5 rounded-2xl border border-gray-200/60 bg-gray-50/80 p-5 sm:p-6 dark:border-slate-700/50 dark:bg-theme-surface/60">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-50 border border-indigo-100 text-lg font-bold tracking-wide text-indigo-700 select-none ring-4 ring-indigo-50/60 dark:bg-indigo-950/70 dark:border-indigo-800/50 dark:text-indigo-300 dark:ring-indigo-900/30">
           {initials}
         </div>

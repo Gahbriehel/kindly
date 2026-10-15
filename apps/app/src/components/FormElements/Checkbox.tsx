@@ -24,7 +24,7 @@ export function Checkbox({
       onChange={onChange}
       disabled={disabled}
       className={clsx(
-        "h-4 w-4 rounded border-gray-300 text-theme-primary bg-white focus:ring-theme-primary focus:ring-offset-2 dark:border-slate-700 dark:bg-slate-800 dark:focus:ring-offset-slate-900",
+        "h-4 w-4 rounded border-gray-300 text-theme-primary bg-white focus:ring-theme-primary focus:ring-offset-2 dark:border-slate-700 dark:bg-slate-800 dark:focus:ring-offset-theme-surface",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}

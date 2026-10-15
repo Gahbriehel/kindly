@@ -70,7 +70,7 @@ export const RichTextEditor = forwardRef<ReactQuillType, RichTextEditorProps>(
 
         <div
           className={clsx(
-            "rich-text-editor-container min-h-[250px] w-full overflow-hidden rounded-xl border bg-gray-50 dark:bg-slate-900 focus-within:border-primary-500 transition-all",
+            "rich-text-editor-container min-h-[250px] w-full overflow-hidden rounded-xl border bg-gray-50 dark:bg-theme-surface focus-within:border-primary-500 transition-all",
             error ? "border-red-500" : "border-gray-200 dark:border-slate-800",
             className,
           )}

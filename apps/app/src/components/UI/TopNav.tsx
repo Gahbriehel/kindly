@@ -57,7 +57,7 @@ export const TopNav = memo(function TopNav({
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-20 w-full shrink-0 items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 sm:px-6 transition-colors duration-200">
+    <header className="sticky top-0 z-10 flex h-20 w-full shrink-0 items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface px-4 sm:px-6 transition-colors duration-200">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
@@ -74,7 +74,7 @@ export const TopNav = memo(function TopNav({
       <div className="flex items-center gap-2 sm:gap-4">
         <button className="relative flex h-10 w-10 items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full dark:text-slate-400 dark:hover:bg-slate-800 transition-colors">
           <FiBell className="size-5" />
-          <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-theme-primary ring-2 ring-white dark:ring-slate-950"></span>
+          <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-theme-primary ring-2 ring-white dark:ring-theme-surface"></span>
         </button>
 
         {/* Profile Dropdown Container */}
@@ -104,7 +104,7 @@ export const TopNav = memo(function TopNav({
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 ring-1 ring-black/5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-2 ring-1 ring-black/5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               {/* Header Info */}
               <div className="px-3 py-2.5">
                 <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">

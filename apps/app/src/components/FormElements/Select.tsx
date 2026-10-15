@@ -184,7 +184,7 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
                 "focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20",
                 "dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500",
                 disabled &&
-                  "pointer-events-none cursor-not-allowed bg-gray-50 opacity-60 dark:bg-slate-900",
+                  "pointer-events-none cursor-not-allowed bg-gray-50 opacity-60 dark:bg-theme-surface",
                 validationError &&
                   "border-red-500 dark:border-red-500/50 focus:border-red-500",
                 inputClassName,

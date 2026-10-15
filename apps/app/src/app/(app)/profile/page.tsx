@@ -29,7 +29,7 @@ export default function ProfilePage(): JSX.Element {
       {/* Two-column layout */}
       <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-start">
         {/* Sidebar */}
-        <aside className="w-full md:w-64 shrink-0 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 pr-0 md:pr-6 custom-scrollbar sticky top-0 md:top-2 md:self-start bg-gray-50/95 dark:bg-slate-900/95 md:bg-transparent dark:md:bg-transparent backdrop-blur-xs md:backdrop-blur-none z-10">
+        <aside className="w-full md:w-64 shrink-0 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 pr-0 md:pr-6 custom-scrollbar sticky top-0 md:top-2 md:self-start bg-gray-50/95 dark:bg-theme-surface/95 md:bg-transparent dark:md:bg-transparent backdrop-blur-xs md:backdrop-blur-none z-10">
           {PROFILE_TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

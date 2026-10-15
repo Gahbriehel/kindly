@@ -65,7 +65,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
             "h-10 w-full rounded-r-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 outline-none transition-all placeholder-gray-400",
             "focus:border-theme-primary focus:bg-white focus:ring-2 focus:ring-theme-primary/20",
             "dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:placeholder-slate-500",
-            "dark:focus:border-theme-primary dark:focus:bg-slate-900 dark:focus:ring-theme-primary/20",
+            "dark:focus:border-theme-primary dark:focus:bg-theme-surface dark:focus:ring-theme-primary/20",
             "disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-slate-800/40 dark:disabled:text-slate-600",
             className,
             error &&
