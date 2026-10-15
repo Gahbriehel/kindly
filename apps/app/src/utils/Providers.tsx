@@ -18,7 +18,21 @@ import {
   useState,
 } from "react";
 import { type IBaseResponse } from "../models/base";
-import { refreshAccessToken } from "./session";
+import {
+  broadcastAuth,
+  listenToAuthBroadcast,
+  refreshAccessToken,
+} from "./session";
+
+// Auth endpoints must never trigger the refresh-and-retry flow.
+const AUTH_PATHS = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/refresh",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/invites/accept",
+];
 
 interface Props {
   children: ReactNode;
@@ -57,7 +71,17 @@ export function AxiosProvider({ children }: Props): JSX.Element {
     }
     dispatch(logOut());
     queryClient.clear();
+    broadcastAuth({ type: "logout" });
   }, [dispatch]);
+
+  useEffect(
+    () =>
+      listenToAuthBroadcast(() => {
+        dispatch(logOut());
+        queryClient.clear();
+      }),
+    [dispatch],
+  );
 
   // The access token is memory-only, so after a reload restore it from the
   // refresh cookie before rendering anything that makes authenticated calls.
@@ -95,14 +119,13 @@ export function AxiosProvider({ children }: Props): JSX.Element {
         const errorMessage = errorData?.message ?? "";
         const errorsList = errorData?.errors;
 
-        const isLoginRequest = originalRequest?.url?.includes("/login");
-        const isRefreshRequest =
-          originalRequest?.url?.includes("/auth/refresh");
+        const isAuthRequest = AUTH_PATHS.some((p) =>
+          originalRequest?.url?.includes(p),
+        );
 
         if (
           error.response?.status === 401 &&
-          !isLoginRequest &&
-          !isRefreshRequest &&
+          !isAuthRequest &&
           !originalRequest._retry
         ) {
           originalRequest._retry = true;

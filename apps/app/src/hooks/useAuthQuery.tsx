@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { useAppSelector } from "./useAppSelector";
 import { queryClient } from "../utils/Providers";
+import { broadcastAuth } from "../utils/session";
 
 export function useLoginMutation() {
   const router = useRouter();
@@ -162,6 +163,7 @@ export function useLogoutMutation() {
     onSuccess: (response) => {
       dispatch(logOut());
       queryClient.clear();
+      broadcastAuth({ type: "logout" });
       router.push("/login");
       customToast.success(response?.message || "Logged out successfully");
     },
@@ -169,6 +171,7 @@ export function useLogoutMutation() {
       customToast.error(error.response?.data.message ?? "Logout failed");
       dispatch(logOut());
       queryClient.clear();
+      broadcastAuth({ type: "logout" });
       router.push("/login");
     },
   });
