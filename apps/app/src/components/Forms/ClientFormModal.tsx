@@ -490,30 +490,37 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
                     />
                   )}
                 />
-                <ControlledInput
-                  control={control}
-                  name="eventDate"
-                  rules={{
-                    validate: (v) =>
-                      !hasEventInput || !!v || "Event date is required",
-                  }}
-                  id="client-event-date"
-                  label="Event Date"
-                  type="date"
-                />
-                <Controller
-                  name="isRecurring"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <SwitchWrapper
-                      label="Recurring (repeats every year)"
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      error={fieldState.error}
+                <div className="flex items-start gap-4">
+                  <div className="flex-1">
+                    <ControlledInput
+                      control={control}
+                      name="eventDate"
+                      rules={{
+                        validate: (v) =>
+                          !hasEventInput || !!v || "Event date is required",
+                      }}
+                      id="client-event-date"
+                      label="Event Date"
+                      type="date"
                     />
-                  )}
-                />
+                  </div>
+                  <div className="shrink-0">
+                    <Controller
+                      name="isRecurring"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <SwitchWrapper
+                          label="Recurring"
+                          className="[&_button]:translate-y-3"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          error={fieldState.error}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
                 <Controller
                   name="notes"
                   control={control}
