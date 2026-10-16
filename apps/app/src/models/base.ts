@@ -22,6 +22,8 @@ export interface IQueryParams {
   search?: string;
   tag?: string;
   groupId?: string;
+  filter?: "upcoming" | "past" | "all";
+  categoryId?: string;
 
   page?: number;
   limit?: number;
