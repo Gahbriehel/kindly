@@ -262,7 +262,11 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
               {queryHook && queryResult?.data && (
                 <SelectPagination
                   currentPage={queryParams.page ?? 1}
-                  totalCount={queryResult.data.totalCount ?? 0}
+                  totalCount={
+                    queryResult.data.pagination?.total ??
+                    queryResult.data.totalCount ??
+                    0
+                  }
                   limit={queryParams.limit ?? defaultLimit}
                   onPageChange={(page: number) => {
                     setQueryParams((prev) => ({

@@ -1,4 +1,8 @@
-import { IoHeartOutline, IoGiftOutline } from "react-icons/io5";
+import {
+  IoHeartOutline,
+  IoGiftOutline,
+  IoSparklesOutline,
+} from "react-icons/io5";
 import { PiCake } from "react-icons/pi";
 import type { IconType } from "react-icons";
 
@@ -33,10 +37,46 @@ export function getCategoryConfig(category: string): CategoryConfig {
     };
   }
 
+  if (cat.includes("wedding")) {
+    return {
+      bgClass:
+        "bg-pink-50/80 dark:bg-pink-950/30 text-pink-600 dark:text-pink-400 border border-pink-100/50 dark:border-pink-900/50",
+      icon: IoSparklesOutline,
+      label: "Wedding",
+    };
+  }
+
   return {
     bgClass:
       "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-100 dark:border-slate-700/50",
     icon: IoGiftOutline,
     label: category || "Event",
   };
+}
+
+const CUSTOM_DOTS = [
+  "bg-emerald-500",
+  "bg-sky-500",
+  "bg-violet-500",
+  "bg-teal-500",
+  "bg-amber-500",
+  "bg-rose-400",
+  "bg-lime-500",
+];
+
+/**
+ * Dot colour for a category. System categories have fixed colours; custom ones
+ * get a stable colour hashed from their name so it never changes between loads.
+ */
+export function getCategoryDotClass(category: string | undefined): string {
+  const cat = (category || "").toLowerCase();
+  if (cat.includes("birth")) return "bg-indigo-500";
+  if (cat.includes("work")) return "bg-orange-500";
+  if (cat.includes("anniv")) return "bg-red-500";
+  if (cat.includes("wedding")) return "bg-pink-500";
+  let hash = 0;
+  for (let i = 0; i < cat.length; i++) {
+    hash = (hash * 31 + cat.charCodeAt(i)) >>> 0;
+  }
+  return CUSTOM_DOTS[hash % CUSTOM_DOTS.length];
 }

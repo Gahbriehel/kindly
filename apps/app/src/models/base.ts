@@ -11,6 +11,9 @@ export interface IBaseResponse {
 export interface IQueryParams {
   startDate?: string;
   endDate?: string;
+  /** Inclusive `YYYY-MM-DD` bounds, used by `/events/calendar`. */
+  start?: string;
+  end?: string;
   staff?: string;
   status?: string;
   ref?: string;

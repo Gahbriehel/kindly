@@ -42,3 +42,12 @@ export interface IEventResponse extends IBaseResponse {
   data: IEvent[];
   pagination: IPagination;
 }
+
+/** `/events/calendar` returns every occurrence in range, unpaginated. */
+export interface ICalendarEventsResponse extends IBaseResponse {
+  data: IEvent[];
+}
+
+export interface IEventCreateResponse extends IBaseResponse {
+  data: IEvent;
+}
