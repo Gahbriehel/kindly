@@ -202,17 +202,18 @@ export default function TemplatesPage(): JSX.Element {
   };
 
   const templates = data?.data ?? [];
+  const totalTemplatesCount = data?.pagination?.total ?? templates.length;
 
   return (
-    <>
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex flex-col gap-y-2">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-100">
-            Templates
-          </h2>
+    <div className="flex h-full flex-col gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
           <p className="text-sm text-gray-500 dark:text-slate-400">
             Manage and configure message templates for automated or manual
             triggers
+            {data
+              ? ` · ${totalTemplatesCount} total message template${totalTemplatesCount === 1 ? "" : "s"}`
+              : ""}
           </p>
         </div>
 
@@ -222,7 +223,7 @@ export default function TemplatesPage(): JSX.Element {
           icon={<FiPlus className="size-4" />}
           position="icon-first"
           color="primary"
-          className="h-12 px-4.5 rounded-2xl text-sm font-medium transition-all"
+          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
           onClick={() => {
             setEditingTemplate(null);
             setIsSidebarOpen(true);
@@ -231,35 +232,36 @@ export default function TemplatesPage(): JSX.Element {
         />
       </div>
 
-      <div className="rounded-3xl border border-gray-100/80 bg-white/50 backdrop-blur-xl p-4 sm:p-6 lg:p-8 ring-1 ring-gray-900/5 dark:border-slate-700/50 dark:bg-slate-800/50 dark:ring-slate-100/10">
-        <Table
-          data={templates}
-          columns={columns as Array<ColumnDef<ITemplate>>}
-          loading={isLoading}
-          error={!!error}
-          onRefetch={() => void refetch()}
-          isRefetching={isFetching}
-          supportedViews={["grid"]}
-          searchPlaceholder="Search template"
-          searchQuery={searchQuery}
-          onSearchChange={(query) => {
-            setSearchQuery(query);
+      <Table
+        data={templates}
+        columns={columns as Array<ColumnDef<ITemplate>>}
+        loading={isLoading}
+        error={!!error}
+        onRefetch={() => void refetch()}
+        isRefetching={isFetching}
+        supportedViews={["grid"]}
+        searchPlaceholder="Search template"
+        searchQuery={searchQuery}
+        onSearchChange={(query) => {
+          setSearchQuery((prev) => {
+            if (prev === query) return prev;
             setCurrentPage(1);
-          }}
-          renderGridItem={renderGridItem}
-          pagination={{
-            currentPage,
-            totalPages: data?.pagination?.totalPages ?? 0,
-            totalResults: data?.pagination?.total ?? 0,
-            pageSize: data?.pagination?.limit ?? 0,
-            onPageChange: (page: number) => setCurrentPage(page),
-            onPageSizeChange: (size) => {
-              setPageSize(size);
-              setCurrentPage(1);
-            },
-          }}
-        ></Table>
-      </div>
+            return query;
+          });
+        }}
+        renderGridItem={renderGridItem}
+        pagination={{
+          currentPage,
+          totalPages: data?.pagination?.totalPages ?? 0,
+          totalResults: data?.pagination?.total ?? 0,
+          pageSize: data?.pagination?.limit ?? 0,
+          onPageChange: (page: number) => setCurrentPage(page),
+          onPageSizeChange: (size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          },
+        }}
+      />
 
       {/* Template Form Sidebar Modal */}
       <TemplateForm
@@ -285,6 +287,6 @@ export default function TemplatesPage(): JSX.Element {
           }
         }}
       />
-    </>
+    </div>
   );
 }

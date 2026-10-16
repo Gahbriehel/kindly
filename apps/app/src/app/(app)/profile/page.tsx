@@ -17,10 +17,10 @@ export default function ProfilePage(): JSX.Element {
     <div className="w-full h-full mx-auto pb-12">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-slate-100 tracking-tight">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100 tracking-tight">
           Profile & Settings
         </h1>
-        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-slate-400">
           Manage your account preferences, security policies and template
           categories
         </p>

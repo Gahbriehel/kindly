@@ -3,6 +3,7 @@ import { MdOutlinePeopleAlt } from "react-icons/md";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { TbUserScreen } from "react-icons/tb";
 import { CgProfile } from "react-icons/cg";
+import { PiCalendarBlankLight } from "react-icons/pi";
 import type { UserRole } from "../models/auth";
 
 export interface NavLink {
@@ -23,6 +24,12 @@ export const navLinks: NavLink[] = [
     title: "Clients",
     icon: <MdOutlinePeopleAlt className="size-5" />,
     href: "/clients",
+    roles: ["admin", "moderator"],
+  },
+  {
+    title: "Calendar",
+    icon: <PiCalendarBlankLight className="size-5" />,
+    href: "/calendar",
     roles: ["admin", "moderator"],
   },
   {

@@ -442,16 +442,15 @@ export default function ClientsPage(): JSX.Element {
   );
 
   return (
-    <div className="flex h-full flex-col gap-6 p-4 sm:p-6 lg:p-8">
+    <div className="flex h-full flex-col gap-6">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
-            Clients
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-gray-500 dark:text-slate-400">
             Manage your client relationships
-            {totalClientsCount > 0 && ` · ${totalClientsCount} total`}
+            {data
+              ? ` · ${totalClientsCount} total client${totalClientsCount === 1 ? "" : "s"}`
+              : ""}
           </p>
         </div>
         <BaseButton
@@ -477,8 +476,11 @@ export default function ClientsPage(): JSX.Element {
         searchPlaceholder="Search"
         searchQuery={searchQuery}
         onSearchChange={(query) => {
-          setSearchQuery(query);
-          setCurrentPage(1);
+          setSearchQuery((prev) => {
+            if (prev === query) return prev;
+            setCurrentPage(1);
+            return query;
+          });
         }}
         filterContent={filterPopoverContent}
         filterActiveCount={filter ? 1 : 0}

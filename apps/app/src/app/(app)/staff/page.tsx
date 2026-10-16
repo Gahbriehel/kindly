@@ -146,8 +146,11 @@ export default function StaffPage(): JSX.Element {
   const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
 
   const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
+    setSearchQuery((prev) => {
+      if (prev === query) return prev;
+      setCurrentPage(1);
+      return query;
+    });
   };
 
   const columns = useMemo<ColumnDef<StaffMember>[]>(
@@ -296,14 +299,15 @@ export default function StaffPage(): JSX.Element {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
-          Staff Directory
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-          Manage your team members and their access levels.
-        </p>
+    <div className="flex h-full flex-col gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p className="text-sm text-gray-500 dark:text-slate-400">
+            Manage your team members and their access levels
+            {tier === "PLATINUM" &&
+              ` · ${filteredData.length} total staff member${filteredData.length === 1 ? "" : "s"}`}
+          </p>
+        </div>
       </div>
 
       {tier === "PLATINUM" ? (

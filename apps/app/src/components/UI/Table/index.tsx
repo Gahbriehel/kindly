@@ -115,31 +115,33 @@ export function Table<T>({
 
   // Internal debounced search handling
   const [searchTerm, setSearchTerm] = useState(searchQuery ?? "");
-  const isInitialMount = useRef(true);
+  const onSearchChangeRef = useRef(onSearchChange);
+  useEffect(() => {
+    onSearchChangeRef.current = onSearchChange;
+  });
+
+  const lastQueryRef = useRef(searchQuery ?? "");
 
   // Synchronize internal state when external searchQuery prop changes
   useEffect(() => {
-    if (searchQuery !== undefined && searchQuery !== searchTerm) {
+    if (searchQuery !== undefined && searchQuery !== lastQueryRef.current) {
+      lastQueryRef.current = searchQuery;
       setSearchTerm(searchQuery);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
-  // Debounce calling onSearchChange
+  // Debounce calling onSearchChange ONLY when the user has typed a new search term
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    if (!onSearchChange) return;
+    if (searchTerm === lastQueryRef.current) return;
+    if (!onSearchChangeRef.current) return;
 
     const handler = setTimeout(() => {
-      onSearchChange(searchTerm);
+      lastQueryRef.current = searchTerm;
+      onSearchChangeRef.current?.(searchTerm);
     }, debounceMs);
 
     return () => clearTimeout(handler);
-  }, [searchTerm, debounceMs, onSearchChange]);
+  }, [searchTerm, debounceMs]);
 
   const handleSearchInput = (val: string) => {
     setSearchTerm(val);

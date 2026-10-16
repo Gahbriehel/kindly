@@ -173,8 +173,11 @@ export function CategoryForm(): JSX.Element {
           searchPlaceholder="Search categories..."
           searchQuery={searchQuery}
           onSearchChange={(q) => {
-            setSearchQuery(q);
-            setCurrentPage(1);
+            setSearchQuery((prev) => {
+              if (prev === q) return prev;
+              setCurrentPage(1);
+              return q;
+            });
           }}
           supportedViews={["list"]}
           pagination={{

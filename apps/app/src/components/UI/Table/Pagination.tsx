@@ -81,7 +81,7 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 transition-colors hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none"
+          className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 transition-colors hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none"
         >
           <HiChevronLeft className="h-4 w-4" />
         </button>
@@ -100,7 +100,7 @@ export function Pagination({
               key={page}
               onClick={() => onPageChange(page)}
               className={clsx(
-                "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold transition-all",
+                "cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold transition-all",
                 currentPage === page
                   ? "bg-indigo-600 dark:bg-indigo-500 text-white"
                   : "text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800",
@@ -115,7 +115,7 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 transition-colors hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none"
+          className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 transition-colors hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none"
         >
           <HiChevronRight className="h-4 w-4" />
         </button>

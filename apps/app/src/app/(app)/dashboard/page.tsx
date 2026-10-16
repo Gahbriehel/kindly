@@ -14,47 +14,6 @@ import { getRelativeDays, formatRelativeTime } from "@/src/helpers/dateHelpers";
 import { getCategoryConfig } from "@/src/helpers/categoryConfig";
 import dayjs from "dayjs";
 
-interface IClient {
-  id: string;
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-}
-
-interface IDashboardEvent {
-  eventId: string;
-  title: string;
-  category: string;
-  notes: string;
-  clients?: IClient | IClient[];
-}
-
-// Safe helpers for Today's Outreach events (since client format can vary)
-function getClientNamesFromEvent(event: IDashboardEvent): string {
-  if (!event) return "";
-  if (Array.isArray(event.clients)) {
-    return (event.clients as IClient[])
-      .map((c) => c.fullName)
-      .filter(Boolean)
-      .join(" & ");
-  }
-  if (event.clients && typeof event.clients === "object") {
-    return (event.clients as IClient).fullName || "";
-  }
-  return "";
-}
-
-function getFirstClientFromEvent(event: IDashboardEvent): string {
-  if (!event) return "";
-  if (Array.isArray(event.clients)) {
-    return (event.clients as IClient[])[0]?.fullName || "";
-  }
-  if (event.clients && typeof event.clients === "object") {
-    return (event.clients as IClient).fullName || "";
-  }
-  return "";
-}
-
 export default function DashboardPage(): JSX.Element {
   const { data, isLoading } = useDashboardQuery();
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,8 +41,6 @@ export default function DashboardPage(): JSX.Element {
 
   const stats = data?.data.dashboard.stats;
   const upcomingEvents = eventsData?.data || [];
-  const todaysEvents = data?.data.dashboard.todaysOutreach?.events || [];
-  const todaysOutreachDate = data?.data.dashboard.todaysOutreach?.date || "";
   const recentActivity = data?.data.dashboard.recentActivity || [];
 
   const activeFilterCount =
@@ -282,8 +239,11 @@ export default function DashboardPage(): JSX.Element {
             searchPlaceholder="Search"
             searchQuery={searchQuery}
             onSearchChange={(query) => {
-              setSearchQuery(query);
-              setCurrentPage(1);
+              setSearchQuery((prev) => {
+                if (prev === query) return prev;
+                setCurrentPage(1);
+                return query;
+              });
             }}
             pagination={{
               currentPage,
@@ -300,131 +260,49 @@ export default function DashboardPage(): JSX.Element {
         </div>
 
         {/* Right Column */}
-        <div className="space-y-8">
-          {/* Today's Events */}
-          <div className="space-y-4">
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
-              Today's events
-            </h2>
-            <div className="rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface overflow-hidden">
-              {isLoading ? (
-                <div className="p-5 space-y-4">
-                  {[1, 2].map((n) => (
-                    <div
-                      key={n}
-                      className="flex items-center justify-between py-3 border-b border-gray-50 dark:border-slate-800/50 last:border-0 animate-pulse"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-slate-800 shrink-0" />
-                        <div className="space-y-2">
-                          <div className="h-4 w-28 bg-gray-100 dark:bg-slate-800 rounded" />
-                          <div className="h-3 w-16 bg-gray-100 dark:bg-slate-800 rounded" />
-                        </div>
-                      </div>
-                      <div className="h-8 w-8 bg-gray-100 dark:bg-slate-800 rounded-full" />
+        <div className="flex flex-col gap-5">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
+            Recent Activity
+          </h2>
+          <div className="rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6">
+            {isLoading ? (
+              <div className="space-y-5 animate-pulse">
+                {[1, 2, 3, 4].map((n) => (
+                  <div key={n} className="flex items-start gap-3">
+                    <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-200 dark:bg-slate-800" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-full bg-gray-100 dark:bg-slate-800 rounded" />
+                      <div className="h-3 w-16 bg-gray-100 dark:bg-slate-800 rounded" />
                     </div>
-                  ))}
-                </div>
-              ) : todaysEvents.length > 0 ? (
-                <div className="divide-y divide-gray-100 dark:divide-slate-800/50">
-                  {todaysEvents.map((event) => {
-                    const clientName = getClientNamesFromEvent(event);
-                    const firstClientName = getFirstClientFromEvent(event);
-                    const initials = getInitials(firstClientName);
-                    const config = getCategoryConfig(event.category);
-                    const IconComponent = config.icon;
-
-                    return (
-                      <div
-                        key={event.eventId}
-                        className="flex items-center justify-between p-5 hover:bg-gray-50/50 dark:hover:bg-slate-800/30 transition-colors"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-semibold text-sm">
-                            {initials}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-semibold text-gray-900 dark:text-slate-100 text-sm truncate">
-                                {clientName}
-                              </span>
-                              <span
-                                className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[0.65rem] font-semibold ${config.bgClass}`}
-                              >
-                                <IconComponent className="size-2.5" />
-                                {config.label}
-                              </span>
-                            </div>
-                            <span className="block text-xs text-gray-400 dark:text-slate-500 font-medium mt-1">
-                              {todaysOutreachDate
-                                ? dayjs(todaysOutreachDate).format("MMMM D")
-                                : dayjs().format("MMMM D")}
-                            </span>
-                          </div>
-                        </div>
-
-                        <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-100 dark:border-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 transition-all cursor-pointer">
-                          <IoChatbubbleOutline className="size-4" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <p className="text-sm text-gray-400 dark:text-slate-500 font-medium">
-                    No outreach events for today
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="space-y-4">
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
-              Recent Activity
-            </h2>
-            <div className="rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6">
-              {isLoading ? (
-                <div className="space-y-5 animate-pulse">
-                  {[1, 2, 3, 4].map((n) => (
-                    <div key={n} className="flex items-start gap-3">
-                      <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-200 dark:bg-slate-800" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 w-full bg-gray-100 dark:bg-slate-800 rounded" />
-                        <div className="h-3 w-16 bg-gray-100 dark:bg-slate-800 rounded" />
-                      </div>
+                  </div>
+                ))}
+              </div>
+            ) : recentActivity.length > 0 ? (
+              <div className="space-y-5">
+                {recentActivity.map((activity, idx) => (
+                  <div
+                    key={activity.refId || idx}
+                    className="flex items-start gap-3"
+                  >
+                    <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 dark:text-slate-300">
+                        {activity.label}
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 font-medium">
+                        {formatRelativeTime(activity.at)}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              ) : recentActivity.length > 0 ? (
-                <div className="space-y-5">
-                  {recentActivity.map((activity, idx) => (
-                    <div
-                      key={activity.refId || idx}
-                      className="flex items-start gap-3"
-                    >
-                      <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-600 dark:bg-indigo-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                          {activity.label}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 font-medium">
-                          {formatRelativeTime(activity.at)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <p className="text-sm text-gray-400 dark:text-slate-500 font-medium">
-                    No recent activity
-                  </p>
-                </div>
-              )}
-            </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <p className="text-sm text-gray-400 dark:text-slate-500 font-medium">
+                  No recent activity
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
