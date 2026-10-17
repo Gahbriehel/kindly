@@ -17,6 +17,7 @@ import type {
   ICreateClientPayload,
   IUpdateClientPayload,
 } from "../models/client";
+import { SUBSCRIPTION_CURRENT_KEY } from "./useSubscriptionQuery";
 
 const CLIENTS_KEY = "clients";
 const TAGS_KEY = "client-tags";
@@ -50,11 +51,15 @@ interface MutationProps {
 
 export function useAddClient({ onSuccess }: MutationProps = {}) {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (payload: ICreateClientPayload) => createClient(payload),
     onSuccess: () => {
+      // 1. Invalidate clients list so the table updates
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
       queryClient.invalidateQueries({ queryKey: [TAGS_KEY] });
+      // 2. Invalidate subscription to immediately refetch the updated client_limit badge
+      queryClient.invalidateQueries({ queryKey: SUBSCRIPTION_CURRENT_KEY });
       onSuccess?.();
     },
   });
@@ -83,10 +88,14 @@ export function useUpdateClient({ onSuccess }: MutationProps = {}) {
 
 export function useDeleteClient({ onSuccess }: MutationProps = {}) {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => deleteClient(id),
     onSuccess: () => {
+      // 1. Invalidate clients list so the table updates
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
+      // 2. Invalidate subscription to immediately refetch the updated client_limit badge
+      queryClient.invalidateQueries({ queryKey: SUBSCRIPTION_CURRENT_KEY });
       onSuccess?.();
     },
   });

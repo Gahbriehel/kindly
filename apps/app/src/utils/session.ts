@@ -1,12 +1,16 @@
 import { store } from "../store";
-import { setToken } from "../store/slices/auth";
+import { setToken, updateClientLimit } from "../store/slices/auth";
 import { refreshTokenRequest } from "../services/auth";
+import type { IClientLimit } from "../models/auth";
 
 const REFRESH_LOCK = "kindly-auth-refresh";
 
 let inFlight: Promise<string> | null = null;
 
-type AuthMessage = { type: "token"; accessToken: string } | { type: "logout" };
+type AuthMessage =
+  | { type: "token"; accessToken: string }
+  | { type: "logout" }
+  | { type: "client_limit"; clientLimit: IClientLimit };
 
 const channel =
   typeof window !== "undefined" && "BroadcastChannel" in window
@@ -24,6 +28,9 @@ export function listenToAuthBroadcast(onLogout: () => void): () => void {
   const handler = (e: MessageEvent<AuthMessage>) => {
     if (e.data.type === "token") store.dispatch(setToken(e.data.accessToken));
     if (e.data.type === "logout") onLogout();
+    if (e.data.type === "client_limit") {
+      store.dispatch(updateClientLimit(e.data.clientLimit));
+    }
   };
   channel.addEventListener("message", handler);
   return () => channel.removeEventListener("message", handler);

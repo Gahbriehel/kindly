@@ -1,4 +1,11 @@
-import { forwardRef, useMemo, type ComponentProps } from "react";
+import {
+  forwardRef,
+  useMemo,
+  useState,
+  useEffect,
+  type ComponentProps,
+  type ChangeEvent,
+} from "react";
 import { clsx } from "clsx";
 import { FiChevronDown } from "react-icons/fi";
 import { Input } from "./Input";
@@ -40,7 +47,7 @@ interface Props extends Omit<
   "value" | "onChange" | "type" | "countryCode"
 > {
   /** International format (+<code><number>) or "" */
-  value: string;
+  value?: string;
   onChange: (value: string) => void;
 }
 
@@ -50,7 +57,7 @@ interface Props extends Omit<
  */
 export const PhoneInput = forwardRef<HTMLInputElement, Props>(
   function PhoneInput(
-    { value, onChange, id, className, error, label, required, ...props },
+    { value = "", onChange, id, className, error, label, required, ...props },
     ref,
   ) {
     const { data } = useCountriesQuery();
@@ -70,14 +77,42 @@ export const PhoneInput = forwardRef<HTMLInputElement, Props>(
       return result;
     }, [data]);
 
-    const { code, national } = splitPhone(
-      value,
-      options.map((o) => o.code),
+    const codes = useMemo(() => options.map((o) => o.code), [options]);
+
+    const { code: parsedCode, national } = splitPhone(value ?? "", codes);
+    const hasPlus = (value ?? "").trim().startsWith("+");
+
+    const [selectedCode, setSelectedCode] = useState<string>(() =>
+      hasPlus ? parsedCode : DEFAULT_DIAL_CODE,
     );
+
+    useEffect(() => {
+      if (hasPlus) {
+        setSelectedCode(parsedCode);
+      }
+    }, [hasPlus, parsedCode]);
+
+    const activeCode = hasPlus ? parsedCode : selectedCode;
 
     const emit = (nextCode: string, nextNational: string) => {
       const n = digitsOnly(nextNational).replace(/^0+/, "");
       onChange(n ? `+${nextCode}${n}` : "");
+    };
+
+    const handleCodeChange = (nextCode: string) => {
+      setSelectedCode(nextCode);
+      emit(nextCode, national);
+    };
+
+    const handleNationalChange = (e: ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      if (raw.trim().startsWith("+")) {
+        const parsed = splitPhone(raw, codes);
+        setSelectedCode(parsed.code);
+        emit(parsed.code, parsed.national);
+        return;
+      }
+      emit(activeCode, raw);
     };
 
     return (
@@ -96,18 +131,18 @@ export const PhoneInput = forwardRef<HTMLInputElement, Props>(
               aria-hidden
               className="flex h-full items-center justify-between gap-1 rounded-l-xl border border-r-0 border-gray-200 bg-white px-3 text-sm font-medium text-gray-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
             >
-              +{code}
+              +{activeCode}
               <FiChevronDown className="size-3.5 text-gray-400" />
             </span>
             <select
               aria-label="Country code"
-              value={code}
-              onChange={(e) => emit(e.target.value, national)}
+              value={activeCode}
+              onChange={(e) => handleCodeChange(e.target.value)}
               className="absolute inset-0 size-full cursor-pointer opacity-0"
             >
               {/* Keeps a code we cannot resolve selectable instead of silently swapping it */}
-              {!options.some((o) => o.code === code) && (
-                <option value={code}>+{code}</option>
+              {!options.some((o) => o.code === activeCode) && (
+                <option value={activeCode}>+{activeCode}</option>
               )}
               {options.map((o) => (
                 <option key={o.code} value={o.code}>
@@ -126,7 +161,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, Props>(
               autoComplete="tel-national"
               error={error}
               value={national}
-              onChange={(e) => emit(code, e.target.value)}
+              onChange={handleNationalChange}
               className={clsx("rounded-l-none!", className)}
             />
           </div>

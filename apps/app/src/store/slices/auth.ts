@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { IUserData } from "../../models/auth";
+import type { IUserData, IClientLimit } from "../../models/auth";
 
 interface authState {
   user: IUserData | null;
@@ -56,6 +56,17 @@ export const auth = createSlice({
         };
       }
     },
+    updateClientLimit: (
+      state,
+      { payload }: PayloadAction<Partial<IClientLimit>>,
+    ) => {
+      if (state.user) {
+        state.user.client_limit = {
+          ...state.user.client_limit,
+          ...payload,
+        } as IClientLimit;
+      }
+    },
   },
 });
 
@@ -68,5 +79,6 @@ export const {
   clearRedirectUrl,
   updateSubscriptionTier,
   updateCompany,
+  updateClientLimit,
 } = auth.actions;
 export default auth.reducer;

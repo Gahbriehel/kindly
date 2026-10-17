@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { FiArrowRight, FiX } from "react-icons/fi";
 import { UpgradeModal } from "../Modals/UpgradeModal";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
+import { useCurrentSubscriptionQuery } from "@/src/hooks/useSubscriptionQuery";
 
 export function SubscriptionBadge({
   collapsed,
@@ -11,15 +12,19 @@ export function SubscriptionBadge({
   collapsed: boolean;
 }): React.ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
+  const { data: subscriptionRes } = useCurrentSubscriptionQuery();
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const clientLimit = user?.client_limit;
 
-  if (
-    collapsed ||
-    isDismissed ||
-    user?.company?.subscriptionTier?.toUpperCase() === "PLATINUM"
-  ) {
+  const clientLimit =
+    subscriptionRes?.data?.client_limit ||
+    subscriptionRes?.client_limit ||
+    user?.client_limit;
+
+  const currentTier =
+    subscriptionRes?.data?.subscriptionTier || user?.company?.subscriptionTier;
+
+  if (collapsed || isDismissed || currentTier?.toUpperCase() === "PLATINUM") {
     return null;
   }
 
