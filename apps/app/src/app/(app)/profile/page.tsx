@@ -16,7 +16,7 @@ export default function ProfilePage(): JSX.Element {
   return (
     <div className="w-full h-full mx-auto pb-12">
       {/* Page Header */}
-      <div className="mb-8">
+      <div className="mb-4 md:mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100 tracking-tight">
           Profile & Settings
         </h1>
@@ -27,50 +27,56 @@ export default function ProfilePage(): JSX.Element {
       </div>
 
       {/* Two-column layout */}
-      <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-start">
+      <div className="mt-4 md:mt-8 flex flex-col gap-6 md:gap-8 md:flex-row md:items-start">
         {/* Sidebar */}
-        <aside className="w-full md:w-64 shrink-0 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 pr-0 md:pr-6 custom-scrollbar sticky top-0 md:top-2 md:self-start bg-gray-50/95 dark:bg-theme-surface/95 md:bg-transparent dark:md:bg-transparent backdrop-blur-xs md:backdrop-blur-none z-10">
-          {PROFILE_TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative flex flex-col md:flex-row items-center md:items-start gap-3 w-full p-3 rounded-xl transition-all text-left whitespace-nowrap md:whitespace-normal cursor-pointer ${
-                  isActive
-                    ? "bg-theme-primary/10 text-theme-primary"
-                    : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50"
-                }`}
-              >
-                <Icon
-                  className={`size-5 mt-0.5 shrink-0 ${isActive ? "text-theme-primary" : "text-gray-400"}`}
-                />
-                <div className="hidden md:block">
-                  <p className="font-semibold text-sm">{tab.name}</p>
-                  <p
-                    className={`text-xs mt-0.5 ${
-                      isActive
-                        ? "text-theme-primary/80"
-                        : "text-gray-400 dark:text-slate-500"
-                    }`}
-                  >
-                    {tab.desc}
-                  </p>
-                </div>
-                <span className="md:hidden text-xs font-semibold">
-                  {tab.name}
-                </span>
-                {isActive && (
-                  <motion.div
-                    layoutId="active-settings-tab"
-                    className="absolute bottom-0 md:bottom-auto md:right-0 left-0 md:left-auto h-0.5 md:h-full w-full md:w-0.5 bg-theme-primary"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        <aside className="w-[calc(100%+2rem)] -mx-4 sm:w-[calc(100%+3rem)] sm:-mx-6 md:w-64 md:mx-0 shrink-0 flex flex-row md:flex-col items-center md:items-stretch overflow-x-auto md:overflow-x-visible px-4 sm:px-6 md:px-0 md:pr-6 py-2 md:py-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sticky -top-4 sm:-top-6 md:top-2 md:self-start bg-gray-50/95 dark:bg-theme-surface/95 md:bg-transparent dark:md:bg-transparent backdrop-blur-xs md:backdrop-blur-none z-10">
+          <div className="flex flex-row md:flex-col items-center md:items-stretch gap-1.5 md:gap-1 min-w-max mx-auto md:mx-0">
+            {PROFILE_TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative flex flex-col md:flex-row items-center justify-center md:items-start md:justify-start gap-1.5 md:gap-3 shrink-0 md:shrink md:w-full py-2 px-3 md:p-3 rounded-xl transition-all text-center md:text-left whitespace-nowrap md:whitespace-normal cursor-pointer ${
+                    isActive
+                      ? "bg-theme-primary/10 text-theme-primary"
+                      : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                  }`}
+                >
+                  <Icon
+                    className={`size-5 shrink-0 md:mt-0.5 ${isActive ? "text-theme-primary" : "text-gray-400"}`}
                   />
-                )}
-              </button>
-            );
-          })}
+                  <div className="hidden md:block">
+                    <p className="font-semibold text-sm">{tab.name}</p>
+                    <p
+                      className={`text-xs mt-0.5 ${
+                        isActive
+                          ? "text-theme-primary/80"
+                          : "text-gray-400 dark:text-slate-500"
+                      }`}
+                    >
+                      {tab.desc}
+                    </p>
+                  </div>
+                  <span className="md:hidden text-xs font-semibold leading-none">
+                    {tab.name}
+                  </span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-settings-tab"
+                      className="absolute bottom-0 md:bottom-auto md:right-0 left-2 right-2 md:left-auto h-0.5 md:h-full md:w-0.5 bg-theme-primary rounded-full"
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </aside>
 
         {/* Content area */}
