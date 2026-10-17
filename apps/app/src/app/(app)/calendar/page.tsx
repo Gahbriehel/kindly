@@ -113,11 +113,12 @@ export default function CalendarPage(): JSX.Element {
             <BaseButton
               color="primary"
               icon={<FiPlus className="size-4" />}
-              text="Add Event"
               onClick={() => setAdding({ date: selected ?? undefined })}
-              className="shrink-0 max-sm:size-10 max-sm:px-0 max-sm:[&>span]:hidden"
+              className="shrink-0 max-sm:size-10 max-sm:px-0"
               aria-label="Add event"
-            />
+            >
+              <span className="hidden sm:inline">Add Event</span>
+            </BaseButton>
           </div>
 
           <div className="mt-4">
