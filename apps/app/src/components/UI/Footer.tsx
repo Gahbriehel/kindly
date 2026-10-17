@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-6 md:py-8 bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-900 w-full transition-colors duration-300 z-10">
+    <footer className="relative flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-6 md:py-8 bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-900 w-full transition-colors duration-300 z-10">
       <div>
         <Image
           src="/images/kindly-logo-light.png"
