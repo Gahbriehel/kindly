@@ -77,3 +77,15 @@ export function groupEventsByDate(events: IEvent[]): Map<DateKey, IEvent[]> {
   }
   return map;
 }
+
+/** Formats how far an event date is from today (e.g. "Today", "Tomorrow", "in 5 days", "3 days ago"). */
+export function getEventTimingLabel(dateStr: string): string {
+  const today = dayjs().startOf("day");
+  const eventDay = dayjs(dateStr).startOf("day");
+  const diff = eventDay.diff(today, "day");
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Tomorrow";
+  if (diff === -1) return "Yesterday";
+  if (diff > 1) return `in ${diff} days`;
+  return `${Math.abs(diff)} days ago`;
+}

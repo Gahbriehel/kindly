@@ -16,8 +16,14 @@ import { CalendarSidePanel } from "@/src/components/Calendar/CalendarSidePanel";
 import { CategoryChips } from "@/src/components/Calendar/CategoryChips";
 import { MonthPicker } from "@/src/components/Calendar/MonthPicker";
 import { EventFormDrawer } from "@/src/components/Forms/EventFormDrawer";
+import { EventViewModal } from "@/src/components/Modals/EventViewModal";
+import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
-import { useCalendarEventsQuery } from "@/src/hooks/useEventQuery";
+import {
+  useCalendarEventsQuery,
+  useDeleteEvent,
+} from "@/src/hooks/useEventQuery";
+import { customToast } from "@/src/helpers/customToast";
 import {
   addMonths,
   groupEventsByDate,
@@ -26,6 +32,7 @@ import {
   todayKey,
   type DateKey,
 } from "@/src/helpers/calendarHelpers";
+import type { IEvent } from "@/src/models/event";
 
 const iconButton =
   "flex size-9 cursor-pointer items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800";
@@ -36,7 +43,14 @@ export default function CalendarPage(): JSX.Element {
   );
   const [selected, setSelected] = useState<DateKey | null>(null);
   const [categoryId, setCategoryId] = useState("");
-  const [adding, setAdding] = useState<{ date?: DateKey } | null>(null);
+  const [viewingSnapshot, setViewingEvent] = useState<IEvent | null>(null);
+  const [returnToView, setReturnToView] = useState<IEvent | null>(null);
+  const [drawerState, setDrawerState] = useState<{
+    defaultDate?: DateKey;
+    event?: IEvent | null;
+  } | null>(null);
+  const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
+
   const panelRef = useRef<HTMLElement>(null);
 
   const { data: categoriesData } = useCategoriesQuery();
@@ -52,6 +66,37 @@ export default function CalendarPage(): JSX.Element {
 
   const events = useMemo(() => data?.data ?? [], [data]);
   const eventsByDate = useMemo(() => groupEventsByDate(events), [events]);
+
+  // Keep viewingEvent updated if query data updates
+  const viewingEvent = viewingSnapshot
+    ? (events.find((e) => e.id === viewingSnapshot.id) ?? viewingSnapshot)
+    : null;
+
+  const deleteMutation = useDeleteEvent({
+    onSuccess: () => {
+      customToast.success("Event deleted successfully");
+      setDeletingEventId(null);
+      setViewingEvent(null);
+    },
+  });
+
+  const openAdd = (date?: DateKey) => {
+    setDrawerState({ defaultDate: date ?? selected ?? undefined });
+  };
+
+  const openEditFromView = (event: IEvent) => {
+    setReturnToView(event);
+    setViewingEvent(null);
+    setDrawerState({ event });
+  };
+
+  const closeForm = () => {
+    setDrawerState(null);
+    if (returnToView) {
+      setViewingEvent(returnToView);
+      setReturnToView(null);
+    }
+  };
 
   // Changing month clears the selected day, returning the panel to the overview.
   const changeMonth = useCallback((next: DateKey) => {
@@ -113,7 +158,7 @@ export default function CalendarPage(): JSX.Element {
             <BaseButton
               color="primary"
               icon={<FiPlus className="size-4" />}
-              onClick={() => setAdding({ date: selected ?? undefined })}
+              onClick={() => openAdd(selected ?? undefined)}
               className="shrink-0 max-sm:size-10 max-sm:px-0"
               aria-label="Add event"
             >
@@ -166,16 +211,40 @@ export default function CalendarPage(): JSX.Element {
           dayEvents={selected ? (eventsByDate.get(selected) ?? []) : []}
           loading={isLoading}
           onClear={() => setSelected(null)}
-          onAdd={(date) => setAdding({ date })}
+          onAdd={(date) => openAdd(date)}
+          onEventClick={setViewingEvent}
         />
       </div>
 
-      {adding && (
+      <EventViewModal
+        event={viewingEvent}
+        close={() => setViewingEvent(null)}
+        onEdit={openEditFromView}
+        onDelete={setDeletingEventId}
+      />
+
+      {drawerState && (
         <EventFormDrawer
-          defaultDate={adding.date}
-          close={() => setAdding(null)}
+          key={drawerState.event?.id ?? "new"}
+          defaultDate={drawerState.defaultDate}
+          event={drawerState.event}
+          close={closeForm}
         />
       )}
+
+      <ConfirmActionModal
+        actionName="Delete"
+        title="Delete Event"
+        message="Are you sure you want to delete this event? This action cannot be undone."
+        display={!!deletingEventId}
+        close={() => setDeletingEventId(null)}
+        loading={deleteMutation.isPending}
+        fn={() => {
+          if (deletingEventId) {
+            deleteMutation.mutate(deletingEventId);
+          }
+        }}
+      />
     </div>
   );
 }

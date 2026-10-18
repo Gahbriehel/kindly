@@ -24,7 +24,7 @@ export function ConfirmActionModal({
   if (!display) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white dark:bg-theme-surface rounded-2xl w-full max-w-md min-w-0 p-6">
         <h3 className="text-lg font-semibold mb-2 dark:text-white">
           {title || `Confirm ${actionName}`}

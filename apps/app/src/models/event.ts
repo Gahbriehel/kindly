@@ -16,7 +16,7 @@ export interface IEvent {
   nextOccurrence?: string;
 }
 
-interface IEventParticipant {
+export interface IEventParticipant {
   id: string;
   clientId: string;
   eventId: string;
@@ -37,6 +37,8 @@ export interface IEventPayload {
   groupId?: string;
   participantClientIds?: string[];
 }
+
+export type IUpdateEventPayload = Partial<IEventPayload>;
 
 export interface IEventResponse extends IBaseResponse {
   data: IEvent[];

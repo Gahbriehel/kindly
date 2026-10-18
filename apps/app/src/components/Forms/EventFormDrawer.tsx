@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type JSX } from "react";
+import { useEffect, useMemo, useState, type JSX } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
@@ -16,10 +16,12 @@ import { CategoryDrawer } from "@/src/components/Forms/CategoryDrawer";
 import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getClients } from "@/src/services/clients";
-import { useAddEvent } from "@/src/hooks/useEventQuery";
+import { useAddEvent, useUpdateEvent } from "@/src/hooks/useEventQuery";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
+import { toDateKey } from "@/src/helpers/calendarHelpers";
 import { customToast } from "@/src/helpers/customToast";
 import type { IQueryParams } from "@/src/models/base";
+import type { IEvent } from "@/src/models/event";
 
 interface EventFormValues {
   title: string;
@@ -33,6 +35,8 @@ interface Props {
   /** Pre-filled `YYYY-MM-DD` date, e.g. the day selected on the calendar. */
   defaultDate?: string;
   close: () => void;
+  /** When provided the drawer edits this event, otherwise it creates one. */
+  event?: IEvent | null;
 }
 
 /** The select drives its search through `name`; the clients API wants `search`. */
@@ -52,8 +56,21 @@ const toClientOption = (c: { id: string; fullName: string }): ISelect => ({
   label: c.fullName,
 });
 
-/** Add-event drawer. Past dates are allowed. */
-export function EventFormDrawer({ defaultDate, close }: Props): JSX.Element {
+/** Add or edit event drawer. Past dates are allowed. */
+export function EventFormDrawer({
+  defaultDate,
+  close,
+  event = null,
+}: Props): JSX.Element {
+  const isEdit = !!event;
+
+  const getInitialCategory = (): ISelect => {
+    if (event?.category) {
+      return { value: { _id: event.category.id }, label: event.category.name };
+    }
+    return emptySelect();
+  };
+
   const {
     control,
     handleSubmit,
@@ -61,20 +78,22 @@ export function EventFormDrawer({ defaultDate, close }: Props): JSX.Element {
     formState: { isDirty },
   } = useForm<EventFormValues>({
     defaultValues: {
-      title: "",
-      date: defaultDate ?? "",
-      category: emptySelect(),
-      isRecurring: false,
-      notes: "",
+      title: event?.title ?? "",
+      date: event?.date ? toDateKey(event.date) : (defaultDate ?? ""),
+      category: getInitialCategory(),
+      isRecurring: Boolean(event?.isRecurring),
+      notes: event?.notes ?? "",
     },
   });
-  const [participants, setParticipants] = useState<ISelect[]>([]);
-  const [addingCategory, setAddingCategory] = useState(false);
 
-  const { requestClose, prompt } = useUnsavedChangesGuard(
-    isDirty || participants.length > 0,
-    close,
-  );
+  const [participants, setParticipants] = useState<ISelect[]>(() => {
+    if (!event?.participants) return [];
+    return event.participants.map((p) => ({
+      value: { _id: p.client?.id || p.clientId },
+      label: p.client?.fullName || "Client",
+    }));
+  });
+  const [addingCategory, setAddingCategory] = useState(false);
 
   const { data: categoriesData, isLoading: loadingCategories } =
     useCategoriesQuery();
@@ -86,15 +105,58 @@ export function EventFormDrawer({ defaultDate, close }: Props): JSX.Element {
     [categoriesData],
   );
 
+  // If editing and category was only stored as categoryId, populate from loaded options
+  useEffect(() => {
+    if (
+      event &&
+      !event.category &&
+      event.categoryId &&
+      categoryOptions.length > 0
+    ) {
+      const match = categoryOptions.find(
+        (c) => c.value._id === event.categoryId,
+      );
+      if (match) {
+        setValue("category", match);
+      }
+    }
+  }, [event, categoryOptions, setValue]);
+
+  const participantsChanged = useMemo(() => {
+    const initialIds = (event?.participants ?? [])
+      .map((p) => p.client?.id || p.clientId)
+      .sort()
+      .join(",");
+    const currentIds = participants
+      .map((p) => p.value._id)
+      .sort()
+      .join(",");
+    return initialIds !== currentIds;
+  }, [event, participants]);
+
+  const { requestClose, prompt } = useUnsavedChangesGuard(
+    isDirty || (isEdit ? participantsChanged : participants.length > 0),
+    close,
+  );
+
   const addEvent = useAddEvent({
     onSuccess: () => {
-      customToast.success("Event added");
+      customToast.success("Event added successfully");
       close();
     },
   });
 
+  const updateEventMutation = useUpdateEvent({
+    onSuccess: () => {
+      customToast.success("Event updated successfully");
+      close();
+    },
+  });
+
+  const isSubmitting = addEvent.isPending || updateEventMutation.isPending;
+
   const onSubmit = (values: EventFormValues) => {
-    addEvent.mutate({
+    const payload = {
       title: values.title.trim(),
       date: values.date,
       isRecurring: values.isRecurring,
@@ -103,7 +165,16 @@ export function EventFormDrawer({ defaultDate, close }: Props): JSX.Element {
       participantClientIds: participants.length
         ? participants.map((p) => p.value._id)
         : undefined,
-    });
+    };
+
+    if (isEdit && event) {
+      updateEventMutation.mutate({
+        id: event.id,
+        payload,
+      });
+    } else {
+      addEvent.mutate(payload);
+    }
   };
 
   return (
@@ -111,21 +182,21 @@ export function EventFormDrawer({ defaultDate, close }: Props): JSX.Element {
       <SidebarModal
         display
         close={requestClose}
-        title="Add Event"
+        title={isEdit ? "Edit Event" : "Add Event"}
         footer={
-          <fieldset className="grid w-full grid-cols-2 gap-6 px-0 py-4">
+          <fieldset className="grid w-full grid-cols-2 gap-4 px-0 py-4">
             <BaseButton
               onClick={requestClose}
               color="outline"
               text="Cancel"
-              className="rounded-xl px-5 py-2.5 text-sm"
+              className="h-12 rounded-2xl text-sm"
             />
             <BaseButton
               onClick={handleSubmit(onSubmit)}
               color="primary"
-              text="Add Event"
-              loading={addEvent.isPending}
-              className="rounded-xl px-5 py-2.5 text-sm"
+              text={isEdit ? "Save Changes" : "Add Event"}
+              loading={isSubmitting}
+              className="h-12 rounded-2xl text-sm"
             />
           </fieldset>
         }

@@ -22,7 +22,7 @@ export function getCategoryConfig(category: string): CategoryConfig {
   if (cat.includes("birth")) {
     return {
       bgClass:
-        "bg-indigo-50/80 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-950/50",
+        "bg-indigo-50 text-indigo-600 border border-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-800/40",
       icon: PiCake,
       label: "Birthday",
     };
@@ -31,7 +31,7 @@ export function getCategoryConfig(category: string): CategoryConfig {
   if (cat.includes("anniv")) {
     return {
       bgClass:
-        "bg-blue-50/80 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-900/50",
+        "bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800/40",
       icon: IoHeartOutline,
       label: "Anniversary",
     };
@@ -40,7 +40,7 @@ export function getCategoryConfig(category: string): CategoryConfig {
   if (cat.includes("wedding")) {
     return {
       bgClass:
-        "bg-pink-50/80 dark:bg-pink-950/30 text-pink-600 dark:text-pink-400 border border-pink-100/50 dark:border-pink-900/50",
+        "bg-pink-50 text-pink-600 border border-pink-100 dark:bg-pink-950/40 dark:text-pink-400 dark:border-pink-800/40",
       icon: IoSparklesOutline,
       label: "Wedding",
     };
@@ -48,7 +48,7 @@ export function getCategoryConfig(category: string): CategoryConfig {
 
   return {
     bgClass:
-      "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-100 dark:border-slate-700/50",
+      "bg-gray-100 text-gray-700 border border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
     icon: IoGiftOutline,
     label: category || "Event",
   };

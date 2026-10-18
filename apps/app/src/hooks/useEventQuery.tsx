@@ -5,8 +5,15 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { IQueryParams } from "../models/base";
-import type { IEventPayload } from "../models/event";
-import { createEvent, getCalendarEvents, getEvents } from "../services/events";
+import type { IEventPayload, IUpdateEventPayload } from "../models/event";
+import {
+  createEvent,
+  deleteEvent,
+  getCalendarEvents,
+  getEvent,
+  getEvents,
+  updateEvent,
+} from "../services/events";
 
 export function useEventsQuery(params: IQueryParams = {}) {
   return useQuery({
@@ -28,14 +35,56 @@ export function useCalendarEventsQuery(params: {
   });
 }
 
+export function useEventQuery(id?: string) {
+  return useQuery({
+    queryKey: ["events", id],
+    queryFn: async () => (id ? await getEvent(id) : null),
+    enabled: !!id,
+  });
+}
+
+function invalidateEventQueries(
+  queryClient: ReturnType<typeof useQueryClient>,
+) {
+  queryClient.invalidateQueries({ queryKey: ["events"] });
+  queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+  queryClient.invalidateQueries({ queryKey: ["clients"] });
+}
+
 export function useAddEvent({ onSuccess }: { onSuccess?: () => void } = {}) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: IEventPayload) => createEvent(payload),
     onSuccess: () => {
-      // Covers the dashboard list and every calendar window.
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      invalidateEventQueries(queryClient);
+      onSuccess?.();
+    },
+  });
+}
+
+export function useUpdateEvent({ onSuccess }: { onSuccess?: () => void } = {}) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: IUpdateEventPayload;
+    }) => updateEvent(id, payload),
+    onSuccess: () => {
+      invalidateEventQueries(queryClient);
+      onSuccess?.();
+    },
+  });
+}
+
+export function useDeleteEvent({ onSuccess }: { onSuccess?: () => void } = {}) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteEvent(id),
+    onSuccess: () => {
+      invalidateEventQueries(queryClient);
       onSuccess?.();
     },
   });

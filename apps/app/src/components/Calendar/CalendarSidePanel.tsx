@@ -3,7 +3,7 @@
 import type { JSX, Ref } from "react";
 import dayjs from "dayjs";
 import { clsx } from "clsx";
-import { FiArrowLeft, FiPlus, FiRepeat } from "react-icons/fi";
+import { FiArrowLeft, FiChevronRight, FiPlus, FiRepeat } from "react-icons/fi";
 import {
   eventDateKey,
   getEventDisplayName,
@@ -25,6 +25,7 @@ interface Props {
   loading?: boolean;
   onClear: () => void;
   onAdd: (date: DateKey) => void;
+  onEventClick?: (event: IEvent) => void;
 }
 
 /**
@@ -40,6 +41,7 @@ export function CalendarSidePanel({
   loading,
   onClear,
   onAdd,
+  onEventClick,
 }: Props): JSX.Element {
   const isDay = selected !== null;
   const events = isDay ? dayEvents : monthEvents;
@@ -104,6 +106,7 @@ export function CalendarSidePanel({
                 key={event.id + event.occurrenceDate}
                 event={event}
                 showDate={!isDay}
+                onClick={onEventClick ? () => onEventClick(event) : undefined}
               />
             ))
           )}
@@ -116,9 +119,11 @@ export function CalendarSidePanel({
 function EventItem({
   event,
   showDate,
+  onClick,
 }: {
   event: IEvent;
   showDate: boolean;
+  onClick?: () => void;
 }): JSX.Element {
   const key = eventDateKey(event);
   const name = getEventDisplayName(event);
@@ -128,19 +133,44 @@ function EventItem({
 
   return (
     <li
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       className={clsx(
-        "flex items-center gap-4 rounded-xl border p-3",
+        "group flex items-center gap-4 rounded-2xl border p-3.5 transition-all duration-150 outline-none",
+        onClick &&
+          "cursor-pointer hover:border-indigo-200 hover:bg-indigo-50/30 hover:shadow-xs focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:hover:border-indigo-800/60 dark:hover:bg-indigo-950/20",
         isToday && showDate
-          ? "border-transparent bg-theme-primary/10 dark:bg-theme-primary/20"
-          : "border-gray-100 dark:border-slate-800",
+          ? "border-indigo-100 bg-indigo-50/70 dark:border-indigo-900/40 dark:bg-indigo-950/30"
+          : "border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface",
       )}
     >
       {showDate && (
         <div className="w-10 shrink-0 text-center leading-tight">
-          <div className="text-[11px] text-gray-500 dark:text-slate-400">
+          <div
+            className={clsx(
+              "text-[11px] font-medium uppercase tracking-wider",
+              isToday
+                ? "font-semibold text-indigo-600 dark:text-indigo-400"
+                : "text-gray-400 dark:text-slate-500",
+            )}
+          >
             {dayjs(key).format("MMM")}
           </div>
-          <div className="text-xl font-medium text-gray-900 dark:text-slate-100">
+          <div
+            className={clsx(
+              "text-xl",
+              isToday
+                ? "font-bold text-indigo-600 dark:text-indigo-400"
+                : "font-semibold text-gray-900 dark:text-slate-100",
+            )}
+          >
             {dayjs(key).date()}
           </div>
         </div>
@@ -148,7 +178,7 @@ function EventItem({
       <div className="min-w-0 flex-1">
         <p
           title={name}
-          className="truncate text-sm font-medium text-gray-900 dark:text-slate-100"
+          className="truncate text-sm font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors dark:text-slate-100 dark:group-hover:text-indigo-400"
         >
           {name}
         </p>
@@ -163,10 +193,10 @@ function EventItem({
             {config.label}
           </span>
           {event.isRecurring && (
-            <FiRepeat
-              className="size-3 text-gray-400 dark:text-slate-500"
-              aria-label="Recurring"
-            />
+            <span className="inline-flex items-center gap-1 rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-600 dark:border-indigo-800/40 dark:bg-indigo-950/40 dark:text-indigo-400">
+              <FiRepeat className="size-3" />
+              Annual
+            </span>
           )}
         </div>
         {!showDate && event.notes && (
@@ -175,6 +205,9 @@ function EventItem({
           </p>
         )}
       </div>
+      {onClick && (
+        <FiChevronRight className="size-4 shrink-0 text-indigo-400 opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100 dark:text-indigo-400" />
+      )}
     </li>
   );
 }
