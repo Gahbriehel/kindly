@@ -123,7 +123,6 @@ export function BusinessView(): JSX.Element {
       bankAccountName: company?.bankAccountName ?? "",
       bankAccountNumber: company?.bankAccountNumber ?? "",
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [company, industriesQuery.data]);
 
   const { control, handleSubmit, reset } = useForm<BusinessFormValues>({

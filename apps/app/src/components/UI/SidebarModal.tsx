@@ -2,9 +2,17 @@
 
 import { useWindowDimension } from "@/src/hooks/useWindowDimension";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, type ReactNode, type JSX } from "react";
+import {
+  useEffect,
+  useSyncExternalStore,
+  type ReactNode,
+  type JSX,
+} from "react";
+import { createPortal } from "react-dom";
 import { IoClose } from "react-icons/io5";
 import { clsx } from "clsx";
+
+const emptySubscribe = () => () => {};
 
 export interface SidebarModalProps {
   children: ReactNode;
@@ -22,8 +30,13 @@ export const SidebarModal = ({
   close,
   className,
   footer,
-}: SidebarModalProps): JSX.Element => {
+}: SidebarModalProps): JSX.Element | null => {
   const { width = 0 } = useWindowDimension();
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (display) {
@@ -40,7 +53,9 @@ export const SidebarModal = ({
   // The layout has max-w-[2400px] and mx-auto
   const layoutOffset = width > 2400 ? (width - 2400) / 2 : 0;
 
-  return (
+  if (!isMounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {display && (
         <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden print:hidden">
@@ -97,6 +112,7 @@ export const SidebarModal = ({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };

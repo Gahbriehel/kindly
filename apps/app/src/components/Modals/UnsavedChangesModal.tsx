@@ -1,6 +1,10 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { BaseButton } from "../UI/Buttons";
+
+const emptySubscribe = () => () => {};
 
 interface UnsavedChangesModalProps {
   display: boolean;
@@ -15,9 +19,15 @@ export function UnsavedChangesModal({
   stay,
   discard,
 }: UnsavedChangesModalProps) {
-  if (!display) return null;
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
-  return (
+  if (!display || !isMounted) return null;
+
+  return createPortal(
     <div
       role="alertdialog"
       aria-modal="true"
@@ -50,6 +60,7 @@ export function UnsavedChangesModal({
           />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

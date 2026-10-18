@@ -1,6 +1,10 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { BaseButton } from "../UI/Buttons";
+
+const emptySubscribe = () => () => {};
 
 interface ConfirmActionModalProps {
   actionName: string;
@@ -21,9 +25,15 @@ export function ConfirmActionModal({
   close,
   display,
 }: ConfirmActionModalProps) {
-  if (!display) return null;
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
-  return (
+  if (!display || !isMounted) return null;
+
+  return createPortal(
     <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white dark:bg-theme-surface rounded-2xl w-full max-w-md min-w-0 p-6">
         <h3 className="text-lg font-semibold mb-2 dark:text-white">
@@ -50,6 +60,7 @@ export function ConfirmActionModal({
           />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
