@@ -84,6 +84,12 @@ export default function CalendarPage(): JSX.Element {
     setDrawerState({ defaultDate: date ?? selected ?? undefined });
   };
 
+  const openEdit = (event: IEvent) => {
+    setReturnToView(null);
+    setViewingEvent(null);
+    setDrawerState({ event });
+  };
+
   const openEditFromView = (event: IEvent) => {
     setReturnToView(event);
     setViewingEvent(null);
@@ -213,6 +219,8 @@ export default function CalendarPage(): JSX.Element {
           onClear={() => setSelected(null)}
           onAdd={(date) => openAdd(date)}
           onEventClick={setViewingEvent}
+          onEdit={openEdit}
+          onDelete={setDeletingEventId}
         />
       </div>
 
@@ -220,7 +228,6 @@ export default function CalendarPage(): JSX.Element {
         event={viewingEvent}
         close={() => setViewingEvent(null)}
         onEdit={openEditFromView}
-        onDelete={setDeletingEventId}
       />
 
       {drawerState && (

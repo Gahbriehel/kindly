@@ -3,7 +3,14 @@
 import { useMemo, useState, type JSX, type Ref } from "react";
 import dayjs from "dayjs";
 import { clsx } from "clsx";
-import { FiArrowLeft, FiChevronRight, FiPlus, FiRepeat } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiChevronRight,
+  FiEdit2,
+  FiPlus,
+  FiRepeat,
+  FiTrash2,
+} from "react-icons/fi";
 import {
   eventDateKey,
   getEventDisplayName,
@@ -26,6 +33,8 @@ interface Props {
   onClear: () => void;
   onAdd: (date: DateKey) => void;
   onEventClick?: (event: IEvent) => void;
+  onEdit?: (event: IEvent) => void;
+  onDelete?: (id: string) => void;
 }
 
 /**
@@ -42,6 +51,8 @@ export function CalendarSidePanel({
   onClear,
   onAdd,
   onEventClick,
+  onEdit,
+  onDelete,
 }: Props): JSX.Element {
   const isDay = selected !== null;
   const today = todayKey();
@@ -167,6 +178,8 @@ export function CalendarSidePanel({
                 event={event}
                 showDate={!isSingleDay}
                 onClick={onEventClick ? () => onEventClick(event) : undefined}
+                onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))
           )}
@@ -180,10 +193,14 @@ function EventItem({
   event,
   showDate,
   onClick,
+  onEdit,
+  onDelete,
 }: {
   event: IEvent;
   showDate: boolean;
   onClick?: () => void;
+  onEdit?: (event: IEvent) => void;
+  onDelete?: (id: string) => void;
 }): JSX.Element {
   const key = eventDateKey(event);
   const name = getEventDisplayName(event);
@@ -198,6 +215,7 @@ function EventItem({
       onClick={onClick}
       onKeyDown={(e) => {
         if (onClick && (e.key === "Enter" || e.key === " ")) {
+          if (e.target !== e.currentTarget) return;
           e.preventDefault();
           onClick();
         }
@@ -265,9 +283,41 @@ function EventItem({
           </p>
         )}
       </div>
-      {onClick && (
-        <FiChevronRight className="size-4 shrink-0 text-indigo-400 opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100 dark:text-indigo-400" />
-      )}
+      <div className="flex shrink-0 items-center gap-2 text-gray-500 dark:text-slate-400">
+        {(onEdit || onDelete) && (
+          <span className="flex w-0 items-center justify-end gap-2 overflow-hidden opacity-0 transition-all duration-200 group-hover:w-12 group-hover:opacity-100 group-focus-within:w-12 group-focus-within:opacity-100">
+            {onEdit && (
+              <button
+                type="button"
+                aria-label="Edit event"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(event);
+                }}
+                className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400"
+              >
+                <FiEdit2 className="size-4" />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                aria-label="Delete event"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(event.id);
+                }}
+                className="cursor-pointer hover:text-red-600 dark:hover:text-red-400"
+              >
+                <FiTrash2 className="size-4" />
+              </button>
+            )}
+          </span>
+        )}
+        {onClick && (
+          <FiChevronRight className="size-4 shrink-0 text-indigo-400 opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100 dark:text-indigo-400" />
+        )}
+      </div>
     </li>
   );
 }

@@ -9,7 +9,6 @@ import {
   FiMail,
   FiPhone,
   FiRepeat,
-  FiTrash2,
 } from "react-icons/fi";
 import { clsx } from "clsx";
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
@@ -28,7 +27,6 @@ interface Props {
   event: IEvent | null;
   close: () => void;
   onEdit: (event: IEvent) => void;
-  onDelete: (id: string) => void;
 }
 
 function Section({
@@ -48,12 +46,7 @@ function Section({
   );
 }
 
-export function EventViewModal({
-  event,
-  close,
-  onEdit,
-  onDelete,
-}: Props): JSX.Element {
+export function EventViewModal({ event, close, onEdit }: Props): JSX.Element {
   const dateKey = event ? eventDateKey(event) : "";
   const timingLabel = dateKey ? getEventTimingLabel(dateKey) : "";
   const participants = event?.participants ?? [];
@@ -101,10 +94,9 @@ export function EventViewModal({
             <BaseButton
               type="button"
               color="outline"
-              text="Delete"
-              icon={<FiTrash2 className="size-4" />}
-              onClick={() => onDelete(event.id)}
-              className="h-12 flex-1 rounded-2xl text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-950/30"
+              text="Close"
+              onClick={close}
+              className="h-12 flex-1 rounded-2xl"
             />
             <BaseButton
               type="button"
