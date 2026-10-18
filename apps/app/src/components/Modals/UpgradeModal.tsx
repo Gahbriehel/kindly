@@ -38,6 +38,8 @@ export function UpgradeModal({
   );
 
   const carouselRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScrollRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Lock body scroll and handle Escape key
   useEffect(() => {
@@ -59,41 +61,67 @@ export function UpgradeModal({
     };
   }, [isOpen, onClose]);
 
-  // Center the selected plan on open for mobile
+  // Center the default plan once on open for mobile
   useEffect(() => {
     if (!isOpen) return;
+
+    const initialIdx = defaultIndex !== -1 ? defaultIndex : 1;
+    isProgrammaticScrollRef.current = true;
+
     const timer = setTimeout(() => {
+      setSelectedPlanIndex(initialIdx);
       if (carouselRef.current) {
-        const card = carouselRef.current.children[
-          selectedPlanIndex
-        ] as HTMLElement;
+        const container = carouselRef.current;
+        const card = container.children[initialIdx] as HTMLElement;
         if (card) {
-          card.scrollIntoView({
+          const targetLeft =
+            card.offsetLeft - (container.clientWidth - card.clientWidth) / 2;
+          container.scrollTo({
+            left: Math.max(0, targetLeft),
             behavior: "instant",
-            inline: "center",
-            block: "nearest",
           });
         }
       }
+      scrollTimeoutRef.current = setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, 120);
     }, 50);
-    return () => clearTimeout(timer);
-  }, [isOpen, selectedPlanIndex]);
+
+    return () => {
+      clearTimeout(timer);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [isOpen, defaultIndex]);
 
   const scrollToCard = useCallback((idx: number) => {
     setSelectedPlanIndex(idx);
-    if (carouselRef.current) {
-      const card = carouselRef.current.children[idx] as HTMLElement;
-      if (card) {
-        card.scrollIntoView({
-          behavior: "smooth",
-          inline: "center",
-          block: "nearest",
-        });
-      }
+    const container = carouselRef.current;
+    if (!container) return;
+
+    const card = container.children[idx] as HTMLElement;
+    if (!card) return;
+
+    isProgrammaticScrollRef.current = true;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
     }
+
+    const targetLeft =
+      card.offsetLeft - (container.clientWidth - card.clientWidth) / 2;
+    container.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+    }, 450);
   }, []);
 
   const handleScroll = useCallback(() => {
+    if (isProgrammaticScrollRef.current) return;
     if (!carouselRef.current) return;
     const container = carouselRef.current;
     const containerCenter =
@@ -112,8 +140,15 @@ export function UpgradeModal({
       }
     });
 
-    setSelectedPlanIndex(closestIdx);
+    setSelectedPlanIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
   }, []);
+
+  const handleTouchStart = () => {
+    isProgrammaticScrollRef.current = false;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+  };
 
   const handleSelectPlan = (tier: string) => {
     dispatch(updateSubscriptionTier(tier));
@@ -163,7 +198,7 @@ export function UpgradeModal({
         </div>
 
         {/* Mobile Plan Segmented Tabs (< md) */}
-        <div className="md:hidden flex items-center p-1 bg-gray-100 dark:bg-slate-800/80 rounded-xl mb-3.5 gap-1">
+        <div className="md:hidden flex items-center p-1 bg-gray-100 dark:bg-slate-800/80 rounded-xl mb-1.5 gap-1">
           {plans.map((plan, idx) => {
             const isSelected = selectedPlanIndex === idx;
             const isCurrent = currentTier === plan.name;
@@ -197,7 +232,9 @@ export function UpgradeModal({
         <div
           ref={carouselRef}
           onScroll={handleScroll}
-          className="flex md:grid md:grid-cols-3 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-2 px-2 pb-2 md:mx-0 md:px-0 md:pb-0 scroll-smooth items-stretch"
+          onTouchStart={handleTouchStart}
+          onMouseDown={handleTouchStart}
+          className="flex md:grid md:grid-cols-3 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-2 px-2 pt-4 pb-2 md:mx-0 md:px-0 md:pt-4 md:pb-0 items-stretch"
         >
           {plans.map((plan) => {
             const isCurrent = currentTier === plan.name;
@@ -212,11 +249,11 @@ export function UpgradeModal({
               >
                 {/* Popular or Current Badge */}
                 {plan.popular ? (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-theme-primary to-indigo-500 px-3 py-0.5 sm:px-3.5 sm:py-1 text-[0.625rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-white shadow-xs whitespace-nowrap">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 rounded-full bg-gradient-to-r from-theme-primary to-indigo-500 px-3 py-0.5 sm:px-3.5 sm:py-1 text-[0.625rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-white shadow-xs whitespace-nowrap">
                     Most Popular
                   </span>
                 ) : isCurrent ? (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gray-700 dark:bg-slate-700 px-3 py-0.5 sm:px-3.5 sm:py-1 text-[0.625rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-white shadow-xs whitespace-nowrap">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 rounded-full bg-gray-700 dark:bg-slate-700 px-3 py-0.5 sm:px-3.5 sm:py-1 text-[0.625rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-white shadow-xs whitespace-nowrap">
                     Current Plan
                   </span>
                 ) : null}
