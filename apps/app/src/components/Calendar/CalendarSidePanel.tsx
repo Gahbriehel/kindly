@@ -1,6 +1,6 @@
 "use client";
 
-import type { JSX, Ref } from "react";
+import { useMemo, useState, type JSX, type Ref } from "react";
 import dayjs from "dayjs";
 import { clsx } from "clsx";
 import { FiArrowLeft, FiChevronRight, FiPlus, FiRepeat } from "react-icons/fi";
@@ -44,8 +44,29 @@ export function CalendarSidePanel({
   onEventClick,
 }: Props): JSX.Element {
   const isDay = selected !== null;
-  const events = isDay ? dayEvents : monthEvents;
-  const isCurrentMonth = month.slice(0, 7) === todayKey().slice(0, 7);
+  const today = todayKey();
+  const isCurrentMonth = month.slice(0, 7) === today.slice(0, 7);
+
+  const todayEvents = useMemo(() => {
+    if (!isCurrentMonth) return [];
+    return monthEvents.filter((event) => eventDateKey(event) === today);
+  }, [isCurrentMonth, monthEvents, today]);
+
+  const hasTodayEvents = todayEvents.length > 0;
+
+  const [activeTab, setActiveTab] = useState<"today" | "month" | null>(null);
+  const [viewedMonth, setViewedMonth] = useState(month);
+
+  // Reset tab selection when month prop changes
+  if (viewedMonth !== month) {
+    setViewedMonth(month);
+    setActiveTab(null);
+  }
+
+  const viewMode = activeTab ?? (hasTodayEvents ? "today" : "month");
+  const showToday = !isDay && hasTodayEvents && viewMode === "today";
+  const events = isDay ? dayEvents : showToday ? todayEvents : monthEvents;
+  const isSingleDay = isDay || showToday;
 
   return (
     <aside ref={panelRef} className="relative min-w-0">
@@ -56,7 +77,7 @@ export function CalendarSidePanel({
               <button
                 type="button"
                 onClick={onClear}
-                aria-label="Back to month overview"
+                aria-label="Back to overview"
                 className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800"
               >
                 <FiArrowLeft />
@@ -64,6 +85,41 @@ export function CalendarSidePanel({
               <h2 className="truncate text-sm font-semibold text-gray-900 dark:text-slate-100">
                 {dayjs(selected).format("dddd, MMMM D")}
               </h2>
+            </div>
+          ) : hasTodayEvents ? (
+            <div
+              role="tablist"
+              className="flex items-center rounded-xl bg-gray-100 p-0.5 dark:bg-slate-800/80"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === "today"}
+                onClick={() => setActiveTab("today")}
+                className={clsx(
+                  "flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all",
+                  viewMode === "today"
+                    ? "bg-white text-gray-900 shadow-xs dark:bg-theme-surface dark:text-white"
+                    : "text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white",
+                )}
+              >
+                <span className="size-1.5 rounded-full bg-theme-primary" />
+                Today
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === "month"}
+                onClick={() => setActiveTab("month")}
+                className={clsx(
+                  "cursor-pointer rounded-lg px-2.5 py-1 text-xs font-semibold transition-all",
+                  viewMode === "month"
+                    ? "bg-white text-gray-900 shadow-xs dark:bg-theme-surface dark:text-white"
+                    : "text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white",
+                )}
+              >
+                This Month
+              </button>
             </div>
           ) : (
             <h2 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
@@ -87,12 +143,16 @@ export function CalendarSidePanel({
           ) : events.length === 0 ? (
             <li className="flex flex-col items-center justify-center gap-3 py-10 text-center">
               <p className="text-sm font-medium text-gray-400 dark:text-slate-500">
-                {isDay ? "No events on this day" : "No events this month"}
+                {isDay
+                  ? "No events on this day"
+                  : showToday
+                    ? "No events today"
+                    : "No events this month"}
               </p>
-              {isDay && (
+              {(isDay || showToday) && (
                 <button
                   type="button"
-                  onClick={() => onAdd(selected)}
+                  onClick={() => onAdd(selected ?? today)}
                   className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
                   <FiPlus className="size-3.5" />
@@ -105,7 +165,7 @@ export function CalendarSidePanel({
               <EventItem
                 key={event.id + event.occurrenceDate}
                 event={event}
-                showDate={!isDay}
+                showDate={!isSingleDay}
                 onClick={onEventClick ? () => onEventClick(event) : undefined}
               />
             ))
