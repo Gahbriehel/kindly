@@ -74,7 +74,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="flex flex-1 min-w-0 flex-col relative h-full">
           <TopNav onMenuClick={toggleMobileMenu} />
-          <main className="flex flex-1 flex-col overflow-auto bg-gray-50 dark:bg-theme-canvas p-4 pb-24 sm:p-6 sm:pb-12 transition-colors duration-200">
+          <main className="relative z-0 flex flex-1 flex-col overflow-auto bg-gray-50 dark:bg-theme-canvas p-4 pb-24 sm:p-6 sm:pb-12 transition-colors duration-200">
             {children}
           </main>
         </div>

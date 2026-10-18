@@ -57,7 +57,7 @@ export const TopNav = memo(function TopNav({
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-20 w-full shrink-0 items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface px-4 sm:px-6 transition-colors duration-200">
+    <header className="sticky top-0 z-30 flex h-20 w-full shrink-0 items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-theme-surface px-4 sm:px-6 transition-colors duration-200">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
