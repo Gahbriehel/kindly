@@ -14,6 +14,7 @@ import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { updateSubscriptionTier } from "@/src/store/slices/auth";
 import { customToast } from "@/src/helpers/customToast";
 import { BaseButton } from "../UI/Buttons";
+import { SUBSCRIPTION_PLANS } from "@/src/data/subscriptions";
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -28,58 +29,7 @@ export function UpgradeModal({
   const user = useAppSelector((state) => state.auth.user);
   const currentTier = user?.company?.subscriptionTier?.toUpperCase() || "BASIC";
 
-  const plans = [
-    {
-      name: "BASIC",
-      price: "$0",
-      description: "Ideal for creators getting started.",
-      features: [
-        "Up to 5 clients",
-        "Personal template library",
-        "Full dashboard access",
-      ],
-      notIncluded: [
-        "Staff & team collaboration",
-        "Unlimited client management",
-        "Dedicated account manager",
-      ],
-      color:
-        "border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/40",
-      buttonColor: "outline" as const,
-    },
-    {
-      name: "PREMIUM",
-      price: "$19",
-      description: "Perfect for growing professionals.",
-      features: [
-        "More than 5 clients (Unlimited)",
-        "Personal template library",
-        "Full dashboard access",
-        "Priority email support",
-      ],
-      notIncluded: ["Staff & team collaboration", "Dedicated account manager"],
-      color:
-        "border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/40",
-      buttonColor: "primary" as const,
-    },
-    {
-      name: "PLATINUM",
-      price: "$40",
-      description: "Ultimate power for teams and enterprises.",
-      features: [
-        "Unlimited clients",
-        "Staff & team collaboration",
-        "Staff directory & access levels",
-        "Dedicated account manager",
-        "Early access to new features",
-      ],
-      notIncluded: [],
-      color:
-        "border-theme-primary ring-2 ring-theme-primary/30 bg-theme-primary/5 dark:bg-theme-primary/10 shadow-lg shadow-theme-primary/5",
-      buttonColor: "gradient" as const,
-      popular: true,
-    },
-  ];
+  const plans = SUBSCRIPTION_PLANS;
 
   // Default to popular plan (PLATINUM) or current plan
   const defaultIndex = plans.findIndex((p) => p.name === "PLATINUM");

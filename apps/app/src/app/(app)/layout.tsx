@@ -9,6 +9,7 @@ import { useWindowDimension } from "../../hooks/useWindowDimension";
 import { SideNav } from "../../components/UI/SideNav";
 import { TopNav } from "../../components/UI/TopNav";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
+import { LimitWarningModal } from "@/src/components/Modals/LimitWarningModal";
 import { MobileNav } from "../../components/UI/MobileNav";
 import { queryClient } from "@/src/utils/Providers";
 import { logOut } from "@/src/store/slices/auth";
@@ -94,6 +95,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           fn={handleLogout}
           loading={isPending}
         />
+
+        <LimitWarningModal />
       </div>
     </>
   );
