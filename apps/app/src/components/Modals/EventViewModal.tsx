@@ -3,6 +3,7 @@
 import type { JSX, ReactNode } from "react";
 import dayjs from "dayjs";
 import {
+  FiCalendar,
   FiClock,
   FiEdit2,
   FiGift,
@@ -26,7 +27,8 @@ import type { IEvent } from "@/src/models/event";
 interface Props {
   event: IEvent | null;
   close: () => void;
-  onEdit: (event: IEvent) => void;
+  onEdit?: (event: IEvent) => void;
+  viewOnly?: boolean;
 }
 
 function Section({
@@ -46,7 +48,12 @@ function Section({
   );
 }
 
-export function EventViewModal({ event, close, onEdit }: Props): JSX.Element {
+export function EventViewModal({
+  event,
+  close,
+  onEdit,
+  viewOnly,
+}: Props): JSX.Element {
   const dateKey = event ? eventDateKey(event) : "";
   const timingLabel = dateKey ? getEventTimingLabel(dateKey) : "";
   const participants = event?.participants ?? [];
@@ -98,14 +105,26 @@ export function EventViewModal({ event, close, onEdit }: Props): JSX.Element {
               onClick={close}
               className="h-12 flex-1 rounded-2xl"
             />
-            <BaseButton
-              type="button"
-              color="primary"
-              text="Edit"
-              icon={<FiEdit2 className="size-4" />}
-              onClick={() => onEdit(event)}
-              className="h-12 flex-1 rounded-2xl"
-            />
+            {viewOnly || !onEdit ? (
+              <BaseButton
+                type="link"
+                href={dateKey ? `/calendar?date=${dateKey}` : "/calendar"}
+                color="primary"
+                text="View in Calendar"
+                icon={<FiCalendar className="size-4" />}
+                onClick={close}
+                className="h-12 flex-1 rounded-2xl"
+              />
+            ) : (
+              <BaseButton
+                type="button"
+                color="primary"
+                text="Edit"
+                icon={<FiEdit2 className="size-4" />}
+                onClick={() => onEdit(event)}
+                className="h-12 flex-1 rounded-2xl"
+              />
+            )}
           </>
         )
       }

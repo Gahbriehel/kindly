@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -8,9 +9,11 @@ import {
   useState,
   type JSX,
 } from "react";
+import { useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 import { FiChevronLeft, FiChevronRight, FiPlus } from "react-icons/fi";
 import { BaseButton } from "@/src/components/UI/Buttons";
+import { PageLoader } from "@/src/components/UI/PageLoader";
 import { CalendarGrid } from "@/src/components/Calendar/CalendarGrid";
 import { CalendarSidePanel } from "@/src/components/Calendar/CalendarSidePanel";
 import { CategoryChips } from "@/src/components/Calendar/CategoryChips";
@@ -37,11 +40,23 @@ import type { IEvent } from "@/src/models/event";
 const iconButton =
   "flex size-9 cursor-pointer items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800";
 
-export default function CalendarPage(): JSX.Element {
-  const [month, setMonth] = useState<DateKey>(() =>
-    dayjs().startOf("month").format("YYYY-MM-DD"),
-  );
-  const [selected, setSelected] = useState<DateKey | null>(null);
+function CalendarContent({
+  dateParam,
+}: {
+  dateParam: string | null;
+}): JSX.Element {
+  const [month, setMonth] = useState<DateKey>(() => {
+    if (dateParam && dayjs(dateParam).isValid()) {
+      return dayjs(dateParam).startOf("month").format("YYYY-MM-DD");
+    }
+    return dayjs().startOf("month").format("YYYY-MM-DD");
+  });
+  const [selected, setSelected] = useState<DateKey | null>(() => {
+    if (dateParam && dayjs(dateParam).isValid()) {
+      return dayjs(dateParam).format("YYYY-MM-DD");
+    }
+    return null;
+  });
   const [categoryId, setCategoryId] = useState("");
   const [viewingSnapshot, setViewingEvent] = useState<IEvent | null>(null);
   const [returnToView, setReturnToView] = useState<IEvent | null>(null);
@@ -253,5 +268,19 @@ export default function CalendarPage(): JSX.Element {
         }}
       />
     </div>
+  );
+}
+
+function CalendarParamWrapper(): JSX.Element {
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get("date");
+  return <CalendarContent key={dateParam || "default"} dateParam={dateParam} />;
+}
+
+export default function CalendarPage(): JSX.Element {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <CalendarParamWrapper />
+    </Suspense>
   );
 }

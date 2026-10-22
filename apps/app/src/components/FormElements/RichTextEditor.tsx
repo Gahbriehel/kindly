@@ -6,6 +6,7 @@ import "react-quill-new/dist/quill.snow.css";
 import { ErrorMessage } from "./ErrorMessage";
 import { clsx } from "clsx";
 import type ReactQuillType from "react-quill-new";
+import { htmlToPlainText } from "@/src/helpers/htmlHelpers";
 
 type QuillWrapperProps = ComponentProps<typeof ReactQuillType> & {
   forwardedRef?: Ref<ReactQuillType>;
@@ -29,7 +30,7 @@ const ReactQuill = dynamic(
   },
 );
 
-interface RichTextEditorProps {
+export interface RichTextEditorProps {
   label?: string;
   error?: string;
   required?: boolean;
@@ -38,24 +39,52 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
   id?: string;
+  toolbarPosition?: "top" | "bottom";
+  variant?: "default" | "compact";
+  editorMinHeight?: string;
+  showCharCount?: boolean;
 }
 
 export const RichTextEditor = forwardRef<ReactQuillType, RichTextEditorProps>(
   function RichTextEditor(
-    { label, error, required, value, onChange, placeholder, className, id },
+    {
+      label,
+      error,
+      required,
+      value,
+      onChange,
+      placeholder,
+      className,
+      id,
+      toolbarPosition = "top",
+      variant = "default",
+      editorMinHeight,
+      showCharCount,
+    },
     ref,
   ) {
     const modules = useMemo(
       () => ({
-        toolbar: [
-          [{ header: [1, 2, 3, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["link", "clean"],
-        ],
+        toolbar:
+          variant === "compact"
+            ? [["bold", "italic"], [{ list: "bullet" }], ["link", "image"]]
+            : [
+                [{ header: [1, 2, 3, false] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["link", "clean"],
+              ],
       }),
-      [],
+      [variant],
     );
+
+    const charCount = useMemo(
+      () => htmlToPlainText(value || "").length,
+      [value],
+    );
+
+    const minHeightStyle =
+      editorMinHeight || (variant === "compact" ? "110px" : "180px");
 
     return (
       <fieldset className="relative space-y-2">
@@ -69,8 +98,15 @@ export const RichTextEditor = forwardRef<ReactQuillType, RichTextEditorProps>(
         )}
 
         <div
+          style={
+            {
+              "--ql-editor-min-height": minHeightStyle,
+            } as React.CSSProperties
+          }
           className={clsx(
-            "rich-text-editor-container min-h-[250px] w-full overflow-hidden rounded-xl border bg-gray-50 dark:bg-theme-surface focus-within:border-primary-500 transition-all",
+            "rich-text-editor-container w-full overflow-hidden rounded-xl border bg-gray-50 dark:bg-theme-surface focus-within:border-primary-500 transition-all",
+            variant === "compact" ? "min-h-[140px]" : "min-h-[250px]",
+            toolbarPosition === "bottom" && "toolbar-bottom",
             error ? "border-red-500" : "border-gray-200 dark:border-slate-800",
             className,
           )}
@@ -86,31 +122,50 @@ export const RichTextEditor = forwardRef<ReactQuillType, RichTextEditorProps>(
           />
         </div>
 
+        {showCharCount && (
+          <div className="text-xs text-gray-400 dark:text-slate-500 font-medium">
+            {charCount} chars
+          </div>
+        )}
+
         {error && <ErrorMessage message={error} />}
 
         <style jsx global>{`
+          .rich-text-editor-container.toolbar-bottom .quill {
+            display: flex;
+            flex-direction: column-reverse;
+          }
           .rich-text-editor-container .ql-toolbar {
             border-top: none;
             border-left: none;
             border-right: none;
             border-bottom: 1px solid #e5e7eb;
             background: #f9fafb;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 12px 12px 0 0;
+          }
+          .rich-text-editor-container.toolbar-bottom .ql-toolbar {
+            border-bottom: none;
+            border-top: 1px solid #e5e7eb;
+            border-radius: 0 0 12px 12px;
           }
           .dark .rich-text-editor-container .ql-toolbar {
             background: #0f172a;
             border-bottom-color: #1e293b;
           }
+          .dark .rich-text-editor-container.toolbar-bottom .ql-toolbar {
+            border-top-color: #1e293b;
+            border-bottom: none;
+          }
           .rich-text-editor-container .ql-container {
             border: none;
             font-family: inherit;
             font-size: 0.875rem;
-            min-height: 200px;
+            min-height: var(--ql-editor-min-height, 180px);
           }
           .rich-text-editor-container .ql-editor {
-            padding: 16px;
-            min-height: 200px;
+            padding: 12px 16px;
+            min-height: var(--ql-editor-min-height, 180px);
           }
           .rich-text-editor-container .ql-editor.ql-blank::before {
             color: #9ca3af;

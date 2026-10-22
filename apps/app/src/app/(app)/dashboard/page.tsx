@@ -13,9 +13,15 @@ import { getInitials } from "@/src/helpers/stringHelpers";
 import { getRelativeDays, formatRelativeTime } from "@/src/helpers/dateHelpers";
 import { getCategoryConfig } from "@/src/helpers/categoryConfig";
 import dayjs from "dayjs";
+import { SendClientMessageModal } from "@/src/components/Modals/SendClientMessageModal";
+import { EventViewModal } from "@/src/components/Modals/EventViewModal";
 
 export default function DashboardPage(): JSX.Element {
   const { data, isLoading } = useDashboardQuery();
+  const [selectedEventForMessage, setSelectedEventForMessage] =
+    useState<IEvent | null>(null);
+  const [selectedEventForView, setSelectedEventForView] =
+    useState<IEvent | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -189,8 +195,17 @@ export default function DashboardPage(): JSX.Element {
       {
         id: "actions",
         header: "",
-        cell: () => (
-          <button className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-100 dark:border-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 transition-all cursor-pointer">
+        cell: ({ row }) => (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedEventForMessage(row.original);
+            }}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-100 dark:border-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 transition-all cursor-pointer"
+            title="Send Message"
+            aria-label="Send message to client"
+          >
             <IoChatbubbleOutline className="size-4.5" />
           </button>
         ),
@@ -232,6 +247,7 @@ export default function DashboardPage(): JSX.Element {
             loading={isEventsLoading}
             error={!!eventsError}
             supportedViews={["list"]}
+            onRowClick={(item) => setSelectedEventForView(item)}
             filterContent={filterContent}
             filterActiveCount={activeFilterCount}
             onRefetch={() => void refetchEvents()}
@@ -306,6 +322,18 @@ export default function DashboardPage(): JSX.Element {
           </div>
         </div>
       </div>
+
+      <SendClientMessageModal
+        display={!!selectedEventForMessage}
+        close={() => setSelectedEventForMessage(null)}
+        event={selectedEventForMessage}
+      />
+
+      <EventViewModal
+        event={selectedEventForView}
+        close={() => setSelectedEventForView(null)}
+        viewOnly
+      />
     </>
   );
 }
