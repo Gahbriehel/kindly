@@ -93,7 +93,7 @@ export const BaseButton = forwardRef<
         color === "sky",
       "border-theme-primary bg-white text-theme-primary hover:bg-gray-50 dark:border-theme-primary dark:bg-slate-800 dark:text-theme-primary dark:hover:bg-slate-700 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50 disabled:dark:text-slate-500 disabled:dark:border-slate-800 disabled:dark:bg-theme-surface":
         color === "white",
-      "border-transparent bg-gradient-to-r from-theme-primary to-theme-primary-hover hover:from-theme-primary-hover hover:to-theme-primary shadow-theme-primary/30 hover:shadow-theme-primary/50 dark:shadow-theme-primary/20 disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-400 disabled:dark:from-slate-800 disabled:dark:to-theme-surface":
+      "border-transparent bg-gradient-to-r from-theme-primary to-theme-primary-hover hover:from-theme-primary-hover hover:to-theme-primary text-white shadow-theme-primary/30 hover:shadow-theme-primary/50 dark:shadow-theme-primary/20 disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-400 disabled:dark:from-slate-800 disabled:dark:to-theme-surface":
         color === "gradient",
       "bg-transparent text-theme-primary hover:bg-theme-primary/10 border border-theme-primary hover:border-theme-primary/50 dark:text-theme-primary dark:hover:bg-theme-primary/20 dark:border-theme-primary dark:hover:border-theme-primary/70 disabled:text-gray-400 disabled:border-gray-300 disabled:bg-gray-50 disabled:dark:text-slate-500 disabled:dark:border-slate-800":
         color === "transparent",
