@@ -4,6 +4,7 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { TbUserScreen } from "react-icons/tb";
 import { CgProfile } from "react-icons/cg";
 import { PiCalendarBlankLight } from "react-icons/pi";
+import { FaRegFile } from "react-icons/fa";
 import type { UserRole } from "../models/auth";
 
 export interface NavLink {
@@ -36,7 +37,13 @@ export const navLinks: NavLink[] = [
     title: "Templates",
     icon: <IoDocumentTextOutline className="size-5" />,
     href: "/templates",
-    roles: ["admin"],
+    roles: ["admin", "moderator"],
+  },
+  {
+    title: "Invoices",
+    icon: <FaRegFile className="size-5" />,
+    href: "/invoices",
+    roles: ["admin", "moderator"],
   },
   {
     title: "Staff",
