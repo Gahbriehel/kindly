@@ -1,18 +1,33 @@
 "use client";
 
 import { useState, useMemo, type JSX } from "react";
-import { LuCake, LuCalendar } from "react-icons/lu";
-import { FiHeart, FiGift } from "react-icons/fi";
+import {
+  LuCake,
+  LuCalendar,
+  LuClock,
+  LuFileText,
+  LuReceipt,
+  LuTrendingUp,
+} from "react-icons/lu";
+import { FiHeart, FiGift, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { Table } from "@/src/components/UI/Table";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { InvoiceStatusBadge } from "@/src/components/UI/InvoiceStatusBadge";
-import { useInvoicesQuery } from "@/src/hooks/useInvoiceQuery";
+import { StatsCardContainer, StatsCard } from "@/src/components/UI/StatsCard";
+import {
+  useInvoicesQuery,
+  useInvoiceSummaryQuery,
+} from "@/src/hooks/useInvoiceQuery";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
 import { formatCurrency } from "@/src/helpers/formatCurrency";
 import { INVOICE_STATUS_OPTIONS } from "@/src/helpers/invoiceConfig";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { IInvoice, InvoiceStatus } from "@/src/models/invoice";
+import type {
+  IInvoice,
+  InvoiceStatus,
+  IInvoiceCurrencySummary,
+} from "@/src/models/invoice";
 
 /**
  * Renders event title with an appropriate icon (Cake/Heart/Gift)
@@ -67,6 +82,80 @@ export default function InvoicesPage(): JSX.Element {
     status: statusFilter || undefined,
     search: searchQuery.trim() || undefined,
   });
+
+  const { data: summaryData, isLoading: isSummaryLoading } =
+    useInvoiceSummaryQuery();
+
+  const [selectedCurrency, setSelectedCurrency] = useState<string | null>(null);
+
+  const rawCurrencies = useMemo(() => {
+    return summaryData?.currencies || summaryData?.data?.currencies || [];
+  }, [summaryData]);
+
+  const rawSummary = summaryData?.summary || summaryData?.data?.summary || null;
+
+  const activeSummary = useMemo<IInvoiceCurrencySummary | null>(() => {
+    if (selectedCurrency) {
+      const found = rawCurrencies.find(
+        (c) => c.currency.toUpperCase() === selectedCurrency.toUpperCase(),
+      );
+      if (found) return found;
+    }
+    return rawSummary || rawCurrencies[0] || null;
+  }, [selectedCurrency, rawCurrencies, rawSummary]);
+
+  const activeCurrency = activeSummary?.currency || "USD";
+
+  // Financial Stats
+  const waitingAmount =
+    activeSummary?.totalOutstanding ??
+    activeSummary?.totalAmountWaitingToBePaid ??
+    activeSummary?.amountWaitingToBePaid ??
+    0;
+  const waitingCount =
+    activeSummary?.awaitingPayment?.count ??
+    summaryData?.totalAwaitingPayment ??
+    summaryData?.data?.totalAwaitingPayment ??
+    0;
+
+  const overdueAmount =
+    activeSummary?.totalOverdueAmount ?? activeSummary?.overdue?.total ?? 0;
+  const overdueCount =
+    activeSummary?.totalOverdueInvoices ??
+    activeSummary?.overdue?.count ??
+    summaryData?.totalOverdue ??
+    summaryData?.data?.totalOverdue ??
+    0;
+
+  const paidAmount =
+    activeSummary?.paidSoFar ??
+    activeSummary?.totalAmountPaidSoFar ??
+    activeSummary?.paid?.total ??
+    0;
+  const paidCount =
+    activeSummary?.paid?.count ??
+    summaryData?.totalPaid ??
+    summaryData?.data?.totalPaid ??
+    0;
+
+  const draftsAmount =
+    activeSummary?.totalDraftAmount ?? activeSummary?.draft?.total ?? 0;
+  const draftsCount =
+    activeSummary?.totalDrafts ??
+    activeSummary?.draft?.count ??
+    summaryData?.totalDrafts ??
+    summaryData?.data?.totalDrafts ??
+    0;
+
+  const totalInvoicedAmount = activeSummary?.totalInvoiced ?? 0;
+  const totalInvoicedCount =
+    activeSummary?.totalInvoices ??
+    summaryData?.totalInvoices ??
+    summaryData?.data?.totalInvoices ??
+    data?.pagination?.total ??
+    0;
+
+  const collectionRate = activeSummary?.collectionRate;
 
   const invoices = useMemo<IInvoice[]>(() => {
     if (!data) return [];
@@ -340,7 +429,135 @@ export default function InvoicesPage(): JSX.Element {
               : ""}
           </p>
         </div>
+
+        {rawCurrencies.length > 1 && (
+          <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-xl bg-gray-100 p-1 dark:bg-slate-800">
+            <span className="px-2 text-xs font-semibold text-gray-400 dark:text-slate-400">
+              Currency:
+            </span>
+            {rawCurrencies.map((c) => {
+              const isSelected =
+                (activeSummary?.currency || "").toUpperCase() ===
+                c.currency.toUpperCase();
+              return (
+                <button
+                  key={c.currency}
+                  type="button"
+                  onClick={() => setSelectedCurrency(c.currency)}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-white text-gray-900 shadow-xs dark:bg-slate-900 dark:text-white"
+                      : "text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white"
+                  }`}
+                >
+                  {c.currency}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
+
+      {/* Stats Cards Section */}
+      <StatsCardContainer>
+        <StatsCard
+          label="Waiting to be paid"
+          value={formatCurrency(waitingAmount, activeCurrency)}
+          tooltip={`${waitingCount} invoice${waitingCount === 1 ? "" : "s"} waiting for payment`}
+          icon={<LuClock className="size-4 text-amber-500" />}
+          isLoading={isSummaryLoading}
+          onClick={() => {
+            setStatusFilter((prev) => (prev === "SENT" ? null : "SENT"));
+            setCurrentPage(1);
+          }}
+          className={
+            statusFilter === "SENT"
+              ? "ring-2 ring-amber-500/50 border-amber-500/60 dark:border-amber-400/60"
+              : ""
+          }
+        />
+        <StatsCard
+          label="Overdue"
+          value={formatCurrency(overdueAmount, activeCurrency)}
+          tooltip={`${overdueCount} overdue invoice${overdueCount === 1 ? "" : "s"}`}
+          icon={<FiAlertCircle className="size-4 text-rose-500" />}
+          isLoading={isSummaryLoading}
+          onClick={() => {
+            setStatusFilter((prev) => (prev === "OVERDUE" ? null : "OVERDUE"));
+            setCurrentPage(1);
+          }}
+          className={
+            statusFilter === "OVERDUE"
+              ? "ring-2 ring-rose-500/50 border-rose-500/60 dark:border-rose-400/60"
+              : ""
+          }
+        />
+        <StatsCard
+          label="Paid so far"
+          value={formatCurrency(paidAmount, activeCurrency)}
+          tooltip={`${paidCount} paid invoice${paidCount === 1 ? "" : "s"}`}
+          icon={<FiCheckCircle className="size-4 text-emerald-500" />}
+          isLoading={isSummaryLoading}
+          onClick={() => {
+            setStatusFilter((prev) => (prev === "PAID" ? null : "PAID"));
+            setCurrentPage(1);
+          }}
+          className={
+            statusFilter === "PAID"
+              ? "ring-2 ring-emerald-500/50 border-emerald-500/60 dark:border-emerald-400/60"
+              : ""
+          }
+        />
+        <StatsCard
+          label="Drafts"
+          value={formatCurrency(draftsAmount, activeCurrency)}
+          tooltip={`${draftsCount} draft invoice${draftsCount === 1 ? "" : "s"}`}
+          icon={
+            <LuFileText className="size-4 text-gray-500 dark:text-slate-400" />
+          }
+          isLoading={isSummaryLoading}
+          onClick={() => {
+            setStatusFilter((prev) => (prev === "DRAFT" ? null : "DRAFT"));
+            setCurrentPage(1);
+          }}
+          className={
+            statusFilter === "DRAFT"
+              ? "ring-2 ring-gray-400/50 border-gray-400/60 dark:border-slate-500/60"
+              : ""
+          }
+        />
+        <StatsCard
+          label="Total Invoiced"
+          value={formatCurrency(totalInvoicedAmount, activeCurrency)}
+          tooltip={`${totalInvoicedCount} total invoice${totalInvoicedCount === 1 ? "" : "s"}`}
+          icon={<LuReceipt className="size-4 text-indigo-500" />}
+          isLoading={isSummaryLoading}
+          onClick={() => {
+            setStatusFilter(null);
+            setCurrentPage(1);
+          }}
+          className={
+            statusFilter === null
+              ? "ring-1 ring-gray-200 dark:ring-slate-700"
+              : ""
+          }
+        />
+        <StatsCard
+          label="Collection Rate"
+          value={
+            typeof collectionRate === "number"
+              ? `${collectionRate.toFixed(1)}%`
+              : "0%"
+          }
+          tooltip={
+            collectionRate !== undefined
+              ? `Overall collection rate: ${formatCurrency(paidAmount, activeCurrency)} of ${formatCurrency(totalInvoicedAmount, activeCurrency)}`
+              : "Overall collection rate"
+          }
+          icon={<LuTrendingUp className="size-4 text-emerald-500" />}
+          isLoading={isSummaryLoading}
+        />
+      </StatsCardContainer>
 
       {/* Table Container */}
       <Table

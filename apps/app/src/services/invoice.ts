@@ -4,6 +4,7 @@ import { cleanObject } from "../helpers/cleanObject";
 import type {
   IInvoiceResponse,
   ISingleInvoiceResponse,
+  IInvoiceSummaryResponse,
 } from "../models/invoice";
 
 export async function getInvoices(
@@ -17,5 +18,17 @@ export async function getInvoices(
 
 export async function getInvoice(id: string): Promise<ISingleInvoiceResponse> {
   const response = await axios.get<ISingleInvoiceResponse>(`/invoices/${id}`);
+  return response.data;
+}
+
+export async function getInvoiceSummary(
+  params: IQueryParams = {},
+): Promise<IInvoiceSummaryResponse> {
+  const response = await axios.get<IInvoiceSummaryResponse>(
+    "/invoices/summary",
+    {
+      params: cleanObject(params),
+    },
+  );
   return response.data;
 }

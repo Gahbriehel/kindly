@@ -18,6 +18,7 @@ interface StatsCardProps {
   tooltip?: string;
   isLoading?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
 const containerVariants = {
@@ -72,6 +73,7 @@ export function StatsCard({
   tooltip,
   isLoading = false,
   className = "",
+  onClick,
 }: StatsCardProps): JSX.Element {
   const [showTooltip, setShowTooltip] = React.useState(false);
 
@@ -114,7 +116,12 @@ export function StatsCard({
   return (
     <motion.div
       variants={cardVariants}
-      className={`group relative flex h-20 w-58 sm:w-60 shrink-0 flex-col justify-between rounded-2xl border border-gray-100 bg-white p-3.5 sm:p-4 transition-all duration-300 hover:border-gray-200 dark:border-slate-800 dark:bg-theme-surface dark:hover:border-slate-700 ${className}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      className={`group relative flex h-20 w-58 sm:w-60 shrink-0 flex-col justify-between rounded-2xl border border-gray-100 bg-white p-3.5 sm:p-4 transition-all duration-300 hover:border-gray-200 dark:border-slate-800 dark:bg-theme-surface dark:hover:border-slate-700 ${
+        onClick ? "cursor-pointer" : ""
+      } ${className}`}
       whileHover={{
         scale: 1.02,
         y: -2,

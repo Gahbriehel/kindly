@@ -116,3 +116,62 @@ export interface IInvoicePaymentPayload {
   reference: string;
   note: string;
 }
+
+export interface IInvoiceStatusSummaryItem {
+  count: number;
+  total: number;
+}
+
+export interface IInvoicePartiallyPaidSummaryItem extends IInvoiceStatusSummaryItem {
+  amountPaid: number;
+  balanceDue: number;
+}
+
+export interface IInvoiceCurrencySummary {
+  currency: string;
+  totalAmountWaitingToBePaid: number;
+  amountWaitingToBePaid: number;
+  totalOutstanding: number;
+  totalOverdueInvoices: number;
+  totalOverdueAmount: number;
+  totalAmountPaidSoFar: number;
+  paidSoFar: number;
+  totalDrafts: number;
+  totalDraftAmount: number;
+  totalInvoiced: number;
+  totalInvoices: number;
+  collectionRate?: number;
+  averageInvoiceValue?: number;
+  draft?: IInvoiceStatusSummaryItem;
+  awaitingPayment?: IInvoiceStatusSummaryItem;
+  overdue?: IInvoiceStatusSummaryItem;
+  paid?: IInvoiceStatusSummaryItem;
+  partiallyPaid?: IInvoicePartiallyPaidSummaryItem;
+  dueSoon?: IInvoiceStatusSummaryItem;
+  void?: IInvoiceStatusSummaryItem;
+}
+
+export interface IInvoiceSummaryResponse {
+  message?: string;
+  statusCode?: number;
+  totalInvoices?: number;
+  totalDrafts?: number;
+  totalAwaitingPayment?: number;
+  totalOverdue?: number;
+  totalPaid?: number;
+  totalPartiallyPaid?: number;
+  totalVoid?: number;
+  summary?: IInvoiceCurrencySummary | null;
+  currencies?: IInvoiceCurrencySummary[];
+  data?: {
+    totalInvoices?: number;
+    totalDrafts?: number;
+    totalAwaitingPayment?: number;
+    totalOverdue?: number;
+    totalPaid?: number;
+    totalPartiallyPaid?: number;
+    totalVoid?: number;
+    summary?: IInvoiceCurrencySummary | null;
+    currencies?: IInvoiceCurrencySummary[];
+  };
+}

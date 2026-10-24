@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import type { IQueryParams } from "../models/base";
-import { getInvoices, getInvoice } from "../services/invoice";
+import {
+  getInvoices,
+  getInvoice,
+  getInvoiceSummary,
+} from "../services/invoice";
 
 export function useInvoicesQuery(params: IQueryParams = {}) {
   return useQuery({
@@ -14,5 +18,12 @@ export function useInvoiceQuery(id?: string) {
     queryKey: ["invoice", id],
     queryFn: () => getInvoice(id!),
     enabled: !!id,
+  });
+}
+
+export function useInvoiceSummaryQuery(params: IQueryParams = {}) {
+  return useQuery({
+    queryKey: ["invoices-summary", { ...params }],
+    queryFn: () => getInvoiceSummary(params),
   });
 }
