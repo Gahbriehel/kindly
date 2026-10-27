@@ -55,10 +55,8 @@ export function useAddClient({ onSuccess }: MutationProps = {}) {
   return useMutation({
     mutationFn: (payload: ICreateClientPayload) => createClient(payload),
     onSuccess: () => {
-      // 1. Invalidate clients list so the table updates
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
       queryClient.invalidateQueries({ queryKey: [TAGS_KEY] });
-      // 2. Invalidate subscription to immediately refetch the updated client_limit badge
       queryClient.invalidateQueries({ queryKey: SUBSCRIPTION_CURRENT_KEY });
       onSuccess?.();
     },
@@ -78,7 +76,6 @@ export function useUpdateClient({ onSuccess }: MutationProps = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
       queryClient.invalidateQueries({ queryKey: [TAGS_KEY] });
-      // An event may have been created or merged, so refresh event-backed views.
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["events"] });
       onSuccess?.();
@@ -92,9 +89,7 @@ export function useDeleteClient({ onSuccess }: MutationProps = {}) {
   return useMutation({
     mutationFn: (id: string) => deleteClient(id),
     onSuccess: () => {
-      // 1. Invalidate clients list so the table updates
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
-      // 2. Invalidate subscription to immediately refetch the updated client_limit badge
       queryClient.invalidateQueries({ queryKey: SUBSCRIPTION_CURRENT_KEY });
       onSuccess?.();
     },

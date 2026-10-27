@@ -6,6 +6,7 @@ import type {
   ISingleInvoiceResponse,
   IInvoiceSummaryResponse,
   IInvoiceSettingsResponse,
+  IInvoiceSettingsPayload,
 } from "../models/invoice";
 
 export async function getInvoices(
@@ -37,5 +38,15 @@ export async function getInvoiceSummary(
 export async function getInvoiceSettings(): Promise<IInvoiceSettingsResponse> {
   const response =
     await axios.get<IInvoiceSettingsResponse>("/invoice-settings");
+  return response.data;
+}
+
+export async function updateInvoiceSettings(
+  payload: IInvoiceSettingsPayload,
+): Promise<IInvoiceSettingsResponse> {
+  const response = await axios.patch<IInvoiceSettingsResponse>(
+    `/invoice-settings`,
+    payload,
+  );
   return response.data;
 }

@@ -25,6 +25,9 @@ import {
   useInvoicesQuery,
   useInvoiceSummaryQuery,
 } from "@/src/hooks/useInvoiceQuery";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
+import { InvoiceSettingsInterceptModal } from "@/src/components/Modals/InvoiceSettingsInterceptModal";
+import type { IUserData } from "@/src/models/auth";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
 import { formatCurrency } from "@/src/helpers/formatCurrency";
@@ -91,7 +94,33 @@ export default function InvoicesPage(): JSX.Element {
     search: searchQuery.trim() || undefined,
   });
 
-  // const { data: settingsData } = useInvoiceSettingsQuery();
+  const { data: settingsData } = useInvoiceSettingsQuery();
+  const { user } = useAppSelector((state) => state.auth);
+  const userObj = user as IUserData | null;
+  const company = userObj?.company;
+
+  const [isSettingsInterceptOpen, setIsSettingsInterceptOpen] = useState(false);
+
+  const handleProceedToCreateInvoice = (origin: string) => {
+    // Ready for upcoming invoice create modal
+    console.log("Proceeding to create invoice:", origin);
+  };
+
+  const handleNewInvoiceClick = () => {
+    const settings = settingsData?.data?.settings;
+    const logo = settings?.logoUrl ?? company?.logoUrl;
+    const bank = settings?.bankName ?? company?.bankName;
+    const accNum = settings?.bankAccountNumber ?? company?.bankAccountNumber;
+
+    // Check if any key invoice setting is missing (logo or payout details)
+    const isMissingSettings = !logo || !bank || !accNum;
+
+    if (isMissingSettings) {
+      setIsSettingsInterceptOpen(true);
+    } else {
+      handleProceedToCreateInvoice("direct");
+    }
+  };
 
   const { data: summaryData, isLoading: isSummaryLoading } =
     useInvoiceSummaryQuery();
@@ -442,7 +471,7 @@ export default function InvoicesPage(): JSX.Element {
         </div>
         <BaseButton
           type="button"
-          onClick={() => console.log("add invoice")}
+          onClick={handleNewInvoiceClick}
           color="primary"
           icon={<FiPlus className="size-4" />}
           position="icon-first"
@@ -608,6 +637,19 @@ export default function InvoicesPage(): JSX.Element {
             setPageSize(size);
             setCurrentPage(1);
           },
+        }}
+      />
+
+      <InvoiceSettingsInterceptModal
+        isOpen={isSettingsInterceptOpen}
+        onClose={() => setIsSettingsInterceptOpen(false)}
+        onSkip={() => {
+          setIsSettingsInterceptOpen(false);
+          handleProceedToCreateInvoice("skipped");
+        }}
+        onSuccessAndProceed={() => {
+          setIsSettingsInterceptOpen(false);
+          handleProceedToCreateInvoice("saved");
         }}
       />
     </div>

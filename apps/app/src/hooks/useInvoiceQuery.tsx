@@ -1,11 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { IQueryParams } from "../models/base";
 import {
   getInvoices,
   getInvoice,
   getInvoiceSummary,
   getInvoiceSettings,
+  updateInvoiceSettings,
 } from "../services/invoice";
+import { IInvoiceSettingsPayload } from "../models/invoice";
 
 export function useInvoicesQuery(params: IQueryParams = {}) {
   return useQuery({
@@ -33,5 +35,19 @@ export function useInvoiceSettingsQuery() {
   return useQuery({
     queryKey: ["invoice-settings"],
     queryFn: getInvoiceSettings,
+  });
+}
+
+export function useUpdateInvoiceSettings({
+  onSuccess,
+}: { onSuccess?: () => void } = {}) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: IInvoiceSettingsPayload) =>
+      updateInvoiceSettings(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });
+      onSuccess?.();
+    },
   });
 }
