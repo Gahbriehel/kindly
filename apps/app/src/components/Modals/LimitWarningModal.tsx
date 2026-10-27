@@ -1,19 +1,25 @@
 "use client";
 
+import { useCallback, useState, useSyncExternalStore, type JSX } from "react";
 import {
-  useCallback,
-  useEffect,
-  useState,
-  useSyncExternalStore,
-  type JSX,
-} from "react";
-import { FiAlertTriangle, FiArrowRight, FiCheck, FiX } from "react-icons/fi";
+  IoArrowForward,
+  IoCheckmarkCircle,
+  IoPeopleOutline,
+} from "react-icons/io5";
+import { clsx } from "clsx";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { useCurrentSubscriptionQuery } from "@/src/hooks/useSubscriptionQuery";
 import { BaseButton } from "../UI/Buttons";
+import { CenterModal } from "../UI/CenterModal";
 import { UpgradeModal } from "./UpgradeModal";
 
 const SESSION_DISMISS_KEY_PREFIX = "kindly_limit_warning_dismissed_";
+
+const UPGRADE_BENEFITS = [
+  "Unlimited client records and active projects",
+  "Team collaboration, staff seats, and roles",
+  "Priority support and early access to features",
+];
 
 const dismissedKeys = new Set<string>();
 const listeners = new Set<() => void>();
@@ -99,160 +105,111 @@ export function LimitWarningModal(): JSX.Element | null {
     isMounted && isLimitReachedOrNearing && !isDismissed,
   );
 
-  // Lock body scroll and handle Escape key when open
-  useEffect(() => {
-    if (!showWarning) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleDismiss();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [showWarning, handleDismiss]);
-
   if (!isMounted) return null;
+
+  const isAtLimit = Boolean(clientLimit && clientLimit.percentage >= 100);
+  const percentage = Math.round(clientLimit?.percentage ?? 0);
 
   return (
     <>
-      {showWarning && clientLimit && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="limit-warning-title"
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 backdrop-blur-xs p-4 sm:p-6"
-          onClick={handleDismiss}
-        >
-          <div
-            className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white dark:bg-theme-surface border border-gray-100 dark:border-slate-800 shadow-2xl p-6 sm:p-8 text-left transition-all animate-in fade-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Top decorative gradient bar */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-theme-primary" />
-
-            {/* Close button */}
-            <button
-              onClick={handleDismiss}
+      <CenterModal
+        display={showWarning}
+        close={handleDismiss}
+        title={
+          isAtLimit
+            ? "You've reached your client limit"
+            : "You're nearing your client limit"
+        }
+        maxWidth="max-w-md"
+        footer={
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <BaseButton
               type="button"
-              aria-label="Close modal"
-              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-gray-700 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
-            >
-              <FiX className="size-4" />
-            </button>
-
-            {/* Header with icon */}
-            <div className="flex items-start gap-4 mb-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                <FiAlertTriangle className="size-6" />
-              </div>
-              <div>
-                <span className="inline-block rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide mb-1">
-                  Limit Notice
-                </span>
-                <h2
-                  id="limit-warning-title"
-                  className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist"
-                >
-                  You&apos;ve reached {Math.round(clientLimit.percentage)}% of
-                  your limit
-                </h2>
-              </div>
-            </div>
-
-            <p className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed mb-5">
-              You are currently using{" "}
-              <strong className="text-gray-900 dark:text-white">
+              color="outline"
+              onClick={handleDismiss}
+              text="Maybe later"
+              className="w-full sm:w-auto"
+            />
+            <BaseButton
+              type="button"
+              color="primary"
+              onClick={handleOpenUpgrade}
+              icon={<IoArrowForward className="size-4" />}
+              position="icon-last"
+              text="Upgrade plan"
+              className="w-full px-5 font-semibold sm:w-auto"
+            />
+          </div>
+        }
+      >
+        {clientLimit && (
+          <div className="space-y-5 p-6">
+            <p className="text-sm leading-relaxed text-pretty text-gray-600 dark:text-slate-300">
+              You&apos;re using{" "}
+              <span className="font-semibold text-gray-900 dark:text-slate-100">
                 {clientLimit.used} of {clientLimit.max} clients
-              </strong>
-              . Upgrade to a higher subscription plan now so you don&apos;t get
-              interrupted when onboarding new clients.
+              </span>{" "}
+              on your current plan. Upgrade so you don&apos;t get interrupted
+              when onboarding new clients.
             </p>
 
-            {/* Capacity Progress Card */}
-            <div className="rounded-2xl bg-gray-50 dark:bg-slate-900/50 border border-gray-100 dark:border-slate-800/80 p-4 mb-5">
-              <div className="flex items-center justify-between text-xs font-semibold text-gray-700 dark:text-slate-300 mb-2">
-                <span>Client Usage</span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {Math.round(clientLimit.percentage)}% used
+            {/* Client usage */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+              <div className="mb-2 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-slate-100">
+                  <IoPeopleOutline className="size-4 text-theme-primary dark:text-indigo-400" />
+                  <span>Client usage</span>
+                </div>
+                <span
+                  className={clsx(
+                    "text-sm font-semibold",
+                    isAtLimit
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-theme-primary dark:text-indigo-400",
+                  )}
+                >
+                  {percentage}%
                 </span>
               </div>
-
-              {/* Progress bar */}
               <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-slate-800">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500"
+                  className={clsx(
+                    "h-full rounded-full transition-all duration-500",
+                    isAtLimit ? "bg-red-500" : "bg-theme-primary",
+                  )}
                   style={{
                     width: `${Math.min(100, Math.max(0, clientLimit.percentage))}%`,
                   }}
                 />
               </div>
-
-              <div className="mt-2.5 flex items-center justify-between text-[11px] text-gray-500 dark:text-slate-400">
+              <div className="mt-2 flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
                 <span>
                   {clientLimit.used} / {clientLimit.max} clients
                 </span>
-                <span className="font-medium text-gray-700 dark:text-slate-300">
-                  {clientLimit.remaining !== undefined
-                    ? `${clientLimit.remaining} ${clientLimit.remaining === 1 ? "client" : "clients"} remaining`
-                    : null}
-                </span>
+                {clientLimit.remaining !== undefined && (
+                  <span>
+                    {clientLimit.remaining}{" "}
+                    {clientLimit.remaining === 1 ? "client" : "clients"} left
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Why upgrade highlights */}
-            <div className="space-y-2 mb-6">
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-slate-300">
-                <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                  <FiCheck className="size-2.5" />
-                </div>
-                <span>Unlimited client records and active projects</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-slate-300">
-                <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                  <FiCheck className="size-2.5" />
-                </div>
-                <span>Team collaboration, staff seats, and roles</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-slate-300">
-                <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                  <FiCheck className="size-2.5" />
-                </div>
-                <span>Priority support and early access to features</span>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5">
-              <BaseButton
-                type="button"
-                color="outline"
-                className="w-full sm:w-auto text-xs py-2 px-4 cursor-pointer"
-                onClick={handleDismiss}
-              >
-                Maybe Later
-              </BaseButton>
-
-              <BaseButton
-                type="button"
-                color="gradient"
-                className="w-full sm:w-auto text-xs py-2 px-4 cursor-pointer flex items-center justify-center gap-1.5"
-                onClick={handleOpenUpgrade}
-              >
-                <span>Upgrade Plan</span>
-                <FiArrowRight className="size-3.5" />
-              </BaseButton>
-            </div>
+            {/* Upgrade benefits */}
+            <ul className="space-y-2.5">
+              {UPGRADE_BENEFITS.map((benefit) => (
+                <li
+                  key={benefit}
+                  className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-slate-300"
+                >
+                  <IoCheckmarkCircle className="size-4.5 shrink-0 text-emerald-500 dark:text-emerald-400" />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      )}
+        )}
+      </CenterModal>
 
       {/* Upgrade Modal */}
       <UpgradeModal
