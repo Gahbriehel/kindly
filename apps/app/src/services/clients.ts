@@ -5,6 +5,7 @@ import type {
   IClientResponse,
   ISingleClientResponse,
   ICreateClientPayload,
+  ICreateClientResponse,
   IUpdateClientPayload,
   ITagResponse,
 } from "../models/client";
@@ -25,11 +26,8 @@ export async function getClient(id: string): Promise<ISingleClientResponse> {
 
 export async function createClient(
   payload: ICreateClientPayload,
-): Promise<ISingleClientResponse | IClientResponse> {
-  const response = await axios.post<ISingleClientResponse | IClientResponse>(
-    "/clients",
-    payload,
-  );
+): Promise<ICreateClientResponse> {
+  const response = await axios.post<ICreateClientResponse>("/clients", payload);
   return response.data;
 }
 

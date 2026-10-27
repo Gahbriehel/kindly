@@ -51,5 +51,5 @@ export interface ICalendarEventsResponse extends IBaseResponse {
 }
 
 export interface IEventCreateResponse extends IBaseResponse {
-  data: IEvent;
+  data: { event: IEvent };
 }

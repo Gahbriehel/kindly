@@ -37,6 +37,10 @@ interface Props {
   close: () => void;
   /** When provided the drawer edits this event, otherwise it creates one. */
   event?: IEvent | null;
+  /** Pre-selected participant when creating, e.g. the client being invoiced. */
+  defaultClient?: { id: string; fullName: string } | null;
+  /** Called with the newly created event. */
+  onCreated?: (event: IEvent) => void;
 }
 
 /** The select drives its search through `name`; the clients API wants `search`. */
@@ -61,6 +65,8 @@ export function EventFormDrawer({
   defaultDate,
   close,
   event = null,
+  defaultClient = null,
+  onCreated,
 }: Props): JSX.Element {
   const isEdit = !!event;
 
@@ -86,13 +92,18 @@ export function EventFormDrawer({
     },
   });
 
-  const [participants, setParticipants] = useState<ISelect[]>(() => {
-    if (!event?.participants) return [];
-    return event.participants.map((p) => ({
-      value: { _id: p.client?.id || p.clientId },
-      label: p.client?.fullName || "Client",
-    }));
+  const [initialParticipants] = useState<ISelect[]>(() => {
+    if (event?.participants) {
+      return event.participants.map((p) => ({
+        value: { _id: p.client?.id || p.clientId },
+        label: p.client?.fullName || "Client",
+      }));
+    }
+    if (!event && defaultClient) return [toClientOption(defaultClient)];
+    return [];
   });
+  const [participants, setParticipants] =
+    useState<ISelect[]>(initialParticipants);
   const [addingCategory, setAddingCategory] = useState(false);
 
   const { data: categoriesData, isLoading: loadingCategories } =
@@ -119,8 +130,8 @@ export function EventFormDrawer({
   }, [event, categoryOptions, setValue]);
 
   const participantsChanged = useMemo(() => {
-    const initialIds = (event?.participants ?? [])
-      .map((p) => p.client?.id || p.clientId)
+    const initialIds = initialParticipants
+      .map((p) => p.value._id)
       .sort()
       .join(",");
     const currentIds = participants
@@ -128,16 +139,17 @@ export function EventFormDrawer({
       .sort()
       .join(",");
     return initialIds !== currentIds;
-  }, [event, participants]);
+  }, [initialParticipants, participants]);
 
   const { requestClose, prompt } = useUnsavedChangesGuard(
-    isDirty || (isEdit ? participantsChanged : participants.length > 0),
+    isDirty || participantsChanged,
     close,
   );
 
   const addEvent = useAddEvent({
-    onSuccess: () => {
+    onSuccess: (response) => {
       customToast.success("Event added successfully");
+      if (response.data?.event) onCreated?.(response.data.event);
       close();
     },
   });

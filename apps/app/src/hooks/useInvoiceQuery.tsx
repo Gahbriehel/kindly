@@ -6,8 +6,15 @@ import {
   getInvoiceSummary,
   getInvoiceSettings,
   updateInvoiceSettings,
+  createInvoice,
+  updateInvoice,
+  sendInvoice,
 } from "../services/invoice";
-import { IInvoiceSettingsPayload } from "../models/invoice";
+import {
+  IInvoicePayload,
+  IInvoiceSettingsPayload,
+  IUpdateInvoicePayload,
+} from "../models/invoice";
 
 export function useInvoicesQuery(params: IQueryParams = {}) {
   return useQuery({
@@ -49,5 +56,43 @@ export function useUpdateInvoiceSettings({
       queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });
       onSuccess?.();
     },
+  });
+}
+
+function invalidateInvoiceQueries(
+  queryClient: ReturnType<typeof useQueryClient>,
+) {
+  queryClient.invalidateQueries({ queryKey: ["invoices"] });
+  queryClient.invalidateQueries({ queryKey: ["invoices-summary"] });
+  queryClient.invalidateQueries({ queryKey: ["invoice"] });
+}
+
+export function useCreateInvoice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: IInvoicePayload) => createInvoice(payload),
+    onSuccess: () => invalidateInvoiceQueries(queryClient),
+  });
+}
+
+export function useUpdateInvoice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: IUpdateInvoicePayload;
+    }) => updateInvoice(id, payload),
+    onSuccess: () => invalidateInvoiceQueries(queryClient),
+  });
+}
+
+export function useSendInvoice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => sendInvoice(id),
+    onSuccess: () => invalidateInvoiceQueries(queryClient),
   });
 }

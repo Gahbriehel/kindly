@@ -60,10 +60,10 @@ export interface IInvoice {
 
 export interface IInvoicePayload {
   clientId: string;
-  eventId: string;
+  eventId?: string;
   currency: string;
   description: string;
-  note: string;
+  note?: string;
   dueDate: string;
   discountPercent: number;
   taxPercent: number;
@@ -72,6 +72,18 @@ export interface IInvoicePayload {
     quantity: number;
     priceEach: number;
   }[];
+}
+
+/** `eventId: null` unlinks the event from a draft. */
+export type IUpdateInvoicePayload = Omit<
+  Partial<IInvoicePayload>,
+  "eventId"
+> & {
+  eventId?: string | null;
+};
+
+export interface ISaveInvoiceResponse extends IBaseResponse {
+  data: { invoice: IInvoice };
 }
 
 export interface IItem {

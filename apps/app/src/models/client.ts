@@ -80,7 +80,16 @@ export interface IClientResponse extends IBaseResponse {
 }
 
 export interface ISingleClientResponse extends IBaseResponse {
-  data: IClient;
+  data: { client: IClient };
+}
+
+export interface ICreateClientResponse extends IBaseResponse {
+  data: {
+    createdCount: number;
+    reusedCount: number;
+    clients: { client: IClient; reused: boolean }[];
+    event: IClientEvent | null;
+  };
 }
 
 export interface ITag {

@@ -161,9 +161,15 @@ interface Props {
   close: () => void;
   /** When provided the modal edits this client, otherwise it creates one. */
   client?: IClient | null;
+  /** Called with the first created client, e.g. to select it in a picker. */
+  onCreated?: (client: IClient) => void;
 }
 
-export function ClientFormModal({ close, client = null }: Props): JSX.Element {
+export function ClientFormModal({
+  close,
+  client = null,
+  onCreated,
+}: Props): JSX.Element {
   const isEdit = !!client;
   const [eventOpen, setEventOpen] = useState(false);
   const [hasTagDraft, setHasTagDraft] = useState(false);
@@ -189,8 +195,10 @@ export function ClientFormModal({ close, client = null }: Props): JSX.Element {
   );
 
   const addMutation = useAddClient({
-    onSuccess: () => {
+    onSuccess: (response) => {
       customToast.success("Client added successfully");
+      const created = response.data?.clients?.[0]?.client;
+      if (created) onCreated?.(created);
       handleClose();
     },
   });

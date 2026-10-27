@@ -15,6 +15,7 @@ import {
 } from "../services/clients";
 import type {
   ICreateClientPayload,
+  ICreateClientResponse,
   IUpdateClientPayload,
 } from "../models/client";
 import { SUBSCRIPTION_CURRENT_KEY } from "./useSubscriptionQuery";
@@ -49,16 +50,18 @@ interface MutationProps {
   onSuccess?: () => void;
 }
 
-export function useAddClient({ onSuccess }: MutationProps = {}) {
+export function useAddClient({
+  onSuccess,
+}: { onSuccess?: (response: ICreateClientResponse) => void } = {}) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: ICreateClientPayload) => createClient(payload),
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: [CLIENTS_KEY] });
       queryClient.invalidateQueries({ queryKey: [TAGS_KEY] });
       queryClient.invalidateQueries({ queryKey: SUBSCRIPTION_CURRENT_KEY });
-      onSuccess?.();
+      onSuccess?.(response);
     },
   });
 }

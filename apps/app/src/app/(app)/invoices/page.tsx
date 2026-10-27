@@ -27,6 +27,7 @@ import {
 } from "@/src/hooks/useInvoiceQuery";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { InvoiceSettingsInterceptModal } from "@/src/components/Modals/InvoiceSettingsInterceptModal";
+import { InvoiceCreateModal } from "@/src/components/Modals/InvoiceCreateModal";
 import type { IUserData } from "@/src/models/auth";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
@@ -100,11 +101,9 @@ export default function InvoicesPage(): JSX.Element {
   const company = userObj?.company;
 
   const [isSettingsInterceptOpen, setIsSettingsInterceptOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  const handleProceedToCreateInvoice = (origin: string) => {
-    // Ready for upcoming invoice create modal
-    console.log("Proceeding to create invoice:", origin);
-  };
+  const handleProceedToCreateInvoice = () => setIsCreateOpen(true);
 
   const handleNewInvoiceClick = () => {
     const settings = settingsData?.data?.settings;
@@ -118,7 +117,7 @@ export default function InvoicesPage(): JSX.Element {
     if (isMissingSettings) {
       setIsSettingsInterceptOpen(true);
     } else {
-      handleProceedToCreateInvoice("direct");
+      handleProceedToCreateInvoice();
     }
   };
 
@@ -645,13 +644,17 @@ export default function InvoicesPage(): JSX.Element {
         onClose={() => setIsSettingsInterceptOpen(false)}
         onSkip={() => {
           setIsSettingsInterceptOpen(false);
-          handleProceedToCreateInvoice("skipped");
+          handleProceedToCreateInvoice();
         }}
         onSuccessAndProceed={() => {
           setIsSettingsInterceptOpen(false);
-          handleProceedToCreateInvoice("saved");
+          handleProceedToCreateInvoice();
         }}
       />
+
+      {isCreateOpen && (
+        <InvoiceCreateModal close={() => setIsCreateOpen(false)} />
+      )}
     </div>
   );
 }

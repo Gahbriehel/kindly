@@ -15,18 +15,18 @@ export interface ICountriesResponse extends IBaseResponse {
 }
 
 export const FALLBACK_COUNTRIES: ICountry[] = [
-  { name: "Nigeria", phoneCode: "234" },
-  { name: "United States", phoneCode: "1" },
-  { name: "United Kingdom", phoneCode: "44" },
-  { name: "Canada", phoneCode: "1" },
-  { name: "South Africa", phoneCode: "27" },
-  { name: "Kenya", phoneCode: "254" },
-  { name: "Ghana", phoneCode: "233" },
-  { name: "Australia", phoneCode: "61" },
-  { name: "Germany", phoneCode: "49" },
-  { name: "France", phoneCode: "33" },
-  { name: "United Arab Emirates", phoneCode: "971" },
-  { name: "India", phoneCode: "91" },
+  { name: "Nigeria", phoneCode: "234", currency: "NGN" },
+  { name: "United States", phoneCode: "1", currency: "USD" },
+  { name: "United Kingdom", phoneCode: "44", currency: "GBP" },
+  { name: "Canada", phoneCode: "1", currency: "CAD" },
+  { name: "South Africa", phoneCode: "27", currency: "ZAR" },
+  { name: "Kenya", phoneCode: "254", currency: "KES" },
+  { name: "Ghana", phoneCode: "233", currency: "GHS" },
+  { name: "Australia", phoneCode: "61", currency: "AUD" },
+  { name: "Germany", phoneCode: "49", currency: "EUR" },
+  { name: "France", phoneCode: "33", currency: "EUR" },
+  { name: "United Arab Emirates", phoneCode: "971", currency: "AED" },
+  { name: "India", phoneCode: "91", currency: "INR" },
 ];
 
 export interface IIndustry {

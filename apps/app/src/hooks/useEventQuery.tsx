@@ -5,7 +5,11 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { IQueryParams } from "../models/base";
-import type { IEventPayload, IUpdateEventPayload } from "../models/event";
+import type {
+  IEventCreateResponse,
+  IEventPayload,
+  IUpdateEventPayload,
+} from "../models/event";
 import {
   createEvent,
   deleteEvent,
@@ -51,13 +55,15 @@ function invalidateEventQueries(
   queryClient.invalidateQueries({ queryKey: ["clients"] });
 }
 
-export function useAddEvent({ onSuccess }: { onSuccess?: () => void } = {}) {
+export function useAddEvent({
+  onSuccess,
+}: { onSuccess?: (response: IEventCreateResponse) => void } = {}) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: IEventPayload) => createEvent(payload),
-    onSuccess: () => {
+    onSuccess: (response) => {
       invalidateEventQueries(queryClient);
-      onSuccess?.();
+      onSuccess?.(response);
     },
   });
 }

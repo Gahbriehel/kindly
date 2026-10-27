@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { IQueryParams } from "../models/base";
+import type { IBaseResponse, IQueryParams } from "../models/base";
 import { cleanObject } from "../helpers/cleanObject";
 import type {
   IInvoiceResponse,
@@ -7,6 +7,9 @@ import type {
   IInvoiceSummaryResponse,
   IInvoiceSettingsResponse,
   IInvoiceSettingsPayload,
+  IInvoicePayload,
+  IUpdateInvoicePayload,
+  ISaveInvoiceResponse,
 } from "../models/invoice";
 
 export async function getInvoices(
@@ -48,5 +51,28 @@ export async function updateInvoiceSettings(
     `/invoice-settings`,
     payload,
   );
+  return response.data;
+}
+
+export async function createInvoice(
+  payload: IInvoicePayload,
+): Promise<ISaveInvoiceResponse> {
+  const response = await axios.post<ISaveInvoiceResponse>("/invoices", payload);
+  return response.data;
+}
+
+export async function updateInvoice(
+  id: string,
+  payload: IUpdateInvoicePayload,
+): Promise<ISaveInvoiceResponse> {
+  const response = await axios.patch<ISaveInvoiceResponse>(
+    `/invoices/${id}`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function sendInvoice(id: string): Promise<IBaseResponse> {
+  const response = await axios.post<IBaseResponse>(`/invoices/${id}/send`);
   return response.data;
 }
