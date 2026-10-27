@@ -72,7 +72,7 @@ function CalendarContent({
   const categories = categoriesData?.data ?? [];
 
   const { start, end } = useMemo(() => monthRange(month), [month]);
-  const { data, isLoading, isFetching, isError, refetch } =
+  const { data, isLoading, isFetching, isPlaceholderData, isError, refetch } =
     useCalendarEventsQuery({
       start,
       end,
@@ -217,7 +217,8 @@ function CalendarContent({
                 month={month}
                 eventsByDate={eventsByDate}
                 selected={selected}
-                loading={isLoading || isFetching}
+                loading={isLoading || isPlaceholderData}
+                fetching={isFetching}
                 onSelect={handleSelect}
               />
             </div>

@@ -11,13 +11,17 @@ import {
   type DateKey,
 } from "@/src/helpers/calendarHelpers";
 import { getCategoryDotClass } from "@/src/helpers/categoryConfig";
+import { Skeleton } from "@/src/components/UI/Skeleton";
 import type { IEvent } from "@/src/models/event";
 
 interface Props {
   month: DateKey;
   eventsByDate: Map<DateKey, IEvent[]>;
   selected: DateKey | null;
+  /** No data for this month yet: render placeholder chips in each cell. */
   loading?: boolean;
+  /** Background refetch over existing data: just dim the grid. */
+  fetching?: boolean;
   onSelect: (date: DateKey) => void;
 }
 
@@ -30,6 +34,7 @@ export function CalendarGrid({
   eventsByDate,
   selected,
   loading,
+  fetching,
   onSelect,
 }: Props): JSX.Element {
   const cells = useMemo(() => buildMonthCells(month), [month]);
@@ -77,10 +82,11 @@ export function CalendarGrid({
 
       <div
         role="grid"
+        aria-busy={loading || fetching}
         onKeyDown={handleKeyDown}
         className={clsx(
           "grid flex-1 auto-rows-fr grid-cols-7 gap-1.5 transition-opacity md:gap-2",
-          loading && "opacity-60",
+          fetching && !loading && "opacity-60",
         )}
       >
         {cells.map((cell, index) => {
@@ -94,7 +100,11 @@ export function CalendarGrid({
               type="button"
               data-date={cell.key}
               aria-pressed={isSelected}
-              aria-label={`${dayjs(cell.key).format("MMMM D")}, ${events.length} ${events.length === 1 ? "event" : "events"}`}
+              aria-label={
+                loading
+                  ? dayjs(cell.key).format("MMMM D")
+                  : `${dayjs(cell.key).format("MMMM D")}, ${events.length} ${events.length === 1 ? "event" : "events"}`
+              }
               onClick={() => onSelect(cell.key as DateKey)}
               className={clsx(
                 "flex min-h-[3.25rem] min-w-0 cursor-pointer flex-col items-center rounded-xl border p-1.5 transition-colors md:min-h-[5.5rem] md:items-stretch md:p-2",
@@ -116,55 +126,79 @@ export function CalendarGrid({
                 {cell.day}
               </span>
 
-              {/* Small screens: up to three category dots. */}
-              {events.length > 0 && (
-                <span className="mt-1.5 flex items-center gap-0.5 md:hidden">
-                  {events.slice(0, MAX_DOTS).map((event) => (
-                    <span
-                      key={event.id + event.occurrenceDate}
-                      className={clsx(
-                        "size-1.5 rounded-full",
-                        getCategoryDotClass(event.category?.name),
+              {loading ? (
+                <CellSkeleton seed={cell.day} />
+              ) : (
+                <>
+                  {/* Small screens: up to three category dots. */}
+                  {events.length > 0 && (
+                    <span className="mt-1.5 flex items-center gap-0.5 md:hidden">
+                      {events.slice(0, MAX_DOTS).map((event) => (
+                        <span
+                          key={event.id + event.occurrenceDate}
+                          className={clsx(
+                            "size-1.5 rounded-full",
+                            getCategoryDotClass(event.category?.name),
+                          )}
+                        />
+                      ))}
+                      {events.length > MAX_DOTS && (
+                        <span className="ml-0.5 text-[9px] font-semibold leading-none text-gray-400">
+                          +{events.length - MAX_DOTS}
+                        </span>
                       )}
-                    />
-                  ))}
-                  {events.length > MAX_DOTS && (
-                    <span className="ml-0.5 text-[9px] font-semibold leading-none text-gray-400">
-                      +{events.length - MAX_DOTS}
                     </span>
                   )}
-                </span>
-              )}
 
-              {/* md and up: name chips with an overflow counter. */}
-              <span className="mt-1 hidden min-w-0 flex-col gap-1 md:flex">
-                {events.slice(0, MAX_CHIPS).map((event) => (
-                  <span
-                    key={event.id + event.occurrenceDate}
-                    className="flex min-w-0 items-center gap-1.5 rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-[11px] font-medium text-gray-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                  >
-                    <span
-                      className={clsx(
-                        "size-1.5 shrink-0 rounded-full",
-                        getCategoryDotClass(event.category?.name),
-                      )}
-                    />
-                    <span className="truncate">
-                      {getEventDisplayName(event)}
-                    </span>
+                  {/* md and up: name chips with an overflow counter. */}
+                  <span className="mt-1 hidden min-w-0 flex-col gap-1 md:flex">
+                    {events.slice(0, MAX_CHIPS).map((event) => (
+                      <span
+                        key={event.id + event.occurrenceDate}
+                        className="flex min-w-0 items-center gap-1.5 rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-[11px] font-medium text-gray-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                      >
+                        <span
+                          className={clsx(
+                            "size-1.5 shrink-0 rounded-full",
+                            getCategoryDotClass(event.category?.name),
+                          )}
+                        />
+                        <span className="truncate">
+                          {getEventDisplayName(event)}
+                        </span>
+                      </span>
+                    ))}
+                    {events.length > MAX_CHIPS && (
+                      <span className="px-1 text-[11px] font-semibold text-theme-primary">
+                        +{events.length - MAX_CHIPS} more
+                      </span>
+                    )}
                   </span>
-                ))}
-                {events.length > MAX_CHIPS && (
-                  <span className="px-1 text-[11px] font-semibold text-theme-primary">
-                    +{events.length - MAX_CHIPS} more
-                  </span>
-                )}
-              </span>
+                </>
+              )}
             </button>
           );
         })}
       </div>
     </div>
+  );
+}
+
+/** Varies placeholder chip count per day so the grid doesn't look uniform. */
+function CellSkeleton({ seed }: { seed: number }): JSX.Element {
+  const chips = (seed * 7) % 3;
+  return (
+    <>
+      <Skeleton className="mt-1.5 h-1.5 w-4 rounded-full md:hidden" />
+      <span className="mt-1 hidden min-w-0 flex-col gap-1 md:flex">
+        {Array.from({ length: chips }, (_, i) => (
+          <Skeleton
+            key={i}
+            className={clsx("h-[18px]", i === 0 ? "w-full" : "w-3/4")}
+          />
+        ))}
+      </span>
+    </>
   );
 }
 
