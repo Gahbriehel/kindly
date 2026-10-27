@@ -285,7 +285,7 @@ function EventItem({
       </div>
       <div className="flex shrink-0 items-center gap-2 text-gray-500 dark:text-slate-400">
         {(onEdit || onDelete) && (
-          <span className="flex w-0 items-center justify-end gap-2 overflow-hidden opacity-0 transition-all duration-200 group-hover:w-12 group-hover:opacity-100 group-focus-within:w-12 group-focus-within:opacity-100">
+          <span className="flex w-auto items-center justify-end gap-2 opacity-100 transition-all duration-200 lg:w-0 lg:overflow-hidden lg:opacity-0 lg:group-hover:w-12 lg:group-hover:opacity-100 lg:group-focus-within:w-12 lg:group-focus-within:opacity-100">
             {onEdit && (
               <button
                 type="button"
@@ -294,7 +294,7 @@ function EventItem({
                   e.stopPropagation();
                   onEdit(event);
                 }}
-                className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400"
+                className="cursor-pointer p-1 text-gray-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
               >
                 <FiEdit2 className="size-4" />
               </button>
@@ -307,7 +307,7 @@ function EventItem({
                   e.stopPropagation();
                   onDelete(event.id);
                 }}
-                className="cursor-pointer hover:text-red-600 dark:hover:text-red-400"
+                className="cursor-pointer p-1 text-gray-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
               >
                 <FiTrash2 className="size-4" />
               </button>

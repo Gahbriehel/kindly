@@ -107,17 +107,13 @@ export function EventFormDrawer({
 
   // If editing and category was only stored as categoryId, populate from loaded options
   useEffect(() => {
-    if (
-      event &&
-      !event.category &&
-      event.categoryId &&
-      categoryOptions.length > 0
-    ) {
-      const match = categoryOptions.find(
-        (c) => c.value._id === event.categoryId,
-      );
-      if (match) {
-        setValue("category", match);
+    if (event && categoryOptions.length > 0) {
+      const catId = event.category?.id || event.categoryId;
+      if (catId) {
+        const match = categoryOptions.find((c) => c.value._id === catId);
+        if (match) {
+          setValue("category", match);
+        }
       }
     }
   }, [event, categoryOptions, setValue]);

@@ -18,12 +18,14 @@ import { CopyButton } from "@/src/components/UI/CopyButton";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
-import type { IClient } from "@/src/models/client";
+import type { IClient, IClientEvent } from "@/src/models/client";
 
 interface Props {
   client: IClient | null;
   close: () => void;
   onEdit: (client: IClient) => void;
+  onEditEvent?: (event: IClientEvent) => void;
+  onDeleteEvent?: (event: IClientEvent) => void;
 }
 
 /** Next occurrence (today or later) of the month/day in `date`. */
@@ -63,7 +65,13 @@ function tagStyle(tag: string): string {
     : "bg-gray-100 text-gray-700 border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
 }
 
-export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
+export function ClientViewModal({
+  client,
+  close,
+  onEdit,
+  onEditEvent,
+  onDeleteEvent,
+}: Props): JSX.Element {
   const birthday = client?.birthDate ? nextOccurrence(client.birthDate) : null;
   const daysAway = birthday?.diff(dayjs().startOf("day"), "day") ?? 0;
   const tags = [
@@ -223,20 +231,26 @@ export function ClientViewModal({ client, close, onEdit }: Props): JSX.Element {
                         showTime: false,
                         utc: false,
                       })}
-                      <span className="flex w-0 items-center gap-2 overflow-hidden opacity-0 transition-all duration-200 group-hover:w-12 group-hover:opacity-100 group-focus-within:w-12 group-focus-within:opacity-100">
+                      <span className="flex w-auto items-center gap-2 opacity-100 transition-all duration-200 lg:w-0 lg:overflow-hidden lg:opacity-0 lg:group-hover:w-12 lg:group-hover:opacity-100 lg:group-focus-within:w-12 lg:group-focus-within:opacity-100">
                         <button
                           type="button"
                           aria-label="Edit event"
-                          onClick={() => {}}
-                          className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEditEvent?.(event);
+                          }}
+                          className="cursor-pointer p-1 text-gray-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
                         >
                           <FiEdit2 className="size-4" />
                         </button>
                         <button
                           type="button"
                           aria-label="Delete event"
-                          onClick={() => {}}
-                          className="cursor-pointer hover:text-red-600 dark:hover:text-red-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteEvent?.(event);
+                          }}
+                          className="cursor-pointer p-1 text-gray-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
                         >
                           <FiTrash2 className="size-4" />
                         </button>

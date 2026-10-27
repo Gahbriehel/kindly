@@ -18,17 +18,20 @@ import { ActionsList } from "@/src/components/UI/ActionsList";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { ClientViewModal } from "@/src/components/Modals/ClientViewModal";
 import { ClientFormModal } from "@/src/components/Forms/ClientFormModal";
+import { EventFormDrawer } from "@/src/components/Forms/EventFormDrawer";
 import {
   useClientsQuery,
   useDeleteClient,
   useTagsQuery,
 } from "@/src/hooks/useClientQuery";
+import { useDeleteEvent } from "@/src/hooks/useEventQuery";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatRelativeTime } from "@/src/helpers/dateHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
 import { customToast } from "@/src/helpers/customToast";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { IClient } from "@/src/models/client";
+import type { IClient, IClientEvent } from "@/src/models/client";
+import type { IEvent } from "@/src/models/event";
 
 const SAVED_TAGS_LIMIT = 50;
 
@@ -176,6 +179,8 @@ export default function ClientsPage(): JSX.Element {
   const [returnToView, setReturnToView] = useState<IClient | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<IClient | null>(null);
+  const [deletingEvent, setDeletingEvent] = useState<IClientEvent | null>(null);
+  const [editingEvent, setEditingEvent] = useState<IEvent | null>(null);
 
   const openAdd = () => {
     setEditingClient(null);
@@ -195,6 +200,66 @@ export default function ClientsPage(): JSX.Element {
   const closeForm = () => {
     setFormOpen(false);
     setEditingClient(null);
+    if (returnToView) {
+      setViewingClient(returnToView);
+      setReturnToView(null);
+    }
+  };
+
+  const deleteEventMutation = useDeleteEvent({
+    onSuccess: () => {
+      customToast.success("Event deleted successfully");
+      const removedId = deletingEvent?.id;
+      setDeletingEvent(null);
+      if (removedId) {
+        setViewingClient((prev) =>
+          prev
+            ? {
+                ...prev,
+                events: prev.events?.filter((e) => e.id !== removedId),
+              }
+            : null,
+        );
+      }
+    },
+  });
+
+  const handleEditEvent = (event: IClientEvent) => {
+    if (!viewingClient) return;
+
+    const fullEvent: IEvent = {
+      id: event.id,
+      title: event.title,
+      date: event.date,
+      isRecurring: event.isRecurring,
+      notes: event.notes ?? "",
+      categoryId: event.category?.id || event.categoryId,
+      category: event.category,
+      companyId: viewingClient.companyId,
+      createdAt: event.createdAt ?? "",
+      updatedAt: event.updatedAt ?? "",
+      participants: [
+        {
+          id: viewingClient.id,
+          clientId: viewingClient.id,
+          eventId: event.id,
+          client: {
+            id: viewingClient.id,
+            fullName: viewingClient.fullName,
+            email: viewingClient.email,
+            phoneNumber: viewingClient.phoneNumber,
+          },
+        },
+      ],
+    };
+
+    setReturnToView(viewingClient);
+    setViewingClient(null);
+    setEditingEvent(fullEvent);
+  };
+
+  const closeEventForm = () => {
+    setEditingEvent(null);
     if (returnToView) {
       setViewingClient(returnToView);
       setReturnToView(null);
@@ -502,11 +567,21 @@ export default function ClientsPage(): JSX.Element {
         client={viewingClient}
         close={() => setViewingClient(null)}
         onEdit={openEditFromView}
+        onEditEvent={handleEditEvent}
+        onDeleteEvent={setDeletingEvent}
       />
 
       {formOpen && <ClientFormModal close={closeForm} client={editingClient} />}
 
-      {/* Delete Confirmation Modal */}
+      {editingEvent && (
+        <EventFormDrawer
+          key={editingEvent.id}
+          event={editingEvent}
+          close={closeEventForm}
+        />
+      )}
+
+      {/* Delete Client Confirmation Modal */}
       <ConfirmActionModal
         actionName="Delete"
         title="Delete Client"
@@ -520,6 +595,57 @@ export default function ClientsPage(): JSX.Element {
           }
         }}
       />
+
+      {/* Delete Event Confirmation Modal */}
+      <ConfirmActionModal
+        actionName="Delete"
+        title="Delete Event"
+        message="Are you sure you want to delete this event? This action cannot be undone."
+        display={!!deletingEvent}
+        close={() => setDeletingEvent(null)}
+        loading={deleteEventMutation.isPending}
+        fn={() => {
+          if (deletingEvent) {
+            deleteEventMutation.mutate(deletingEvent.id);
+          }
+        }}
+      >
+        {deletingEvent && (
+          <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3.5 dark:border-slate-800 dark:bg-slate-900/50">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm">
+                  {deletingEvent.title}
+                </p>
+                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  {deletingEvent.category && (
+                    <span className="rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      {deletingEvent.category.name}
+                    </span>
+                  )}
+                  {deletingEvent.isRecurring && (
+                    <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-600 dark:border-indigo-800/40 dark:bg-indigo-950/40 dark:text-indigo-400">
+                      Annual
+                    </span>
+                  )}
+                </div>
+              </div>
+              <span className="shrink-0 text-xs font-medium text-gray-500 dark:text-slate-400">
+                {formatDate({
+                  date: deletingEvent.date,
+                  showTime: false,
+                  utc: false,
+                })}
+              </span>
+            </div>
+            {deletingEvent.notes && (
+              <p className="mt-2 text-xs text-gray-600 dark:text-slate-400 line-clamp-2">
+                {deletingEvent.notes}
+              </p>
+            )}
+          </div>
+        )}
+      </ConfirmActionModal>
     </div>
   );
 }
