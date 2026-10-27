@@ -2,6 +2,7 @@
 
 import React, { ReactNode, JSX } from "react";
 import { Skeleton } from "@/src/components/UI/Skeleton";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { BiTrendingUp, BiTrendingDown, BiMinus } from "react-icons/bi";
 
@@ -56,7 +57,7 @@ export function StatsCardContainer({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className={`flex shrink-0 gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide ${className}`}
+      className={`flex shrink-0 gap-4 sm:gap-6 overflow-x-auto -mx-1.5 -mt-2 px-1.5 pt-2 pb-4 scrollbar-hide ${className}`}
     >
       {children}
     </motion.div>
@@ -75,7 +76,10 @@ export function StatsCard({
   className = "",
   onClick,
 }: StatsCardProps): JSX.Element {
-  const [showTooltip, setShowTooltip] = React.useState(false);
+  const [tooltipPos, setTooltipPos] = React.useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   if (isLoading) {
     return (
@@ -143,8 +147,12 @@ export function StatsCard({
       <div className="flex items-end justify-between">
         <div className="relative min-w-0 flex-1">
           <motion.h1
-            onMouseEnter={() => tooltip && setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
+            onMouseEnter={(e) => {
+              if (!tooltip) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              setTooltipPos({ top: rect.bottom + 6, left: rect.left });
+            }}
+            onMouseLeave={() => setTooltipPos(null)}
             className={`relative truncate text-xl font-normal text-gray-900 dark:text-white tabular-nums ${
               tooltip ? "cursor-help" : ""
             }`}
@@ -155,20 +163,26 @@ export function StatsCard({
             {typeof value === "number" ? value.toLocaleString() : value}
           </motion.h1>
 
-          <AnimatePresence>
-            {showTooltip && tooltip && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                transition={{ duration: 0.15 }}
-                className="absolute left-0 top-8 z-20 w-auto min-w-[120px] rounded-lg bg-gray-900 dark:bg-slate-800 px-3 py-2 text-xs text-white border dark:border-slate-700 pointer-events-none whitespace-nowrap shadow-lg"
-              >
-                <div className="absolute -top-1 left-3 h-2 w-2 rotate-45 bg-gray-900 dark:bg-slate-800 border-l border-t dark:border-slate-700"></div>
-                <p className="text-center whitespace-nowrap">{tooltip}</p>
-              </motion.div>
+          {/* Portaled so the tooltip isn't clipped by the scrollable container */}
+          {typeof document !== "undefined" &&
+            createPortal(
+              <AnimatePresence>
+                {tooltipPos && tooltip && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                    transition={{ duration: 0.15 }}
+                    style={{ top: tooltipPos.top, left: tooltipPos.left }}
+                    className="fixed z-50 w-auto min-w-[120px] rounded-lg bg-gray-900 dark:bg-slate-800 px-3 py-2 text-xs text-white border dark:border-slate-700 pointer-events-none whitespace-nowrap shadow-lg"
+                  >
+                    <div className="absolute -top-1 left-3 h-2 w-2 rotate-45 bg-gray-900 dark:bg-slate-800 border-l border-t dark:border-slate-700"></div>
+                    <p className="text-center whitespace-nowrap">{tooltip}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>,
+              document.body,
             )}
-          </AnimatePresence>
         </div>
 
         {displayChange && (
