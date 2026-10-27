@@ -4,6 +4,7 @@ import {
   getInvoices,
   getInvoice,
   getInvoiceSummary,
+  getInvoiceSettings,
 } from "../services/invoice";
 
 export function useInvoicesQuery(params: IQueryParams = {}) {
@@ -25,5 +26,12 @@ export function useInvoiceSummaryQuery(params: IQueryParams = {}) {
   return useQuery({
     queryKey: ["invoices-summary", { ...params }],
     queryFn: () => getInvoiceSummary(params),
+  });
+}
+
+export function useInvoiceSettingsQuery() {
+  return useQuery({
+    queryKey: ["invoice-settings"],
+    queryFn: getInvoiceSettings,
   });
 }

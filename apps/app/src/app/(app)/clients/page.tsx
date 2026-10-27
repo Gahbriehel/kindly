@@ -291,9 +291,6 @@ export default function ClientsPage(): JSX.Element {
 
   const { data: savedTags } = useTagsQuery({ limit: SAVED_TAGS_LIMIT });
 
-  // There is no group list endpoint, and a filtered page only contains the
-  // filtered group/tag, so remember every tag and group seen on loaded clients
-  // (deleting a saved tag leaves it on existing clients).
   const [seen, setSeen] = useState<{
     source: IClient[];
     tags: string[];

@@ -5,6 +5,7 @@ import type {
   IInvoiceResponse,
   ISingleInvoiceResponse,
   IInvoiceSummaryResponse,
+  IInvoiceSettingsResponse,
 } from "../models/invoice";
 
 export async function getInvoices(
@@ -30,5 +31,11 @@ export async function getInvoiceSummary(
       params: cleanObject(params),
     },
   );
+  return response.data;
+}
+
+export async function getInvoiceSettings(): Promise<IInvoiceSettingsResponse> {
+  const response =
+    await axios.get<IInvoiceSettingsResponse>("/invoice-settings");
   return response.data;
 }

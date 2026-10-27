@@ -9,12 +9,19 @@ import {
   LuReceipt,
   LuTrendingUp,
 } from "react-icons/lu";
-import { FiHeart, FiGift, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
+import {
+  FiHeart,
+  FiGift,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiPlus,
+} from "react-icons/fi";
 import { Table } from "@/src/components/UI/Table";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { InvoiceStatusBadge } from "@/src/components/UI/InvoiceStatusBadge";
 import { StatsCardContainer, StatsCard } from "@/src/components/UI/StatsCard";
 import {
+  useInvoiceSettingsQuery,
   useInvoicesQuery,
   useInvoiceSummaryQuery,
 } from "@/src/hooks/useInvoiceQuery";
@@ -28,6 +35,7 @@ import type {
   InvoiceStatus,
   IInvoiceCurrencySummary,
 } from "@/src/models/invoice";
+import { BaseButton } from "@/src/components/UI/Buttons";
 
 /**
  * Renders event title with an appropriate icon (Cake/Heart/Gift)
@@ -82,6 +90,8 @@ export default function InvoicesPage(): JSX.Element {
     status: statusFilter || undefined,
     search: searchQuery.trim() || undefined,
   });
+
+  // const { data: settingsData } = useInvoiceSettingsQuery();
 
   const { data: summaryData, isLoading: isSummaryLoading } =
     useInvoiceSummaryQuery();
@@ -423,40 +433,49 @@ export default function InvoicesPage(): JSX.Element {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="text-sm text-gray-500 dark:text-slate-400">
-            Manage and track your invoices
+            Bill clients for the events you plan for them, and keep every
+            document in one place.
             {data
               ? ` · ${totalInvoicesCount} total invoice${totalInvoicesCount === 1 ? "" : "s"}`
               : ""}
           </p>
         </div>
-
-        {rawCurrencies.length > 1 && (
-          <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-xl bg-gray-100 p-1 dark:bg-slate-800">
-            <span className="px-2 text-xs font-semibold text-gray-400 dark:text-slate-400">
-              Currency:
-            </span>
-            {rawCurrencies.map((c) => {
-              const isSelected =
-                (activeSummary?.currency || "").toUpperCase() ===
-                c.currency.toUpperCase();
-              return (
-                <button
-                  key={c.currency}
-                  type="button"
-                  onClick={() => setSelectedCurrency(c.currency)}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-white text-gray-900 shadow-xs dark:bg-slate-900 dark:text-white"
-                      : "text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white"
-                  }`}
-                >
-                  {c.currency}
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <BaseButton
+          type="button"
+          onClick={() => console.log("add invoice")}
+          color="primary"
+          icon={<FiPlus className="size-4" />}
+          position="icon-first"
+          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
+          text="New Invoice"
+        />
       </div>
+      {rawCurrencies.length > 1 && (
+        <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-xl bg-gray-100 p-1 dark:bg-slate-800">
+          <span className="px-2 text-xs font-semibold text-gray-400 dark:text-slate-400">
+            Currency:
+          </span>
+          {rawCurrencies.map((c) => {
+            const isSelected =
+              (activeSummary?.currency || "").toUpperCase() ===
+              c.currency.toUpperCase();
+            return (
+              <button
+                key={c.currency}
+                type="button"
+                onClick={() => setSelectedCurrency(c.currency)}
+                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-white text-gray-900 shadow-xs dark:bg-slate-900 dark:text-white"
+                    : "text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white"
+                }`}
+              >
+                {c.currency}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Stats Cards Section */}
       <StatsCardContainer>

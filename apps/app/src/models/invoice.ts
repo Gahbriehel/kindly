@@ -175,3 +175,27 @@ export interface IInvoiceSummaryResponse {
     currencies?: IInvoiceCurrencySummary[];
   };
 }
+
+export interface IInvoiceSettingsResponse extends IBaseResponse {
+  data: {
+    settings: {
+      logoUrl: string | null;
+      bankAccountName: string | null;
+      bankAccountNumber: string | null;
+      bankName: string | null;
+      billingAddress: string | null;
+      registrationNumber: string | null;
+      taxId: string | null;
+    };
+  };
+}
+
+export interface IInvoiceSettingsPayload {
+  logoUrl: string | null;
+  bankAccountName: string | null;
+  bankAccountNumber: string | null;
+  bankName: string | null;
+  billingAddress: string | null;
+  registrationNumber: string | null;
+  taxId: string | null;
+}
