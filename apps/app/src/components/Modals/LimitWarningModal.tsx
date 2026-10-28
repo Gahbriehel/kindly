@@ -17,7 +17,6 @@ const SESSION_DISMISS_KEY_PREFIX = "kindly_limit_warning_dismissed_";
 
 const UPGRADE_BENEFITS = [
   "Unlimited client records and active projects",
-  "Team collaboration, staff seats, and roles",
   "Priority support and early access to features",
 ];
 

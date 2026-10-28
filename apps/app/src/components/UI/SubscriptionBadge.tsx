@@ -42,8 +42,7 @@ export function SubscriptionBadge({
         </button>
 
         <p className="mb-3 mt-6 text-[12px] font-normal leading-[18px] text-white">
-          Upgrade to premium and enjoy unlimited clients, staff seats & shared
-          templates.
+          Upgrade to premium and enjoy unlimited clients & shared templates.
         </p>
 
         {clientLimit && (

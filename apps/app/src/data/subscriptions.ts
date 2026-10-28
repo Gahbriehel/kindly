@@ -34,11 +34,7 @@ export const SUBSCRIPTION_PLANS: ISubscriptionPlan[] = [
       "Personal template library",
       "Full dashboard access",
     ],
-    notIncluded: [
-      "Staff & team collaboration",
-      "Unlimited client management",
-      "Dedicated account manager",
-    ],
+    notIncluded: ["Unlimited client management", "Dedicated account manager"],
     color:
       "border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/40",
     buttonColor: "outline",
@@ -58,7 +54,7 @@ export const SUBSCRIPTION_PLANS: ISubscriptionPlan[] = [
       "Full dashboard access",
       "Priority email support",
     ],
-    notIncluded: ["Staff & team collaboration", "Dedicated account manager"],
+    notIncluded: ["Dedicated account manager"],
     color:
       "border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/40",
     buttonColor: "primary",
@@ -74,8 +70,6 @@ export const SUBSCRIPTION_PLANS: ISubscriptionPlan[] = [
     description: "Ultimate power for teams and enterprises.",
     features: [
       "Unlimited clients",
-      "Staff & team collaboration",
-      "Staff directory & access levels",
       "Dedicated account manager",
       "Early access to new features",
     ],
