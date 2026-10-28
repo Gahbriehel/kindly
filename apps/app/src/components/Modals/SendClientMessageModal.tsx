@@ -57,8 +57,13 @@ export function SendClientMessageModal({
   const participant = event?.participants?.[0]?.client;
   const clientName =
     client?.fullName || participant?.fullName || event?.title || "Client";
-  const clientPhone =
-    client?.phoneNumber || participant?.phoneNumber || "+1 234 567 8900";
+  // Email is the only active channel, so show the address the message goes to
+  const clientContact =
+    client?.email ||
+    participant?.email ||
+    client?.phoneNumber ||
+    participant?.phoneNumber ||
+    "";
   const initials = getInitials(clientName) || "CL";
 
   // Handle actual close: reset state and trigger close
@@ -116,9 +121,11 @@ export function SendClientMessageModal({
           <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100 truncate">
             {clientName}
           </h2>
-          <p className="text-xs text-gray-500 dark:text-slate-400 font-medium truncate mt-0.5">
-            {clientPhone}
-          </p>
+          {clientContact && (
+            <p className="text-xs text-gray-500 dark:text-slate-400 font-medium truncate mt-0.5">
+              {clientContact}
+            </p>
+          )}
         </div>
       </div>
       <button
@@ -201,7 +208,7 @@ export function SendClientMessageModal({
           <div className="flex flex-wrap items-center justify-between gap-3 pt-3">
             <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
               <IoInformationCircleOutline className="size-4 shrink-0 text-gray-400 dark:text-slate-500" />
-              <span>Sender will receive this via email.</span>
+              <span>{clientName} will receive this via email.</span>
             </div>
             <BaseButton
               type="button"
