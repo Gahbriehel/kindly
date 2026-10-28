@@ -37,6 +37,7 @@ import {
   emptyItem,
   toInvoicePayload,
   toNumber,
+  type InvoiceClient,
   type InvoiceFormValues,
 } from "./types";
 
@@ -95,10 +96,11 @@ function Stepper({ current }: { current: number }): JSX.Element {
 function getDefaultValues(
   invoice: IInvoice | null,
   currency: string,
+  defaultClient: InvoiceClient | null,
 ): InvoiceFormValues {
   if (!invoice) {
     return {
-      client: null,
+      client: defaultClient,
       description: "",
       event: null,
       items: [emptyItem()],
@@ -147,12 +149,15 @@ interface Props {
   close: () => void;
   /** A draft to edit. Without it the modal creates a new invoice. */
   invoice?: IInvoice | null;
+  /** Pre-selected client for a new invoice, e.g. when started from their profile. */
+  defaultClient?: InvoiceClient | null;
 }
 
 /** Three-step invoice flow for new invoices and drafts. Nothing is saved until Save as Draft or Send. */
 export function InvoiceCreateModal({
   close,
   invoice = null,
+  defaultClient = null,
 }: Props): JSX.Element {
   const isEdit = !!invoice;
   const [step, setStep] = useState(0);
@@ -198,7 +203,7 @@ export function InvoiceCreateModal({
     getFieldState,
     formState: { isDirty },
   } = useForm<InvoiceFormValues>({
-    defaultValues: getDefaultValues(invoice, companyCurrency),
+    defaultValues: getDefaultValues(invoice, companyCurrency, defaultClient),
   });
 
   // The countries list can arrive after mount; follow it until the user picks.

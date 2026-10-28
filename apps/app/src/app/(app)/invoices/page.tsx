@@ -29,6 +29,7 @@ import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { InvoiceSettingsInterceptModal } from "@/src/components/Modals/InvoiceSettingsInterceptModal";
 import { InvoiceCreateModal } from "@/src/components/Modals/InvoiceCreateModal";
 import { InvoiceDetailsModal } from "@/src/components/Modals/InvoiceDetailsModal";
+import { isMissingInvoiceSetup } from "@/src/components/Invoices/invoiceBusiness";
 import type { IUserData } from "@/src/models/auth";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
@@ -105,15 +106,7 @@ export default function InvoicesPage(): JSX.Element {
   const handleProceedToCreateInvoice = () => setIsCreateOpen(true);
 
   const handleNewInvoiceClick = () => {
-    const settings = settingsData?.data?.settings;
-    const logo = settings?.logoUrl ?? company?.logoUrl;
-    const bank = settings?.bankName ?? company?.bankName;
-    const accNum = settings?.bankAccountNumber ?? company?.bankAccountNumber;
-
-    // Check if any key invoice setting is missing (logo or payout details)
-    const isMissingSettings = !logo || !bank || !accNum;
-
-    if (isMissingSettings) {
+    if (isMissingInvoiceSetup(settingsData?.data?.settings, company)) {
       setIsSettingsInterceptOpen(true);
     } else {
       handleProceedToCreateInvoice();

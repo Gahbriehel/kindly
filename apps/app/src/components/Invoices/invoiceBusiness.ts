@@ -38,6 +38,15 @@ export function getCurrentBusiness(
   };
 }
 
+/** Logo or payout details missing, so the settings intercept should show before a new invoice. */
+export function isMissingInvoiceSetup(
+  settings: IInvoiceSettingsPayload | null | undefined,
+  company: ICompanyData | null | undefined,
+): boolean {
+  const business = getCurrentBusiness(settings, company);
+  return !business.logoUrl || !business.bankName || !business.bankAccountNumber;
+}
+
 /** What the client actually received: the snapshot taken when it was first sent. */
 export function getSnapshotBusiness(
   invoice: IInvoice,

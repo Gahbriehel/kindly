@@ -17,8 +17,14 @@ import { BaseButton } from "@/src/components/UI/Buttons";
 import { CopyButton } from "@/src/components/UI/CopyButton";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { SendClientMessageModal } from "@/src/components/Modals/SendClientMessageModal";
+import { InvoiceSettingsInterceptModal } from "@/src/components/Modals/InvoiceSettingsInterceptModal";
+import { InvoiceCreateModal } from "@/src/components/Modals/InvoiceCreateModal";
+import { isMissingInvoiceSetup } from "@/src/components/Invoices/invoiceBusiness";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
+import { useInvoiceSettingsQuery } from "@/src/hooks/useInvoiceQuery";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
+import type { IUserData } from "@/src/models/auth";
 import type { IClient, IClientEvent } from "@/src/models/client";
 
 interface Props {
@@ -74,6 +80,12 @@ export function ClientViewModal({
   onDeleteEvent,
 }: Props): JSX.Element {
   const [messageOpen, setMessageOpen] = useState(false);
+  const [invoiceStep, setInvoiceStep] = useState<"settings" | "create" | null>(
+    null,
+  );
+  const { user } = useAppSelector((state) => state.auth);
+  const company = (user as IUserData | null)?.company;
+  const { data: settingsData } = useInvoiceSettingsQuery();
   const birthday = client?.birthDate ? nextOccurrence(client.birthDate) : null;
   const daysAway = birthday?.diff(dayjs().startOf("day"), "day") ?? 0;
   const tags = [
@@ -83,7 +95,17 @@ export function ClientViewModal({
 
   const handleClose = () => {
     setMessageOpen(false);
+    setInvoiceStep(null);
     close();
+  };
+
+  // Always a new invoice: existing ones live on the Invoices page.
+  const handleInvoiceClick = () => {
+    setInvoiceStep(
+      isMissingInvoiceSetup(settingsData?.data?.settings, company)
+        ? "settings"
+        : "create",
+    );
   };
 
   return (
@@ -133,7 +155,7 @@ export function ClientViewModal({
                 color="outline"
                 text="Invoice"
                 icon={<FiFileText className="size-4" />}
-                onClick={() => {}}
+                onClick={handleInvoiceClick}
                 className="h-12 flex-1 rounded-2xl"
               />
               <BaseButton
@@ -279,6 +301,18 @@ export function ClientViewModal({
         close={() => setMessageOpen(false)}
         client={client}
       />
+      <InvoiceSettingsInterceptModal
+        isOpen={!!client && invoiceStep === "settings"}
+        onClose={() => setInvoiceStep(null)}
+        onSkip={() => setInvoiceStep("create")}
+        onSuccessAndProceed={() => setInvoiceStep("create")}
+      />
+      {client && invoiceStep === "create" && (
+        <InvoiceCreateModal
+          defaultClient={client}
+          close={() => setInvoiceStep(null)}
+        />
+      )}
     </>
   );
 }
