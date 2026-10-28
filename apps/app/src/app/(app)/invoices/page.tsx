@@ -42,10 +42,6 @@ import type {
 } from "@/src/models/invoice";
 import { BaseButton } from "@/src/components/UI/Buttons";
 
-/**
- * Renders event title with an appropriate icon (Cake/Heart/Gift)
- * and formatted date.
- */
 function InvoiceEventInfo({ invoice }: { invoice: IInvoice }): JSX.Element {
   const event = invoice.event;
   const title = event?.title || invoice.eventNameSnapshot;
