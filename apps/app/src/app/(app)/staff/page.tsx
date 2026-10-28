@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useMemo, type JSX } from "react";
+import { useEffect, useState, useMemo, type JSX } from "react";
+import { useRouter } from "next/navigation";
 import { Table } from "@/src/components/UI/Table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { FiMail, FiCheckCircle, FiClock, FiSend } from "react-icons/fi";
 import { useStaffQuery } from "@/src/hooks/useStaffQuery";
-import type { IStaffInvite, IStaffMember, StaffRole } from "@/src/models/staff";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
+import type { UserRole } from "@/src/models/auth";
+import type { IStaffInvite, IStaffMember } from "@/src/models/staff";
 
 type StaffStatus = "Active" | "Inactive" | "Invited" | "Expired";
 
@@ -14,17 +17,17 @@ interface StaffRow {
   name: string;
   avatarText: string;
   email: string;
-  role: StaffRole;
+  role: UserRole;
   permissionCount: number;
   status: StaffStatus;
 }
 
-const roleLabels: Record<StaffRole, string> = {
+const roleLabels: Record<UserRole, string> = {
   OWNER: "Owner",
   STAFF: "Staff",
 };
 
-const roleStyles: Record<StaffRole, string> = {
+const roleStyles: Record<UserRole, string> = {
   OWNER:
     "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400",
   STAFF: "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300",
@@ -99,7 +102,7 @@ function StatusBadge({ status }: { status: StaffStatus }): JSX.Element {
   );
 }
 
-function RoleBadge({ role }: { role: StaffRole }): JSX.Element {
+function RoleBadge({ role }: { role: UserRole }): JSX.Element {
   return (
     <span
       className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${roleStyles[role]}`}
@@ -109,12 +112,23 @@ function RoleBadge({ role }: { role: StaffRole }): JSX.Element {
   );
 }
 
-export default function StaffPage(): JSX.Element {
+export default function StaffPage(): JSX.Element | null {
+  const router = useRouter();
+  const role = useAppSelector((state) => state.auth.user?.role);
+  const isOwner = role === "OWNER";
+
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const { data, isLoading, error, refetch, isFetching } = useStaffQuery();
+  const { data, isLoading, error, refetch, isFetching } = useStaffQuery({
+    enabled: isOwner,
+  });
+
+  // Staff management is owner-only on the backend
+  useEffect(() => {
+    if (role && !isOwner) router.replace("/dashboard");
+  }, [role, isOwner, router]);
 
   const rows = useMemo<StaffRow[]>(() => {
     if (!data?.data) return [];
@@ -244,6 +258,8 @@ export default function StaffPage(): JSX.Element {
       </div>
     </div>
   );
+
+  if (!isOwner) return null;
 
   return (
     <div className="flex h-full flex-col gap-6">

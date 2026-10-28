@@ -19,47 +19,46 @@ export const navLinks: NavLink[] = [
     title: "Dashboard",
     icon: <LuLayoutDashboard className="size-5" />,
     href: "/dashboard",
-    roles: ["admin", "moderator"],
+    roles: ["OWNER", "STAFF"],
   },
   {
     title: "Clients",
     icon: <MdOutlinePeopleAlt className="size-5" />,
     href: "/clients",
-    roles: ["admin", "moderator"],
+    roles: ["OWNER", "STAFF"],
   },
   {
     title: "Calendar",
     icon: <PiCalendarBlankLight className="size-5" />,
     href: "/calendar",
-    roles: ["admin", "moderator"],
+    roles: ["OWNER", "STAFF"],
   },
   {
     title: "Templates",
     icon: <IoDocumentTextOutline className="size-5" />,
     href: "/templates",
-    roles: ["admin", "moderator"],
+    roles: ["OWNER", "STAFF"],
   },
   {
     title: "Invoices",
     icon: <FaRegFile className="size-5" />,
     href: "/invoices",
-    roles: ["admin", "moderator"],
+    roles: ["OWNER", "STAFF"],
   },
   {
     title: "Staff",
     icon: <TbUserScreen className="size-5" />,
     href: "/staff",
-    roles: ["admin"],
+    roles: ["OWNER"],
   },
   {
     title: "Profile",
     icon: <CgProfile className="size-5" />,
     href: "/profile",
-    roles: ["admin", "moderator"],
+    roles: ["OWNER", "STAFF"],
   },
 ];
 
-export const getNavLinks = (role: UserRole) => {
-  const filtered = navLinks.filter((link) => link.roles.includes(role));
-  return filtered.length > 0 ? filtered : navLinks;
-};
+// Falls back to the least-privileged role until the user is loaded.
+export const getNavLinks = (role?: UserRole) =>
+  navLinks.filter((link) => link.roles.includes(role ?? "STAFF"));

@@ -1,12 +1,13 @@
 "use client";
 
-import { memo, type JSX } from "react";
+import { memo, useMemo, type JSX } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { Logo } from "./Logo";
-import { navLinks } from "@/src/helpers/navLinks";
+import { getNavLinks } from "@/src/helpers/navLinks";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { IoClose } from "react-icons/io5";
 import { SubscriptionBadge } from "./SubscriptionBadge";
 
@@ -21,6 +22,8 @@ export const MobileNav = memo(function MobileNav({
   onClose,
 }: MobileNavProps): JSX.Element {
   const pathname = usePathname();
+  const role = useAppSelector((state) => state.auth.user?.role);
+  const filteredNavLinks = useMemo(() => getNavLinks(role), [role]);
 
   return (
     <AnimatePresence>
@@ -56,7 +59,7 @@ export const MobileNav = memo(function MobileNav({
 
             <nav className="flex-1 overflow-y-auto py-6 px-4">
               <ul className="space-y-2">
-                {navLinks.map((link) => {
+                {filteredNavLinks.map((link) => {
                   const isActive = pathname.startsWith(link.href);
                   return (
                     <li key={link.title}>

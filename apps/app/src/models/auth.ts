@@ -1,7 +1,7 @@
 import { IBaseResponse } from "./base";
 import { Permission } from "./permission";
 
-export type UserRole = "admin" | "moderator";
+export type UserRole = "OWNER" | "STAFF";
 
 export interface ILoginPayload {
   email: string;
@@ -49,7 +49,7 @@ export interface IUserData {
   lastName: string;
   phoneNumber: string | null;
   avatarUrl: string | null;
-  role?: string;
+  role?: UserRole;
   companyId: string;
   company: ICompanyData;
   permissions?: Permission[];

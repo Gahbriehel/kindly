@@ -12,7 +12,6 @@ import {
 import { getNavLinks } from "../../helpers/navLinks";
 import { SubscriptionBadge } from "./SubscriptionBadge";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-import { UserRole } from "@/src/models/auth";
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -80,10 +79,7 @@ export function SideNav({
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
-  const filteredNavLinks = useMemo(
-    () => getNavLinks(user?.role as UserRole),
-    [user?.role],
-  );
+  const filteredNavLinks = useMemo(() => getNavLinks(user?.role), [user?.role]);
 
   // Intercept clicks on the collapsed sidebar to expand instead
   const handleCollapsedClick = useCallback(

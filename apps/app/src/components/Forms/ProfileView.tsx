@@ -9,6 +9,7 @@ import { IUserData } from "@/src/models/auth";
 import { useUpdateProfileMutation } from "@/src/hooks/useAuthQuery";
 import { Input } from "@/src/components/FormElements/Input";
 import { BaseButton } from "@/src/components/UI/Buttons";
+import { capitalizeFirstLetter } from "@/src/helpers/capitalizeFirstLetter";
 
 interface ProfileFormValues {
   firstName: string;
@@ -78,7 +79,7 @@ export function ProfileView(): JSX.Element {
   const phone = isEditing ? watchedPhone : userObj?.phoneNumber || "";
 
   const roleDisplay = userObj?.role
-    ? userObj.role.charAt(0).toUpperCase() + userObj.role.slice(1).toLowerCase()
+    ? capitalizeFirstLetter(userObj.role)
     : "Owner";
 
   const isLoading = updateProfileMutation.isPending;

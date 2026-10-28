@@ -1,7 +1,6 @@
+import type { UserRole } from "./auth";
 import type { IBaseResponse } from "./base";
 import type { Permission } from "./permission";
-
-export type StaffRole = "OWNER" | "STAFF";
 
 export type InviteStatus =
   | "PENDING"
@@ -15,7 +14,7 @@ export interface IStaffMember {
   firstName: string;
   lastName: string;
   email: string;
-  role: StaffRole;
+  role: UserRole;
   permissions: Permission[];
   isActive: boolean;
   createdAt: string;
