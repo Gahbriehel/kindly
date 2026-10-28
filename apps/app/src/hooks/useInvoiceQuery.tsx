@@ -9,9 +9,13 @@ import {
   createInvoice,
   updateInvoice,
   sendInvoice,
+  recordInvoicePayment,
+  voidInvoice,
+  deleteInvoice,
 } from "../services/invoice";
 import {
   IInvoicePayload,
+  IInvoicePaymentPayload,
   IInvoiceSettingsPayload,
   IUpdateInvoicePayload,
 } from "../models/invoice";
@@ -94,5 +98,40 @@ export function useSendInvoice() {
   return useMutation({
     mutationFn: (id: string) => sendInvoice(id),
     onSuccess: () => invalidateInvoiceQueries(queryClient),
+  });
+}
+
+export function useRecordInvoicePayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: IInvoicePaymentPayload;
+    }) => recordInvoicePayment(id, payload),
+    onSuccess: () => invalidateInvoiceQueries(queryClient),
+  });
+}
+
+export function useVoidInvoice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => voidInvoice(id),
+    onSuccess: () => invalidateInvoiceQueries(queryClient),
+  });
+}
+
+export function useDeleteInvoice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteInvoice(id),
+    onSuccess: (_, id) => {
+      // Drop rather than refetch the detail, which would 404.
+      queryClient.removeQueries({ queryKey: ["invoice", id] });
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices-summary"] });
+    },
   });
 }

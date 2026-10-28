@@ -9,6 +9,7 @@ import type {
   IInvoiceSettingsPayload,
   IInvoicePayload,
   IUpdateInvoicePayload,
+  IInvoicePaymentPayload,
   ISaveInvoiceResponse,
 } from "../models/invoice";
 
@@ -74,5 +75,35 @@ export async function updateInvoice(
 
 export async function sendInvoice(id: string): Promise<IBaseResponse> {
   const response = await axios.post<IBaseResponse>(`/invoices/${id}/send`);
+  return response.data;
+}
+
+export async function recordInvoicePayment(
+  id: string,
+  payload: IInvoicePaymentPayload,
+): Promise<ISaveInvoiceResponse> {
+  const response = await axios.post<ISaveInvoiceResponse>(
+    `/invoices/${id}/payments`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function voidInvoice(id: string): Promise<ISaveInvoiceResponse> {
+  const response = await axios.post<ISaveInvoiceResponse>(
+    `/invoices/${id}/void`,
+  );
+  return response.data;
+}
+
+export async function deleteInvoice(id: string): Promise<IBaseResponse> {
+  const response = await axios.delete<IBaseResponse>(`/invoices/${id}`);
+  return response.data;
+}
+
+export async function getInvoicePdf(id: string): Promise<Blob> {
+  const response = await axios.get<Blob>(`/invoices/${id}/pdf`, {
+    responseType: "blob",
+  });
   return response.data;
 }

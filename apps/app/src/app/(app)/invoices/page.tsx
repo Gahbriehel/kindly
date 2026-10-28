@@ -28,6 +28,7 @@ import {
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { InvoiceSettingsInterceptModal } from "@/src/components/Modals/InvoiceSettingsInterceptModal";
 import { InvoiceCreateModal } from "@/src/components/Modals/InvoiceCreateModal";
+import { InvoiceDetailsModal } from "@/src/components/Modals/InvoiceDetailsModal";
 import type { IUserData } from "@/src/models/auth";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
@@ -102,6 +103,8 @@ export default function InvoicesPage(): JSX.Element {
 
   const [isSettingsInterceptOpen, setIsSettingsInterceptOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState<IInvoice | null>(null);
+  const [detailsId, setDetailsId] = useState<string | null>(null);
 
   const handleProceedToCreateInvoice = () => setIsCreateOpen(true);
 
@@ -316,7 +319,18 @@ export default function InvoicesPage(): JSX.Element {
     const eventDate = invoice.event?.date || invoice.eventDateSnapshot;
 
     return (
-      <div className="group relative rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 transition-all duration-200 hover:-translate-y-1 shadow-xs flex flex-col justify-between h-full min-h-[240px]">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => setDetailsId(invoice.id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setDetailsId(invoice.id);
+          }
+        }}
+        className="group relative cursor-pointer rounded-3xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 transition-all duration-200 hover:-translate-y-1 shadow-xs flex flex-col justify-between h-full min-h-[240px]"
+      >
         <div>
           {/* Card Header: Client & Status */}
           <div className="flex items-start justify-between gap-3">
@@ -626,6 +640,7 @@ export default function InvoicesPage(): JSX.Element {
         filterContent={filterPopoverContent}
         filterActiveCount={statusFilter ? 1 : 0}
         renderGridItem={renderGridItem}
+        onRowClick={(invoice) => setDetailsId(invoice.id)}
         pagination={{
           currentPage,
           totalPages: data?.pagination?.totalPages ?? 1,
@@ -653,7 +668,25 @@ export default function InvoicesPage(): JSX.Element {
       />
 
       {isCreateOpen && (
-        <InvoiceCreateModal close={() => setIsCreateOpen(false)} />
+        <InvoiceCreateModal
+          invoice={editingInvoice}
+          close={() => {
+            setIsCreateOpen(false);
+            setEditingInvoice(null);
+          }}
+        />
+      )}
+
+      {detailsId && (
+        <InvoiceDetailsModal
+          invoiceId={detailsId}
+          close={() => setDetailsId(null)}
+          onEdit={(invoice) => {
+            setDetailsId(null);
+            setEditingInvoice(invoice);
+            setIsCreateOpen(true);
+          }}
+        />
       )}
     </div>
   );

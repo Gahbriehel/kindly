@@ -16,6 +16,8 @@ interface ConfirmActionModalProps {
   loading?: boolean;
   close: () => void;
   display: boolean;
+  /** Use "primary" for confirmations that aren't destructive. */
+  confirmColor?: "danger" | "primary";
 }
 
 export function ConfirmActionModal({
@@ -27,6 +29,7 @@ export function ConfirmActionModal({
   loading,
   close,
   display,
+  confirmColor = "danger",
 }: ConfirmActionModalProps) {
   const isMounted = useSyncExternalStore(
     emptySubscribe,
@@ -79,7 +82,7 @@ export function ConfirmActionModal({
           />
           <BaseButton
             type="button"
-            color="danger"
+            color={confirmColor}
             onClick={fn}
             loading={loading}
             text={actionName}

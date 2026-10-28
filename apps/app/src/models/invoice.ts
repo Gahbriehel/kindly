@@ -112,21 +112,16 @@ export interface IInvoicePayment {
   invoiceId?: string;
 }
 
+/** `GET /invoices/:id` nests items, payments, client and event in the invoice. */
 export interface ISingleInvoiceResponse extends IBaseResponse {
-  data: {
-    invoice: IInvoice;
-    items: IItem[];
-    payments: IInvoicePayment[];
-    client: IClient;
-    event: IEvent | null;
-  };
+  data: { invoice: IInvoice };
 }
 
 export interface IInvoicePaymentPayload {
   amount: number;
-  paidAt: string;
-  reference: string;
-  note: string;
+  paidAt?: string;
+  reference?: string;
+  note?: string;
 }
 
 export interface IInvoiceStatusSummaryItem {

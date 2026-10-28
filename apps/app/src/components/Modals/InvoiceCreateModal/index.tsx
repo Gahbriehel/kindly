@@ -25,9 +25,14 @@ import { customToast } from "@/src/helpers/customToast";
 import { calculateInvoiceTotals } from "@/src/helpers/invoiceTotals";
 import { FALLBACK_COUNTRIES } from "@/src/models/locations";
 import type { IUserData } from "@/src/models/auth";
+import type { IInvoice } from "@/src/models/invoice";
+import {
+  getCurrentBusiness,
+  getSendBlockers,
+} from "@/src/components/Invoices/invoiceBusiness";
 import { StepClientEvent } from "./StepClientEvent";
 import { StepCosts } from "./StepCosts";
-import { StepPreview, type InvoiceBusiness } from "./StepPreview";
+import { StepPreview } from "./StepPreview";
 import {
   emptyItem,
   toInvoicePayload,
@@ -37,42 +42,6 @@ import {
 
 const STEPS = ["Client & event", "Costs", "Preview & send"];
 const FALLBACK_CURRENCY = "NGN";
-
-const BUSINESS_FIELD_LABELS: [keyof InvoiceBusiness, string][] = [
-  ["logoUrl", "logo"],
-  ["billingAddress", "billing address"],
-  ["registrationNumber", "registration number"],
-  ["taxId", "tax ID"],
-  ["bankName", "bank name"],
-  ["bankAccountName", "account name"],
-  ["bankAccountNumber", "account number"],
-];
-
-const listJoin = (parts: string[]): string =>
-  parts.length <= 1
-    ? parts.join("")
-    : `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
-
-/** Everything the backend requires before an invoice can be sent. */
-function getSendBlockers(
-  business: InvoiceBusiness,
-  values: InvoiceFormValues,
-): string[] {
-  const blockers: string[] = [];
-  const missing = BUSINESS_FIELD_LABELS.filter(([key]) => !business[key]).map(
-    ([, label]) => label,
-  );
-  if (missing.length)
-    blockers.push(`Add your ${listJoin(missing)} in Profile → Business.`);
-  if (!values.client?.email?.trim())
-    blockers.push(
-      `Add an email address to ${values.client?.fullName ?? "the client"}'s profile.`,
-    );
-  if (!values.event) blockers.push("Link an event to this invoice in step 1.");
-  if (!values.dueDate || values.dueDate <= dayjs().format("YYYY-MM-DD"))
-    blockers.push("Set a due date after today.");
-  return blockers;
-}
 
 function Stepper({ current }: { current: number }): JSX.Element {
   return (
@@ -122,14 +91,72 @@ function Stepper({ current }: { current: number }): JSX.Element {
   );
 }
 
-interface Props {
-  close: () => void;
+/** Form values for a fresh invoice, or pre-filled from a draft being edited. */
+function getDefaultValues(
+  invoice: IInvoice | null,
+  currency: string,
+): InvoiceFormValues {
+  if (!invoice) {
+    return {
+      client: null,
+      description: "",
+      event: null,
+      items: [emptyItem()],
+      currency: { value: { _id: currency }, label: currency },
+      discountPercent: "",
+      taxPercent: "",
+      dueDate: dayjs().add(14, "day").format("YYYY-MM-DD"),
+      note: "",
+    };
+  }
+  // Decimals arrive as strings; "0" is shown as an empty field.
+  const optionalNumber = (value?: number | string | null) =>
+    Number(value) ? String(Number(value)) : "";
+  return {
+    client: {
+      id: invoice.clientId,
+      fullName: invoice.client?.fullName || invoice.clientNameSnapshot || "",
+      email: invoice.client?.email,
+      phoneNumber: invoice.client?.phoneNumber,
+    },
+    description: invoice.description ?? "",
+    event: invoice.event
+      ? {
+          id: invoice.event.id,
+          title: invoice.event.title,
+          date: invoice.event.date,
+          category: invoice.event.category,
+        }
+      : null,
+    items: invoice.items?.length
+      ? invoice.items.map((item) => ({
+          item: item.item,
+          quantity: String(Number(item.quantity)),
+          priceEach: String(Number(item.priceEach)),
+        }))
+      : [emptyItem()],
+    currency: { value: { _id: invoice.currency }, label: invoice.currency },
+    discountPercent: optionalNumber(invoice.discountPercent),
+    taxPercent: optionalNumber(invoice.taxPercent),
+    dueDate: invoice.dueDate?.slice(0, 10) ?? "",
+    note: invoice.note ?? "",
+  };
 }
 
-/** Three-step "New invoice" flow. Nothing is saved until Save as Draft or Send. */
-export function InvoiceCreateModal({ close }: Props): JSX.Element {
+interface Props {
+  close: () => void;
+  /** A draft to edit. Without it the modal creates a new invoice. */
+  invoice?: IInvoice | null;
+}
+
+/** Three-step invoice flow for new invoices and drafts. Nothing is saved until Save as Draft or Send. */
+export function InvoiceCreateModal({
+  close,
+  invoice = null,
+}: Props): JSX.Element {
+  const isEdit = !!invoice;
   const [step, setStep] = useState(0);
-  const [draftId, setDraftId] = useState<string | null>(null);
+  const [draftId, setDraftId] = useState<string | null>(invoice?.id ?? null);
   const [pendingAction, setPendingAction] = useState<"draft" | "send" | null>(
     null,
   );
@@ -171,29 +198,16 @@ export function InvoiceCreateModal({ close }: Props): JSX.Element {
     getFieldState,
     formState: { isDirty },
   } = useForm<InvoiceFormValues>({
-    defaultValues: {
-      client: null,
-      description: "",
-      event: null,
-      items: [emptyItem()],
-      currency: {
-        value: { _id: companyCurrency },
-        label: companyCurrency,
-      },
-      discountPercent: "",
-      taxPercent: "",
-      dueDate: dayjs().add(14, "day").format("YYYY-MM-DD"),
-      note: "",
-    },
+    defaultValues: getDefaultValues(invoice, companyCurrency),
   });
 
   // The countries list can arrive after mount; follow it until the user picks.
   useEffect(() => {
-    if (getFieldState("currency").isDirty) return;
+    if (isEdit || getFieldState("currency").isDirty) return;
     resetField("currency", {
       defaultValue: { value: { _id: companyCurrency }, label: companyCurrency },
     });
-  }, [companyCurrency, getFieldState, resetField]);
+  }, [isEdit, companyCurrency, getFieldState, resetField]);
 
   const { requestClose, prompt } = useUnsavedChangesGuard(isDirty, close);
 
@@ -201,21 +215,7 @@ export function InvoiceCreateModal({ close }: Props): JSX.Element {
   const updateMutation = useUpdateInvoice();
   const sendMutation = useSendInvoice();
 
-  const business: InvoiceBusiness = {
-    businessName: company?.businessName || "Your business",
-    logoUrl: settings?.logoUrl || company?.logoUrl || null,
-    billingAddress: settings?.billingAddress || company?.billingAddress || null,
-    country: company?.country || null,
-    phoneNumber: company?.phoneNumber || null,
-    registrationNumber:
-      settings?.registrationNumber || company?.registrationNumber || null,
-    taxId: settings?.taxId || company?.taxId || null,
-    bankAccountName:
-      settings?.bankAccountName || company?.bankAccountName || null,
-    bankAccountNumber:
-      settings?.bankAccountNumber || company?.bankAccountNumber || null,
-    bankName: settings?.bankName || company?.bankName || null,
-  };
+  const business = getCurrentBusiness(settings, company);
 
   // Step 3 has no inputs, so a snapshot at render time is always current.
   const values = getValues();
@@ -227,7 +227,20 @@ export function InvoiceCreateModal({ close }: Props): JSX.Element {
     toNumber(values.discountPercent),
     toNumber(values.taxPercent),
   );
-  const sendBlockers = step === 2 ? getSendBlockers(business, values) : [];
+  const sendBlockers =
+    step === 2
+      ? getSendBlockers({
+          business,
+          clientName: values.client?.fullName,
+          clientEmail: values.client?.email,
+          hasEvent: !!values.event,
+          dueDate: values.dueDate,
+          fixInvoiceHint: {
+            event: "Link an event to this invoice in step 1.",
+            dueDate: "Set a due date after today.",
+          },
+        })
+      : [];
 
   const goNext = async () => {
     const fields: (keyof InvoiceFormValues)[] =
@@ -265,7 +278,7 @@ export function InvoiceCreateModal({ close }: Props): JSX.Element {
     setPendingAction("draft");
     try {
       await saveDraft();
-      customToast.success("Invoice saved as draft");
+      customToast.success(isEdit ? "Draft updated" : "Invoice saved as draft");
       close();
     } catch {
       setPendingAction(null);
@@ -296,7 +309,7 @@ export function InvoiceCreateModal({ close }: Props): JSX.Element {
           </div>
           <div>
             <h2 className="text-base font-bold text-gray-900 sm:text-lg dark:text-white">
-              New invoice
+              {isEdit ? `Edit ${invoice.invoiceNumber}` : "New invoice"}
             </h2>
             <p className="text-xs text-gray-400 sm:text-sm dark:text-slate-400">
               List what they are paying for
@@ -399,7 +412,7 @@ export function InvoiceCreateModal({ close }: Props): JSX.Element {
         close={requestClose}
         header={header}
         footer={footer}
-        ariaLabel="New invoice"
+        ariaLabel={isEdit ? "Edit invoice" : "New invoice"}
         maxWidth="max-w-[720px]"
         closeOnEscape={!clientFormOpen && !eventFormOpen}
       >
@@ -424,7 +437,12 @@ export function InvoiceCreateModal({ close }: Props): JSX.Element {
             />
           )}
           {step === 2 && (
-            <StepPreview values={values} business={business} totals={totals} />
+            <StepPreview
+              values={values}
+              business={business}
+              totals={totals}
+              invoiceNumber={invoice?.invoiceNumber}
+            />
           )}
         </form>
         {prompt}

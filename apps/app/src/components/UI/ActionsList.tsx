@@ -8,6 +8,8 @@ import Link from "next/link";
 
 interface Props {
   trigger?: ReactNode;
+  /** Extra classes for the popover, e.g. a higher z-index inside a modal. */
+  contentClassName?: string;
   actions: Array<{
     title: string;
     fn?: () => void;
@@ -30,6 +32,7 @@ const ConfirmActionModal = dynamic(
 
 export function ActionsList({
   actions,
+  contentClassName,
   trigger = (
     <span className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md">
       <SlOptionsVertical className="h-6 w-6 text-gray-500" />
@@ -46,7 +49,10 @@ export function ActionsList({
         <Popover.Portal>
           <Popover.Content
             sideOffset={5}
-            className="z-10 w-48 space-y-1 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 will-change-[transform,opacity]"
+            className={clsx(
+              "z-10 w-48 space-y-1 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 will-change-[transform,opacity]",
+              contentClassName,
+            )}
           >
             <>
               {actions?.map(({ color: colorProp, ...action }) => {
