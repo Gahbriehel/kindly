@@ -15,9 +15,13 @@ import { getCategoryConfig } from "@/src/helpers/categoryConfig";
 import dayjs from "dayjs";
 import { SendClientMessageModal } from "@/src/components/Modals/SendClientMessageModal";
 import { EventViewModal } from "@/src/components/Modals/EventViewModal";
+import { usePermissions } from "@/src/hooks/usePermissions";
 
 export default function DashboardPage(): JSX.Element {
   const { data, isLoading } = useDashboardQuery();
+  const { can } = usePermissions();
+  const canViewEvents = can("EVENT_VIEW");
+  const canViewClients = can("CLIENT_VIEW");
   const [selectedEventForMessage, setSelectedEventForMessage] =
     useState<IEvent | null>(null);
   const [selectedEventForView, setSelectedEventForView] =
@@ -37,13 +41,16 @@ export default function DashboardPage(): JSX.Element {
     isFetching: isEventsFetching,
     error: eventsError,
     refetch: refetchEvents,
-  } = useEventsQuery({
-    filter: timeFilter,
-    categoryId: categoryId || undefined,
-    page: currentPage,
-    limit: pageSize,
-    search: searchQuery || undefined,
-  });
+  } = useEventsQuery(
+    {
+      filter: timeFilter,
+      categoryId: categoryId || undefined,
+      page: currentPage,
+      limit: pageSize,
+      search: searchQuery || undefined,
+    },
+    { enabled: canViewEvents },
+  );
 
   const stats = data?.data.dashboard.stats;
   const upcomingEvents = eventsData?.data || [];
@@ -216,67 +223,79 @@ export default function DashboardPage(): JSX.Element {
 
   return (
     <>
-      <StatsCardContainer>
-        <StatsCard
-          label="Events this month"
-          value={stats?.eventsThisMonth || 0}
-          icon={<HiOutlineUsers className="w-5 h-5" />}
-          isLoading={isLoading}
-        />
-        <StatsCard
-          label="Upcoming Events"
-          value={stats?.upcomingEvents || 0}
-          icon={<HiOutlineUsers className="w-5 h-5" />}
-          isLoading={isLoading}
-        />
-        <StatsCard
-          label="Active Clients"
-          value={stats?.activeClients || 0}
-          icon={<HiOutlineUsers className="w-5 h-5" />}
-          isLoading={isLoading}
-        />
-      </StatsCardContainer>
+      {(canViewEvents || canViewClients) && (
+        <StatsCardContainer className="mb-8">
+          {canViewEvents && (
+            <>
+              <StatsCard
+                label="Events this month"
+                value={stats?.eventsThisMonth || 0}
+                icon={<HiOutlineUsers className="w-5 h-5" />}
+                isLoading={isLoading}
+              />
+              <StatsCard
+                label="Upcoming Events"
+                value={stats?.upcomingEvents || 0}
+                icon={<HiOutlineUsers className="w-5 h-5" />}
+                isLoading={isLoading}
+              />
+            </>
+          )}
+          {canViewClients && (
+            <StatsCard
+              label="Active Clients"
+              value={stats?.activeClients || 0}
+              icon={<HiOutlineUsers className="w-5 h-5" />}
+              isLoading={isLoading}
+            />
+          )}
+        </StatsCardContainer>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Milestones */}
-        <div className="lg:col-span-2">
-          <Table
-            title="Milestones"
-            data={upcomingEvents}
-            columns={milestoneColumns}
-            loading={isEventsLoading}
-            error={!!eventsError}
-            supportedViews={["list"]}
-            onRowClick={(item) => setSelectedEventForView(item)}
-            filterContent={filterContent}
-            filterActiveCount={activeFilterCount}
-            onRefetch={() => void refetchEvents()}
-            isRefetching={isEventsFetching}
-            searchPlaceholder="Search"
-            searchQuery={searchQuery}
-            onSearchChange={(query) => {
-              setSearchQuery((prev) => {
-                if (prev === query) return prev;
-                setCurrentPage(1);
-                return query;
-              });
-            }}
-            pagination={{
-              currentPage,
-              totalPages: eventsData?.pagination?.totalPages ?? 1,
-              totalResults: eventsData?.pagination?.total ?? 0,
-              pageSize,
-              onPageChange: (page: number) => setCurrentPage(page),
-              onPageSizeChange: (size) => {
-                setPageSize(size);
-                setCurrentPage(1);
-              },
-            }}
-          />
-        </div>
+        {canViewEvents && (
+          <div className="lg:col-span-2">
+            <Table
+              title="Milestones"
+              data={upcomingEvents}
+              columns={milestoneColumns}
+              loading={isEventsLoading}
+              error={!!eventsError}
+              supportedViews={["list"]}
+              onRowClick={(item) => setSelectedEventForView(item)}
+              filterContent={filterContent}
+              filterActiveCount={activeFilterCount}
+              onRefetch={() => void refetchEvents()}
+              isRefetching={isEventsFetching}
+              searchPlaceholder="Search"
+              searchQuery={searchQuery}
+              onSearchChange={(query) => {
+                setSearchQuery((prev) => {
+                  if (prev === query) return prev;
+                  setCurrentPage(1);
+                  return query;
+                });
+              }}
+              pagination={{
+                currentPage,
+                totalPages: eventsData?.pagination?.totalPages ?? 1,
+                totalResults: eventsData?.pagination?.total ?? 0,
+                pageSize,
+                onPageChange: (page: number) => setCurrentPage(page),
+                onPageSizeChange: (size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                },
+              }}
+            />
+          </div>
+        )}
 
         {/* Right Column */}
-        <div className="flex flex-col gap-5">
+        <div
+          className={`flex flex-col gap-5 ${canViewEvents ? "" : "lg:col-span-3"}`}
+        >
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100 font-geist">
             Recent Activity
           </h2>

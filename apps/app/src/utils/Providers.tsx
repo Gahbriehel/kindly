@@ -139,6 +139,14 @@ export function AxiosProvider({ children }: Props): JSX.Element {
           }
         }
 
+        // A permission error usually means the owner changed this user's
+        // access; refresh the profile so the UI hides what's now off-limits.
+        const errorCode = (errorData as { meta?: { code?: string } })?.meta
+          ?.code;
+        if (errorCode === "PERMISSION_DENIED" || errorCode === "OWNER_ONLY") {
+          void queryClient.invalidateQueries({ queryKey: ["profile"] });
+        }
+
         if (!error.response && error.request) {
           axiosErrorToast({
             message:

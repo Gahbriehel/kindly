@@ -19,10 +19,14 @@ import {
   updateEvent,
 } from "../services/events";
 
-export function useEventsQuery(params: IQueryParams = {}) {
+export function useEventsQuery(
+  params: IQueryParams = {},
+  { enabled = true }: { enabled?: boolean } = {},
+) {
   return useQuery({
     queryKey: ["events", { ...params }],
     queryFn: async () => await getEvents(params),
+    enabled,
   });
 }
 

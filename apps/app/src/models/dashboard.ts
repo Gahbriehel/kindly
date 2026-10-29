@@ -7,12 +7,13 @@ export interface IDashboardResponse extends IBaseResponse {
         type: string;
         role: string;
       };
+      // Sections the user can't view come back as null.
       stats: {
-        activeClients: number;
-        totalTemplates: number;
-        totalModerators: number;
-        eventsThisMonth: number;
-        upcomingEvents: number;
+        activeClients: number | null;
+        totalTemplates: number | null;
+        totalStaff: number | null;
+        eventsThisMonth: number | null;
+        upcomingEvents: number | null;
       };
       todaysOutreach: {
         date: string;
@@ -25,18 +26,20 @@ export interface IDashboardResponse extends IBaseResponse {
           clients: {
             id: string;
             fullName: string;
-            email: string;
-            phoneNumber: string;
+            email: string | null;
+            phoneNumber: string | null;
           };
         }[];
-      };
-      upcomingPreview: {
-        eventId: string;
-        title: string;
-        date: string;
-        category: string;
-        clientNames: string[];
-      }[];
+      } | null;
+      upcomingPreview:
+        | {
+            eventId: string;
+            title: string;
+            date: string;
+            category: string;
+            clientNames: string[];
+          }[]
+        | null;
       recentActivity: {
         type: string;
         label: string;
