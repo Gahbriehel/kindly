@@ -10,10 +10,14 @@ import type { ITemplatePayload } from "../models/template";
 
 const TEMPLATES_KEY = "templates";
 
-export function useTemplatesQuery(params: IQueryParams = {}) {
+export function useTemplatesQuery(
+  params: IQueryParams = {},
+  { enabled = true }: { enabled?: boolean } = {},
+) {
   return useQuery({
     queryKey: [TEMPLATES_KEY, { ...params }],
     queryFn: async () => await getTemplates(params),
+    enabled,
   });
 }
 

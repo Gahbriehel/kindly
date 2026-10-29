@@ -34,6 +34,8 @@ import { formatCurrency } from "@/src/helpers/formatCurrency";
 import { formatDate } from "@/src/helpers/formatDate";
 import type { IUserData } from "@/src/models/auth";
 import type { IInvoice } from "@/src/models/invoice";
+import type { Permission } from "@/src/models/permission";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import { RecordPaymentModal } from "./RecordPaymentModal";
 
 type ConfirmKind = "reminder" | "void" | "delete";
@@ -48,6 +50,8 @@ interface FooterAction {
   loading?: boolean;
   /** Set when the action is unavailable; shown as the button's tooltip. */
   disabledReason?: string;
+  /** Hidden entirely for users without it. */
+  permission: Permission;
 }
 
 const day = (date?: string | null, utc = false) =>
@@ -153,6 +157,7 @@ export function InvoiceDetailsModal({
   const { user } = useAppSelector((state) => state.auth);
   const company = (user as IUserData | null)?.company;
   const { data: settingsData } = useInvoiceSettingsQuery();
+  const { can } = usePermissions();
 
   const sendMutation = useSendInvoice();
   const voidMutation = useVoidInvoice();
@@ -207,7 +212,7 @@ export function InvoiceDetailsModal({
                 disabled: downloading,
                 fn: () => void downloadPdf(invoice),
               },
-              ...(invoice.status === "DRAFT"
+              ...(invoice.status === "DRAFT" && can("INVOICE_UPDATE")
                 ? [
                     {
                       title: "Delete draft",
@@ -216,7 +221,7 @@ export function InvoiceDetailsModal({
                     },
                   ]
                 : []),
-              ...(OUTSTANDING.includes(invoice.status)
+              ...(OUTSTANDING.includes(invoice.status) && can("INVOICE_VOID")
                 ? [
                     {
                       title: "Void invoice",
@@ -333,6 +338,7 @@ export function InvoiceDetailsModal({
   const editAction: FooterAction = {
     label: "Edit",
     color: "outline",
+    permission: "INVOICE_UPDATE",
     onClick: () => onEdit(invoice),
     disabledReason: isDraft
       ? undefined
@@ -352,6 +358,7 @@ export function InvoiceDetailsModal({
       {
         label: "Send invoice",
         color: "primary",
+        permission: "INVOICE_SEND",
         onClick: () => onSend("send"),
         loading: sendMutation.isPending,
         disabledReason: sendBlockers.length
@@ -369,12 +376,14 @@ export function InvoiceDetailsModal({
       {
         label: "Mark as paid",
         color: "outline",
+        permission: "INVOICE_RECORD_PAYMENT",
         onClick: () => setPaymentOpen(true),
         disabledReason: isOutstanding ? undefined : closedReason,
       },
       {
         label: "Send a reminder",
         color: "primary",
+        permission: "INVOICE_SEND",
         onClick: () => setConfirm("reminder"),
         disabledReason: isOutstanding
           ? undefined
@@ -395,9 +404,11 @@ export function InvoiceDetailsModal({
     }
   }
 
+  actions = actions.filter((action) => can(action.permission));
+
   const footer = (
     <div className="flex flex-col gap-3">
-      {sendBlockers.length > 0 && (
+      {sendBlockers.length > 0 && can("INVOICE_SEND") && (
         <div
           role="status"
           className="flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 dark:border-amber-800/40 dark:bg-amber-950/30"

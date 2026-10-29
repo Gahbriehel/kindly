@@ -21,6 +21,7 @@ import { useTemplatesQuery } from "@/src/hooks/useTemplateQuery";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { htmlToPlainText } from "@/src/helpers/htmlHelpers";
 import { getInitials } from "@/src/helpers/stringHelpers";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import type { IEvent } from "@/src/models/event";
 
 export interface SendClientMessageModalProps {
@@ -47,11 +48,10 @@ export function SendClientMessageModal({
     useState<ISelect>(emptySelect());
   const [message, setMessage] = useState<string>("");
 
-  // Fetch available templates
+  // Templates are optional; without access the message is written by hand.
+  const { can } = usePermissions();
   const { data: templatesData, isLoading: isTemplatesLoading } =
-    useTemplatesQuery({
-      limit: 50,
-    });
+    useTemplatesQuery({ limit: 50 }, { enabled: can("TEMPLATE_VIEW") });
 
   // Extract client information from event or prop
   const participant = event?.participants?.[0]?.client;

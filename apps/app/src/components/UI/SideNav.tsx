@@ -79,7 +79,7 @@ export function SideNav({
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
-  const filteredNavLinks = useMemo(() => getNavLinks(user?.role), [user?.role]);
+  const filteredNavLinks = useMemo(() => getNavLinks(user), [user]);
 
   // Intercept clicks on the collapsed sidebar to expand instead
   const handleCollapsedClick = useCallback(

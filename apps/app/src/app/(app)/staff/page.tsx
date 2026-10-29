@@ -1,12 +1,24 @@
 "use client";
 
-import { useEffect, useState, useMemo, type JSX } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo, type JSX } from "react";
 import { Table } from "@/src/components/UI/Table";
+import { BaseButton } from "@/src/components/UI/Buttons";
 import type { ColumnDef } from "@tanstack/react-table";
-import { FiMail, FiCheckCircle, FiClock, FiSend } from "react-icons/fi";
+import {
+  FiMail,
+  FiCheckCircle,
+  FiClock,
+  FiSend,
+  FiUserPlus,
+} from "react-icons/fi";
 import { useStaffQuery } from "@/src/hooks/useStaffQuery";
-import { useAppSelector } from "@/src/hooks/useAppSelector";
+import { usePermissions } from "@/src/hooks/usePermissions";
+import {
+  StaffAccessDrawer,
+  type StaffAccessTarget,
+} from "@/src/components/Forms/StaffAccessDrawer";
+import { matchPreset, withRequired } from "@/src/helpers/permissions";
+import type { Permission } from "@/src/models/permission";
 import type { UserRole } from "@/src/models/auth";
 import type { IStaffInvite, IStaffMember } from "@/src/models/staff";
 
@@ -18,8 +30,9 @@ interface StaffRow {
   avatarText: string;
   email: string;
   role: UserRole;
-  permissionCount: number;
+  permissions: Permission[];
   status: StaffStatus;
+  target: Exclude<StaffAccessTarget, { kind: "new" }>;
 }
 
 const roleLabels: Record<UserRole, string> = {
@@ -68,8 +81,9 @@ const memberToRow = (member: IStaffMember): StaffRow => ({
   avatarText: initials(member.firstName, member.lastName),
   email: member.email,
   role: member.role,
-  permissionCount: member.permissions.length,
+  permissions: member.permissions,
   status: member.isActive ? "Active" : "Inactive",
+  target: { kind: "member", member },
 });
 
 const inviteToRow = (invite: IStaffInvite): StaffRow => ({
@@ -78,17 +92,22 @@ const inviteToRow = (invite: IStaffInvite): StaffRow => ({
   avatarText: initials(invite.firstName, invite.lastName),
   email: invite.email,
   role: "STAFF",
-  permissionCount: invite.permissions.length,
+  permissions: invite.permissions,
   status:
     invite.status === "EXPIRED" || new Date(invite.expiresAt) <= new Date()
       ? "Expired"
       : "Invited",
+  target: { kind: "invite", invite },
 });
 
-const accessLabel = (item: StaffRow) =>
-  item.role === "OWNER"
-    ? "Full access"
-    : `${item.permissionCount} permission${item.permissionCount === 1 ? "" : "s"}`;
+const accessLabel = (item: StaffRow) => {
+  if (item.role === "OWNER") return "Full access";
+  const preset = matchPreset(item.permissions);
+  if (preset) return preset.label;
+  const count = withRequired(item.permissions).size;
+  if (!count) return "No access";
+  return `Custom · ${count} permission${count === 1 ? "" : "s"}`;
+};
 
 function StatusBadge({ status }: { status: StaffStatus }): JSX.Element {
   const cfg = statusConfig[status];
@@ -113,9 +132,9 @@ function RoleBadge({ role }: { role: UserRole }): JSX.Element {
 }
 
 export default function StaffPage(): JSX.Element | null {
-  const router = useRouter();
-  const role = useAppSelector((state) => state.auth.user?.role);
-  const isOwner = role === "OWNER";
+  const { isOwner } = usePermissions();
+  const [editing, setEditing] = useState<StaffAccessTarget | null>(null);
+  const [editingStatus, setEditingStatus] = useState<StaffStatus>();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -124,11 +143,6 @@ export default function StaffPage(): JSX.Element | null {
   const { data, isLoading, error, refetch, isFetching } = useStaffQuery({
     enabled: isOwner,
   });
-
-  // Staff management is owner-only on the backend
-  useEffect(() => {
-    if (role && !isOwner) router.replace("/dashboard");
-  }, [role, isOwner, router]);
 
   const rows = useMemo<StaffRow[]>(() => {
     if (!data?.data) return [];
@@ -224,8 +238,24 @@ export default function StaffPage(): JSX.Element | null {
     [],
   );
 
+  const openRow = (item: StaffRow) => {
+    setEditing(item.target);
+    setEditingStatus(item.status);
+  };
+
   const renderGridItem = (item: StaffRow) => (
-    <div className="group relative rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 transition-all duration-200 hover:-translate-y-1">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => openRow(item)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openRow(item);
+        }
+      }}
+      className="group relative cursor-pointer rounded-[2rem] border border-gray-100 dark:border-slate-800 bg-white dark:bg-theme-surface p-6 transition-all duration-200 hover:-translate-y-1"
+    >
       {/* Card Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -259,6 +289,7 @@ export default function StaffPage(): JSX.Element | null {
     </div>
   );
 
+  // The app layout redirects staff; render nothing until it does.
   if (!isOwner) return null;
 
   return (
@@ -271,6 +302,18 @@ export default function StaffPage(): JSX.Element | null {
               ` · ${rows.length} total staff member${rows.length === 1 ? "" : "s"}`}
           </p>
         </div>
+        <BaseButton
+          type="button"
+          onClick={() => {
+            setEditing({ kind: "new" });
+            setEditingStatus(undefined);
+          }}
+          color="primary"
+          icon={<FiUserPlus className="size-4" />}
+          position="icon-first"
+          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
+          text="Invite Staff"
+        />
       </div>
 
       <Table
@@ -283,6 +326,7 @@ export default function StaffPage(): JSX.Element | null {
         searchPlaceholder="Search by name, email, role or status..."
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
+        onRowClick={openRow}
         renderGridItem={renderGridItem}
         pagination={{
           currentPage,
@@ -296,6 +340,22 @@ export default function StaffPage(): JSX.Element | null {
           },
         }}
       />
+
+      {editing && (
+        <StaffAccessDrawer
+          // Remount per person so the editor starts from their saved access.
+          key={
+            editing.kind === "member"
+              ? editing.member.id
+              : editing.kind === "invite"
+                ? editing.invite.id
+                : "new"
+          }
+          target={editing}
+          badge={editingStatus && <StatusBadge status={editingStatus} />}
+          close={() => setEditing(null)}
+        />
+      )}
     </div>
   );
 }

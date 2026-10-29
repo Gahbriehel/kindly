@@ -13,6 +13,7 @@ import {
 import { MultiSelect } from "@/src/components/FormElements/MultiSelect";
 import { SwitchWrapper } from "@/src/components/FormElements/Switch";
 import { CategoryDrawer } from "@/src/components/Forms/CategoryDrawer";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getClients } from "@/src/services/clients";
@@ -105,6 +106,7 @@ export function EventFormDrawer({
   const [participants, setParticipants] =
     useState<ISelect[]>(initialParticipants);
   const [addingCategory, setAddingCategory] = useState(false);
+  const canAddCategory = usePermissions().can("CATEGORY_CREATE");
 
   const { data: categoriesData, isLoading: loadingCategories } =
     useCategoriesQuery();
@@ -243,7 +245,9 @@ export function EventFormDrawer({
                 placeholder="Select category"
                 options={categoryOptions}
                 loading={loadingCategories}
-                addNewOption={() => setAddingCategory(true)}
+                addNewOption={
+                  canAddCategory ? () => setAddingCategory(true) : undefined
+                }
               />
             )}
           />

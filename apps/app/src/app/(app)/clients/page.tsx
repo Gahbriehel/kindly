@@ -25,6 +25,7 @@ import {
   useTagsQuery,
 } from "@/src/hooks/useClientQuery";
 import { useDeleteEvent } from "@/src/hooks/useEventQuery";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatRelativeTime } from "@/src/helpers/dateHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
@@ -141,19 +142,25 @@ function ClientActions({
 }: {
   client: IClient;
   onView: (client: IClient) => void;
-  onEdit: (client: IClient) => void;
-  onDelete: (id: string) => void;
+  /** Omitted when the user can't edit clients. */
+  onEdit?: (client: IClient) => void;
+  /** Omitted when the user can't delete clients. */
+  onDelete?: (id: string) => void;
 }) {
   return (
     <ActionsList
       actions={[
         { title: "View Client", fn: () => onView(client) },
-        { title: "Edit Client", fn: () => onEdit(client) },
-        {
-          title: "Delete Client",
-          fn: () => onDelete(client.id),
-          color: "red",
-        },
+        ...(onEdit ? [{ title: "Edit Client", fn: () => onEdit(client) }] : []),
+        ...(onDelete
+          ? [
+              {
+                title: "Delete Client",
+                fn: () => onDelete(client.id),
+                color: "red" as const,
+              },
+            ]
+          : []),
       ]}
       trigger={
         <button
@@ -181,6 +188,10 @@ export default function ClientsPage(): JSX.Element {
   const [editingClient, setEditingClient] = useState<IClient | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<IClientEvent | null>(null);
   const [editingEvent, setEditingEvent] = useState<IEvent | null>(null);
+
+  const { can } = usePermissions();
+  const canEdit = can("CLIENT_UPDATE");
+  const canDelete = can("CLIENT_DELETE");
 
   const openAdd = () => {
     setEditingClient(null);
@@ -393,13 +404,13 @@ export default function ClientsPage(): JSX.Element {
           <ClientActions
             client={row.original}
             onView={setViewingClient}
-            onEdit={openEdit}
-            onDelete={setDeletingClientId}
+            onEdit={canEdit ? openEdit : undefined}
+            onDelete={canDelete ? setDeletingClientId : undefined}
           />
         ),
       },
     ],
-    [],
+    [canEdit, canDelete],
   );
 
   const renderGridItem = (client: IClient) => {
@@ -445,8 +456,8 @@ export default function ClientsPage(): JSX.Element {
           <ClientActions
             client={client}
             onView={setViewingClient}
-            onEdit={openEdit}
-            onDelete={setDeletingClientId}
+            onEdit={canEdit ? openEdit : undefined}
+            onDelete={canDelete ? setDeletingClientId : undefined}
           />
         </div>
       </div>
@@ -515,15 +526,17 @@ export default function ClientsPage(): JSX.Element {
               : ""}
           </p>
         </div>
-        <BaseButton
-          type="button"
-          onClick={openAdd}
-          color="primary"
-          icon={<FiPlus className="size-4" />}
-          position="icon-first"
-          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
-          text="Add Client"
-        />
+        {can("CLIENT_CREATE") && (
+          <BaseButton
+            type="button"
+            onClick={openAdd}
+            color="primary"
+            icon={<FiPlus className="size-4" />}
+            position="icon-first"
+            className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
+            text="Add Client"
+          />
+        )}
       </div>
 
       {/* Table Container */}
@@ -563,9 +576,9 @@ export default function ClientsPage(): JSX.Element {
       <ClientViewModal
         client={viewingClient}
         close={() => setViewingClient(null)}
-        onEdit={openEditFromView}
-        onEditEvent={handleEditEvent}
-        onDeleteEvent={setDeletingEvent}
+        onEdit={canEdit ? openEditFromView : undefined}
+        onEditEvent={can("EVENT_UPDATE") ? handleEditEvent : undefined}
+        onDeleteEvent={can("EVENT_DELETE") ? setDeletingEvent : undefined}
       />
 
       {formOpen && <ClientFormModal close={closeForm} client={editingClient} />}

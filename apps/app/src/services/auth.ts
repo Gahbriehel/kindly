@@ -49,6 +49,11 @@ export async function changePassword(payload: IUpdatePasswordPayload) {
   return response.data;
 }
 
+export async function getProfile() {
+  const response = await axios.get<IProfileResponse>(`/auth/me`);
+  return response.data;
+}
+
 export async function updateIndividualProfile(payload: IUpdateProfilePayload) {
   const response = await axios.patch<IProfileResponse>(`/auth/me`, payload);
   return response.data;

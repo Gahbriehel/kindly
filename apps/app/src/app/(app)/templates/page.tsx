@@ -21,6 +21,7 @@ import { useDebounce } from "@/src/hooks/useDebounce";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { ITemplate } from "@/src/models/template";
 import { TemplateForm } from "@/src/components/Forms/TemplateForm";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { customToast } from "@/src/helpers/customToast";
 
@@ -30,6 +31,7 @@ export default function TemplatesPage(): JSX.Element {
   const [pageSize, setPageSize] = useState(6);
   const debouncedSearchQuery = useDebounce(searchQuery);
 
+  const { can } = usePermissions();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<ITemplate | null>(
     null,
@@ -143,23 +145,27 @@ export default function TemplatesPage(): JSX.Element {
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button
-                onClick={() => {
-                  setEditingTemplate(item);
-                  setIsSidebarOpen(true);
-                }}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-500 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                title="Edit Template"
-              >
-                <FiEdit2 className="size-4" />
-              </button>
-              <button
-                onClick={() => setDeletingTemplateId(item.id)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                title="Delete Template"
-              >
-                <FiTrash2 className="size-4" />
-              </button>
+              {can("TEMPLATE_UPDATE") && (
+                <button
+                  onClick={() => {
+                    setEditingTemplate(item);
+                    setIsSidebarOpen(true);
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-500 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Edit Template"
+                >
+                  <FiEdit2 className="size-4" />
+                </button>
+              )}
+              {can("TEMPLATE_DELETE") && (
+                <button
+                  onClick={() => setDeletingTemplateId(item.id)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                  title="Delete Template"
+                >
+                  <FiTrash2 className="size-4" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -217,19 +223,21 @@ export default function TemplatesPage(): JSX.Element {
           </p>
         </div>
 
-        <BaseButton
-          type="button"
-          text="New Template"
-          icon={<FiPlus className="size-4" />}
-          position="icon-first"
-          color="primary"
-          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
-          onClick={() => {
-            setEditingTemplate(null);
-            setIsSidebarOpen(true);
-          }}
-          disabled={isLoading}
-        />
+        {can("TEMPLATE_CREATE") && (
+          <BaseButton
+            type="button"
+            text="New Template"
+            icon={<FiPlus className="size-4" />}
+            position="icon-first"
+            color="primary"
+            className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
+            onClick={() => {
+              setEditingTemplate(null);
+              setIsSidebarOpen(true);
+            }}
+            disabled={isLoading}
+          />
+        )}
       </div>
 
       <Table

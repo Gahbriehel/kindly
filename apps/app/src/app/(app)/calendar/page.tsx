@@ -36,6 +36,7 @@ import {
   type DateKey,
 } from "@/src/helpers/calendarHelpers";
 import type { IEvent } from "@/src/models/event";
+import { usePermissions } from "@/src/hooks/usePermissions";
 
 const iconButton =
   "flex size-9 cursor-pointer items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800";
@@ -94,6 +95,10 @@ function CalendarContent({
       setViewingEvent(null);
     },
   });
+
+  const { can } = usePermissions();
+  const canCreate = can("EVENT_CREATE");
+  const canEdit = can("EVENT_UPDATE");
 
   const openAdd = (date?: DateKey) => {
     setDrawerState({ defaultDate: date ?? selected ?? undefined });
@@ -176,15 +181,17 @@ function CalendarContent({
                 </button>
               )}
             </div>
-            <BaseButton
-              color="primary"
-              icon={<FiPlus className="size-4" />}
-              onClick={() => openAdd(selected ?? undefined)}
-              className="shrink-0 max-sm:size-10 max-sm:px-0"
-              aria-label="Add event"
-            >
-              <span className="hidden sm:inline">Add Event</span>
-            </BaseButton>
+            {canCreate && (
+              <BaseButton
+                color="primary"
+                icon={<FiPlus className="size-4" />}
+                onClick={() => openAdd(selected ?? undefined)}
+                className="shrink-0 max-sm:size-10 max-sm:px-0"
+                aria-label="Add event"
+              >
+                <span className="hidden sm:inline">Add Event</span>
+              </BaseButton>
+            )}
           </div>
 
           <div className="mt-4">
@@ -233,17 +240,17 @@ function CalendarContent({
           dayEvents={selected ? (eventsByDate.get(selected) ?? []) : []}
           loading={isLoading}
           onClear={() => setSelected(null)}
-          onAdd={(date) => openAdd(date)}
+          onAdd={canCreate ? (date) => openAdd(date) : undefined}
           onEventClick={setViewingEvent}
-          onEdit={openEdit}
-          onDelete={setDeletingEventId}
+          onEdit={canEdit ? openEdit : undefined}
+          onDelete={can("EVENT_DELETE") ? setDeletingEventId : undefined}
         />
       </div>
 
       <EventViewModal
         event={viewingEvent}
         close={() => setViewingEvent(null)}
-        onEdit={openEditFromView}
+        onEdit={canEdit ? openEditFromView : undefined}
       />
 
       {drawerState && (

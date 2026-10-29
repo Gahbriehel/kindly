@@ -31,7 +31,8 @@ interface Props {
   dayEvents: IEvent[];
   loading?: boolean;
   onClear: () => void;
-  onAdd: (date: DateKey) => void;
+  /** Omitted when the user can't create events. */
+  onAdd?: (date: DateKey) => void;
   onEventClick?: (event: IEvent) => void;
   onEdit?: (event: IEvent) => void;
   onDelete?: (id: string) => void;
@@ -160,7 +161,7 @@ export function CalendarSidePanel({
                     ? "No events today"
                     : "No events this month"}
               </p>
-              {(isDay || showToday) && (
+              {onAdd && (isDay || showToday) && (
                 <button
                   type="button"
                   onClick={() => onAdd(selected ?? today)}

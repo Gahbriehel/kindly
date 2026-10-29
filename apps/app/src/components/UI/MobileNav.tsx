@@ -22,8 +22,8 @@ export const MobileNav = memo(function MobileNav({
   onClose,
 }: MobileNavProps): JSX.Element {
   const pathname = usePathname();
-  const role = useAppSelector((state) => state.auth.user?.role);
-  const filteredNavLinks = useMemo(() => getNavLinks(role), [role]);
+  const user = useAppSelector((state) => state.auth.user);
+  const filteredNavLinks = useMemo(() => getNavLinks(user), [user]);
 
   return (
     <AnimatePresence>

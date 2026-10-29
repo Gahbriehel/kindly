@@ -6,6 +6,7 @@ import { BaseButton } from "@/src/components/UI/Buttons";
 import { Table } from "@/src/components/UI/Table";
 import { ActionsList } from "@/src/components/UI/ActionsList";
 import { CategoryDrawer } from "@/src/components/Forms/CategoryDrawer";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import {
   useCategoriesQuery,
   useDeleteCategory,
@@ -60,6 +61,9 @@ export function CategoryForm(): JSX.Element {
   };
 
   const deleteMutation = useDeleteCategory({});
+  const { can } = usePermissions();
+  const canEdit = can("CATEGORY_UPDATE");
+  const canDelete = can("CATEGORY_DELETE");
 
   const openAddDrawer = () => {
     setEditingCategory(null);
@@ -134,19 +138,28 @@ export function CategoryForm(): JSX.Element {
       header: "Actions",
       cell: ({ row }) => {
         const item = row.original;
+        if (!canEdit && !canDelete) return null;
         return (
           <ActionsList
             actions={[
-              {
-                title: "Edit",
-                fn: () => openEditDrawer(item),
-                disabled: item.isSystem,
-              },
-              {
-                title: "Delete",
-                fn: () => deleteMutation.mutate(item.id),
-                disabled: item.isSystem,
-              },
+              ...(canEdit
+                ? [
+                    {
+                      title: "Edit",
+                      fn: () => openEditDrawer(item),
+                      disabled: item.isSystem,
+                    },
+                  ]
+                : []),
+              ...(canDelete
+                ? [
+                    {
+                      title: "Delete",
+                      fn: () => deleteMutation.mutate(item.id),
+                      disabled: item.isSystem,
+                    },
+                  ]
+                : []),
             ]}
           />
         );
@@ -192,13 +205,15 @@ export function CategoryForm(): JSX.Element {
             },
           }}
         >
-          <BaseButton
-            onClick={openAddDrawer}
-            color="primary"
-            text="Add Category"
-            icon={<FiPlus className="size-4" />}
-            className="h-12 px-4.5 rounded-2xl text-sm font-medium transition-all"
-          />
+          {can("CATEGORY_CREATE") && (
+            <BaseButton
+              onClick={openAddDrawer}
+              color="primary"
+              text="Add Category"
+              icon={<FiPlus className="size-4" />}
+              className="h-12 px-4.5 rounded-2xl text-sm font-medium transition-all"
+            />
+          )}
         </Table>
       </div>
 

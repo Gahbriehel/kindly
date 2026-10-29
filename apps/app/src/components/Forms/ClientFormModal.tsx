@@ -31,6 +31,7 @@ import {
   type ISelect,
 } from "@/src/components/FormElements/Select";
 import { CategoryDrawer } from "@/src/components/Forms/CategoryDrawer";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import { useCategoriesQuery } from "@/src/hooks/useCategoryQuery";
 import { useAddClient, useUpdateClient } from "@/src/hooks/useClientQuery";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
@@ -234,6 +235,7 @@ export function ClientFormModal({
   }, [categoriesData, anyBirthDate]);
 
   const [addingCategory, setAddingCategory] = useState(false);
+  const canAddCategory = usePermissions().can("CATEGORY_CREATE");
   const pendingCategoryName = useRef<string | null>(null);
 
   // Select the newly created category once the refetched list contains it.
@@ -494,7 +496,11 @@ export function ClientFormModal({
                       placeholder="Select category"
                       options={availableCategories}
                       loading={loadingCategories}
-                      addNewOption={() => setAddingCategory(true)}
+                      addNewOption={
+                        canAddCategory
+                          ? () => setAddingCategory(true)
+                          : undefined
+                      }
                     />
                   )}
                 />

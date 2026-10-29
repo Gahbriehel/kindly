@@ -37,3 +37,10 @@ export interface IStaffListResponse extends IBaseResponse {
     invitations: IStaffInvite[];
   };
 }
+
+export interface IInviteStaffPayload {
+  email: string;
+  firstName: string;
+  lastName: string;
+  permissions: Permission[];
+}
