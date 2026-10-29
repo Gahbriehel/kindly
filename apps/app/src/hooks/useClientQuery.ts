@@ -23,10 +23,14 @@ import { SUBSCRIPTION_CURRENT_KEY } from "./useSubscriptionQuery";
 const CLIENTS_KEY = "clients";
 const TAGS_KEY = "client-tags";
 
-export function useClientsQuery(params: IQueryParams = {}) {
+export function useClientsQuery(
+  params: IQueryParams = {},
+  { enabled = true }: { enabled?: boolean } = {},
+) {
   return useQuery({
     queryKey: [CLIENTS_KEY, { ...params }],
     queryFn: async () => await getClients(params),
+    enabled,
   });
 }
 

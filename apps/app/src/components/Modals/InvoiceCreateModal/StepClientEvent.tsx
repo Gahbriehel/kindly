@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type JSX } from "react";
+import { useState, type JSX } from "react";
 import {
   Controller,
   useWatch,
@@ -28,27 +28,9 @@ interface Props {
   onAddEvent: () => void;
 }
 
-function ClientRow({
-  client,
-  selected,
-  onSelect,
-}: {
-  client: InvoiceClient;
-  selected: boolean;
-  onSelect: () => void;
-}): JSX.Element {
+function ClientSummary({ client }: { client: InvoiceClient }): JSX.Element {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
-      className={clsx(
-        "flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition-colors",
-        selected
-          ? "bg-indigo-50 dark:bg-indigo-950/40"
-          : "hover:bg-gray-50 dark:hover:bg-slate-800/60",
-      )}
-    >
+    <>
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-indigo-100 bg-white text-[0.8rem] font-semibold text-indigo-600 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-400">
         {getInitials(client.fullName) || "CL"}
       </div>
@@ -63,7 +45,48 @@ function ClientRow({
           </p>
         )}
       </div>
+    </>
+  );
+}
+
+function ClientRow({
+  client,
+  onSelect,
+}: {
+  client: InvoiceClient;
+  onSelect: () => void;
+}): JSX.Element {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-slate-800/60"
+    >
+      <ClientSummary client={client} />
     </button>
+  );
+}
+
+function SelectedClientCard({
+  client,
+  onChange,
+}: {
+  client: InvoiceClient;
+  onChange: () => void;
+}): JSX.Element {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-indigo-100 bg-indigo-50 px-3 py-2.5 dark:border-indigo-900/60 dark:bg-indigo-950/40">
+      <div className="flex min-w-0 items-center gap-3">
+        <ClientSummary client={client} />
+      </div>
+      <button
+        type="button"
+        onClick={onChange}
+        className="shrink-0 cursor-pointer text-sm font-medium text-theme-primary hover:underline"
+      >
+        Change
+      </button>
+    </div>
   );
 }
 
@@ -121,24 +144,26 @@ export function StepClientEvent({
   onAddEvent,
 }: Props): JSX.Element {
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search.trim(), 400);
+  // Only focus the search box when the user asks to change the client, not on open.
+  const [focusSearch, setFocusSearch] = useState(false);
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebounce(trimmedSearch, 400);
   const selectedClient = useWatch({ control, name: "client" });
   const selectedEvent = useWatch({ control, name: "event" });
 
-  const { data: clientsData, isLoading: loadingClients } = useClientsQuery({
-    page: 1,
-    limit: CLIENT_RESULTS_LIMIT,
-    search: debouncedSearch || undefined,
-  });
-
-  // Keep the selected client visible even when the search no longer matches it.
-  const clients = useMemo<InvoiceClient[]>(() => {
-    const results: InvoiceClient[] = clientsData?.data ?? [];
-    if (!selectedClient || results.some((c) => c.id === selectedClient.id)) {
-      return results;
-    }
-    return [selectedClient, ...results];
-  }, [clientsData, selectedClient]);
+  // Search-first: nothing is listed until the user types.
+  const { data: clientsData, isLoading: loadingClients } = useClientsQuery(
+    {
+      page: 1,
+      limit: CLIENT_RESULTS_LIMIT,
+      search: debouncedSearch,
+    },
+    { enabled: !selectedClient && !!debouncedSearch },
+  );
+  const clients: InvoiceClient[] = clientsData?.data ?? [];
+  const totalMatches = clientsData?.pagination?.total ?? clients.length;
+  const searching =
+    loadingClients || (!!trimmedSearch && trimmedSearch !== debouncedSearch);
 
   const { data: clientDetail, isLoading: loadingEvents } = useClientQuery(
     selectedClient?.id ?? "",
@@ -159,6 +184,13 @@ export function StepClientEvent({
     );
     // Events belong to a client, so a new client clears the old pick.
     setValue("event", null, { shouldDirty: true });
+    setSearch("");
+  };
+
+  const changeClient = () => {
+    setValue("client", null, { shouldDirty: true });
+    setValue("event", null, { shouldDirty: true });
+    setFocusSearch(true);
   };
 
   return (
@@ -169,47 +201,71 @@ export function StepClientEvent({
         rules={{ validate: (v) => !!v || "Select who this invoice is for" }}
         render={({ fieldState }) => (
           <div className="flex flex-col gap-3">
-            <Input
-              id="invoice-client-search"
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search"
-              aria-label="Search clients"
-              className="h-12 rounded-2xl pl-11"
-              icon={
-                <FiSearch className="pointer-events-none absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-gray-400" />
-              }
-            />
+            {selectedClient ? (
+              <SelectedClientCard
+                client={selectedClient}
+                onChange={changeClient}
+              />
+            ) : (
+              <>
+                <Input
+                  id="invoice-client-search"
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search clients"
+                  aria-label="Search clients"
+                  autoFocus={focusSearch}
+                  className="h-12 rounded-2xl pl-11"
+                  icon={
+                    <FiSearch className="pointer-events-none absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-gray-400" />
+                  }
+                />
 
-            <div className="flex flex-col gap-1">
-              {loadingClients && clients.length === 0 ? (
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="flex flex-col gap-1.5">
-                      <Skeleton className="h-3.5 w-32" />
-                      <Skeleton className="h-3 w-24" />
-                    </div>
+                {!trimmedSearch ? (
+                  <p className="px-3 text-xs text-gray-400 dark:text-slate-500">
+                    Search for the client this invoice is for.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {searching ? (
+                      Array.from({ length: 2 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-3 px-3 py-2.5"
+                        >
+                          <Skeleton className="h-10 w-10 rounded-full" />
+                          <div className="flex flex-col gap-1.5">
+                            <Skeleton className="h-3.5 w-32" />
+                            <Skeleton className="h-3 w-24" />
+                          </div>
+                        </div>
+                      ))
+                    ) : clients.length === 0 ? (
+                      <p className="px-3 py-4 text-center text-sm text-gray-500 dark:text-slate-400">
+                        No clients match &quot;{debouncedSearch}&quot;
+                      </p>
+                    ) : (
+                      <>
+                        {clients.map((client) => (
+                          <ClientRow
+                            key={client.id}
+                            client={client}
+                            onSelect={() => selectClient(client)}
+                          />
+                        ))}
+                        {totalMatches > clients.length && (
+                          <p className="px-3 pt-1 text-xs text-gray-400 dark:text-slate-500">
+                            Showing {clients.length} of {totalMatches}. Keep
+                            typing to narrow it down.
+                          </p>
+                        )}
+                      </>
+                    )}
                   </div>
-                ))
-              ) : clients.length === 0 ? (
-                <p className="px-3 py-4 text-center text-sm text-gray-500 dark:text-slate-400">
-                  {debouncedSearch
-                    ? `No clients match "${debouncedSearch}"`
-                    : "You don't have any clients yet"}
-                </p>
-              ) : (
-                clients.map((client) => (
-                  <ClientRow
-                    key={client.id}
-                    client={client}
-                    selected={client.id === selectedClient?.id}
-                    onSelect={() => selectClient(client)}
-                  />
-                ))
-              )}
-            </div>
+                )}
+              </>
+            )}
 
             <div className="flex items-start justify-between gap-3">
               {fieldState.error && (
