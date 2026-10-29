@@ -6,7 +6,7 @@ import type {
   ISingleInvoiceResponse,
   IInvoiceSummaryResponse,
   IInvoiceSettingsResponse,
-  IInvoiceSettingsPayload,
+  IUpdateInvoiceSettingsPayload,
   IInvoicePayload,
   IUpdateInvoicePayload,
   IInvoicePaymentPayload,
@@ -46,7 +46,7 @@ export async function getInvoiceSettings(): Promise<IInvoiceSettingsResponse> {
 }
 
 export async function updateInvoiceSettings(
-  payload: IInvoiceSettingsPayload,
+  payload: IUpdateInvoiceSettingsPayload,
 ): Promise<IInvoiceSettingsResponse> {
   const response = await axios.patch<IInvoiceSettingsResponse>(
     `/invoice-settings`,

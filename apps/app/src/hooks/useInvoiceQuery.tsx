@@ -16,7 +16,7 @@ import {
 import {
   IInvoicePayload,
   IInvoicePaymentPayload,
-  IInvoiceSettingsPayload,
+  IUpdateInvoiceSettingsPayload,
   IUpdateInvoicePayload,
 } from "../models/invoice";
 
@@ -54,7 +54,7 @@ export function useUpdateInvoiceSettings({
 }: { onSuccess?: () => void } = {}) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: IInvoiceSettingsPayload) =>
+    mutationFn: (payload: IUpdateInvoiceSettingsPayload) =>
       updateInvoiceSettings(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });

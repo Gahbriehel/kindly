@@ -7,11 +7,13 @@ import {
   FiZap,
 } from "react-icons/fi";
 import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
+import { LuFileText } from "react-icons/lu";
 import type { IconType } from "react-icons";
 
 export type ProfileTab =
   | "profile"
   | "business"
+  | "invoices"
   | "notifications"
   | "security"
   | "categories"
@@ -37,6 +39,12 @@ export const PROFILE_TABS: ProfileTabConfig[] = [
     name: "Business",
     desc: "Company & time zone",
     icon: HiOutlineBuildingOffice2,
+  },
+  {
+    id: "invoices",
+    name: "Invoices",
+    desc: "Numbering & defaults",
+    icon: LuFileText,
   },
   {
     id: "notifications",
@@ -65,7 +73,7 @@ export const PROFILE_TABS: ProfileTabConfig[] = [
   {
     id: "billing",
     name: "Plan & Billing",
-    desc: "Your plan and invoices",
+    desc: "Your plan and payments",
     icon: FiZap,
   },
 ];

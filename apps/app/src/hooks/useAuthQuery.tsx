@@ -145,6 +145,8 @@ export function useUpdateCompanyProfileMutation() {
           } as IUserData),
         );
       }
+      // Same company row; a renamed business changes the auto invoice prefix
+      queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       customToast.error(

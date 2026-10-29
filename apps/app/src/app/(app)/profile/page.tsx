@@ -4,6 +4,7 @@ import { JSX, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ProfileView } from "@/src/components/Forms/ProfileView";
 import { BusinessView } from "@/src/components/Forms/BusinessView";
+import { InvoiceSettingsForm } from "@/src/components/Forms/InvoiceSettingsForm";
 import { NotificationsForm } from "@/src/components/Forms/NotificationsForm";
 import { SecurityForm } from "@/src/components/Forms/SecurityForm";
 import { CategoryForm } from "@/src/components/Forms/CategoryForm";
@@ -92,6 +93,7 @@ export default function ProfilePage(): JSX.Element {
             >
               {activeTab === "profile" && <ProfileView />}
               {activeTab === "business" && <BusinessView />}
+              {activeTab === "invoices" && <InvoiceSettingsForm />}
               {activeTab === "notifications" && <NotificationsForm />}
               {activeTab === "security" && <SecurityForm />}
               {activeTab === "categories" && <CategoryForm />}
@@ -102,7 +104,7 @@ export default function ProfilePage(): JSX.Element {
                     Plan & Billing
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-                    Manage your subscription tier, payment methods, and invoices
+                    Manage your subscription tier and payment methods
                   </p>
                 </div>
               )}

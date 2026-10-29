@@ -193,6 +193,12 @@ export interface IInvoiceSettingsResponse extends IBaseResponse {
       billingAddress: string | null;
       registrationNumber: string | null;
       taxId: string | null;
+      /** User override; null when auto-derived from business initials. */
+      invoicePrefix: string | null;
+      /** Prefix the backend will stamp on the next invoice. */
+      effectivePrefix: string;
+      /** Counter for the current UTC month; resets to 1 monthly. */
+      nextInvoiceNumber: number;
     };
   };
 }
@@ -206,3 +212,9 @@ export interface IInvoiceSettingsPayload {
   registrationNumber: string | null;
   taxId: string | null;
 }
+
+/** PATCH /invoice-settings accepts any subset of fields. */
+export type IUpdateInvoiceSettingsPayload = Partial<IInvoiceSettingsPayload> & {
+  invoicePrefix?: string | null;
+  nextInvoiceNumber?: number;
+};
