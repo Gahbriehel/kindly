@@ -285,7 +285,7 @@ function EventItem({
       </div>
       <div className="flex shrink-0 items-center gap-2 text-gray-500 dark:text-slate-400">
         {(onEdit || onDelete) && (
-          <span className="flex w-auto items-center justify-end gap-2 opacity-100 transition-all duration-200 lg:w-0 lg:overflow-hidden lg:opacity-0 lg:group-hover:w-12 lg:group-hover:opacity-100 lg:group-focus-within:w-12 lg:group-focus-within:opacity-100">
+          <span className="flex w-auto items-center justify-end gap-2 opacity-100 transition-all duration-200 lg:w-0 lg:overflow-hidden lg:opacity-0 lg:group-hover:w-14 lg:group-hover:opacity-100 lg:group-focus-within:w-14 lg:group-focus-within:opacity-100">
             {onEdit && (
               <button
                 type="button"
