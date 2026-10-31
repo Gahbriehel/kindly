@@ -173,18 +173,19 @@ export function StaffAccessDrawer({
       text={person.isActive ? "Deactivate" : "Reactivate"}
       loading={setStatus.isPending}
       onClick={() => setConfirmStatus(true)}
-      className="mr-auto"
+      className="w-full sm:mr-auto sm:w-auto"
     />
   );
 
   const inviteActions = invite && (
-    <div className="mr-auto flex gap-3">
+    <div className="flex flex-col-reverse gap-2 sm:mr-auto sm:flex-row sm:gap-3">
       <BaseButton
         type="button"
         color="outline"
         text="Resend"
         loading={resend.isPending}
         onClick={() => resend.mutate(invite.id, { onSuccess: close })}
+        className="w-full sm:w-auto"
       />
       {!inviteExpired && (
         <BaseButton
@@ -193,6 +194,7 @@ export function StaffAccessDrawer({
           text="Revoke"
           loading={revoke.isPending}
           onClick={() => setConfirmRevoke(true)}
+          className="w-full sm:w-auto"
         />
       )}
     </div>
@@ -205,7 +207,7 @@ export function StaffAccessDrawer({
         close={requestClose}
         title={header}
         footer={
-          <div className="flex w-full flex-wrap items-center justify-end gap-3">
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3">
             {secondaryActions}
             {inviteActions}
             {readOnly ? (
@@ -214,6 +216,7 @@ export function StaffAccessDrawer({
                 color="outline"
                 text="Close"
                 onClick={close}
+                className="w-full sm:w-auto"
               />
             ) : (
               <>
@@ -222,6 +225,7 @@ export function StaffAccessDrawer({
                   color="outline"
                   text="Cancel"
                   onClick={requestClose}
+                  className="w-full sm:w-auto"
                 />
                 <BaseButton
                   type="button"
@@ -230,6 +234,7 @@ export function StaffAccessDrawer({
                   loading={saving}
                   disabled={!isNew && !permissionsDirty}
                   onClick={submit}
+                  className="w-full sm:w-auto"
                 />
               </>
             )}
@@ -318,7 +323,7 @@ export function StaffAccessDrawer({
 
             <fieldset
               disabled={inviteExpired}
-              className="disabled:pointer-events-none disabled:opacity-60"
+              className="min-w-0 disabled:pointer-events-none disabled:opacity-60"
             >
               <PermissionEditor
                 selected={selected}

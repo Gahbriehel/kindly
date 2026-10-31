@@ -21,7 +21,7 @@ export function CopyButton({
       onClick={() => {
         void copyToClipboard(text);
       }}
-      className="shrink-0 cursor-pointer rounded p-0.5 text-gray-400 opacity-0 transition hover:text-theme-primary focus-visible:opacity-100 group-hover:opacity-100 dark:text-slate-500"
+      className="shrink-0 cursor-pointer rounded p-0.5 text-gray-400 ml-auto opacity-100 transition hover:text-theme-primary focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 dark:text-slate-500"
     >
       {isCopied ? (
         <FiCheck className="size-3.5 text-green-600" />

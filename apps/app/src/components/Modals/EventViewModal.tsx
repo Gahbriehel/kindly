@@ -134,7 +134,7 @@ export function EventViewModal({
         title={
           event &&
           config && (
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-slate-800 dark:text-indigo-400">
                 <CategoryIcon className="size-5" />
               </div>
@@ -270,16 +270,16 @@ export function EventViewModal({
                           )}
                         </div>
                         {client && (client.phoneNumber || client.email) && (
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                             {client.email && (
-                              <span className="group flex min-w-0 flex-1 items-center gap-2 break-all rounded-lg bg-indigo-50 px-3 py-2 text-xs text-gray-700 dark:bg-slate-800 dark:text-slate-300">
+                              <span className="group flex min-w-0 items-center gap-2 break-all rounded-lg sm:flex-1 bg-indigo-50 px-3 py-2 text-xs text-gray-700 dark:bg-slate-800 dark:text-slate-300">
                                 <FiMail className="size-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
                                 {client.email}
                                 <CopyButton text={client.email} label="Email" />
                               </span>
                             )}
                             {client.phoneNumber && (
-                              <span className="group flex flex-1 items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-xs text-gray-700 dark:bg-slate-800 dark:text-slate-300">
+                              <span className="group flex min-w-0 items-center gap-2 rounded-lg sm:flex-1 bg-indigo-50 px-3 py-2 text-xs text-gray-700 dark:bg-slate-800 dark:text-slate-300">
                                 <FiPhone className="size-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
                                 {client.phoneNumber}
                                 <CopyButton

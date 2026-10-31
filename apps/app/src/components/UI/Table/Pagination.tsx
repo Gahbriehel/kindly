@@ -42,10 +42,10 @@ export function Pagination({
   const pages = getPageNumbers(currentPage, totalPages);
 
   return (
-    <div className="flex flex-col items-center justify-between gap-4 px-6 py-4 sm:flex-row">
+    <div className="flex items-center justify-between gap-3 px-4 py-4 sm:px-6">
       {/* Left: result count + rows-per-page */}
-      <div className="flex items-center gap-5">
-        <p className="text-xs text-gray-400 dark:text-slate-500 tabular-nums">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-5">
+        <p className="whitespace-nowrap text-xs text-gray-400 dark:text-slate-500 tabular-nums">
           <span className="font-semibold text-gray-700 dark:text-slate-200">
             {start}–{end}
           </span>{" "}
@@ -86,12 +86,17 @@ export function Pagination({
           <HiChevronLeft className="h-4 w-4" />
         </button>
 
+        {/* Mobile: compact indicator instead of numbered buttons */}
+        <span className="min-w-12 px-1 text-center text-xs font-semibold tabular-nums text-gray-700 dark:text-slate-200 sm:hidden">
+          {currentPage} / {totalPages}
+        </span>
+
         {/* Page numbers */}
         {pages.map((page, i) =>
           page === "…" ? (
             <span
               key={`ellipsis-${i}`}
-              className="flex h-8 w-8 items-center justify-center text-xs text-gray-400 dark:text-slate-500 select-none"
+              className="hidden h-8 w-8 items-center justify-center text-xs text-gray-400 dark:text-slate-500 select-none sm:flex"
             >
               …
             </span>
@@ -100,7 +105,7 @@ export function Pagination({
               key={page}
               onClick={() => onPageChange(page)}
               className={clsx(
-                "cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold transition-all",
+                "cursor-pointer hidden h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold transition-all sm:flex",
                 currentPage === page
                   ? "bg-indigo-600 dark:bg-indigo-500 text-white"
                   : "text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800",

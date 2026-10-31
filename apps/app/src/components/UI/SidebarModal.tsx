@@ -75,7 +75,7 @@ export const SidebarModal = ({
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             style={{ marginRight: layoutOffset }}
             className={clsx(
-              "relative z-10 flex h-full w-full flex-col bg-white dark:bg-theme-surface sm:max-w-xl",
+              "relative z-10 flex h-dvh w-full flex-col bg-white dark:bg-theme-surface sm:max-w-xl",
               "border-l border-gray-100 dark:border-slate-800",
               className,
             )}
@@ -83,7 +83,7 @@ export const SidebarModal = ({
             {/* Top brand accent bar */}
             <div className="h-1.5 w-full bg-theme-primary shrink-0" />
 
-            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-slate-800">
+            <div className="flex items-center justify-between gap-2 border-b border-gray-100 px-4 py-4 dark:border-slate-800 sm:px-6 sm:py-5">
               {typeof title === "string" ? (
                 <h2 className="font-manrope text-base font-bold text-gray-900 dark:text-slate-100">
                   {title}
@@ -100,12 +100,12 @@ export const SidebarModal = ({
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto px-4 py-5 custom-scrollbar sm:px-6 sm:py-8">
               {children}
             </div>
 
             {footer && (
-              <div className="!w-full flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-slate-800 shrink-0 bg-white dark:bg-theme-surface">
+              <div className="!w-full flex shrink-0 flex-col-reverse items-stretch gap-2 border-t border-gray-100 bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:border-slate-800 dark:bg-theme-surface sm:flex-row sm:items-center sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
                 {footer}
               </div>
             )}

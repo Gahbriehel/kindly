@@ -102,10 +102,10 @@ export function PermissionEditor({ selected, onChange }: Props): JSX.Element {
   const autoAdded = [...effective].filter((p) => !selected.includes(p));
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       {/* Presets */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">
             Start from a preset
           </h3>
@@ -117,14 +117,14 @@ export function PermissionEditor({ selected, onChange }: Props): JSX.Element {
                 : "No access"}
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
           {PERMISSION_PRESETS.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => onChange(p.permissions)}
               className={clsx(
-                "rounded-xl border px-3 py-2.5 text-left transition-colors cursor-pointer",
+                "min-w-0 rounded-xl border px-3 py-2.5 text-left transition-colors cursor-pointer",
                 preset?.id === p.id
                   ? "border-theme-primary bg-theme-primary/5 dark:bg-theme-primary/10"
                   : "border-gray-200 hover:border-gray-300 dark:border-slate-700 dark:hover:border-slate-600",
@@ -188,7 +188,7 @@ export function PermissionEditor({ selected, onChange }: Props): JSX.Element {
               </div>
 
               {isOpen && (
-                <ul className="space-y-1 border-t border-gray-50 px-4 py-3 dark:border-slate-800/60">
+                <ul className="min-w-0 space-y-1 border-t border-gray-50 px-4 py-3 dark:border-slate-800/60">
                   {group.permissions.map((option) => (
                     <PermissionRow
                       key={option.key}
