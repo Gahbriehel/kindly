@@ -77,15 +77,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <>
       <div
         id="app-layout-container"
-        className="relative mx-auto flex h-screen w-full max-w-[2400px] overflow-hidden print:hidden"
+        className="relative mx-auto flex min-h-dvh w-full max-w-[2400px] overflow-x-clip sm:h-dvh sm:overflow-clip print:hidden"
       >
         {width >= 640 && (
           <SideNav collapsed={collapsed} onToggle={toggleCollapsed} />
         )}
 
-        <div className="flex flex-1 min-w-0 flex-col relative h-full">
+        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col sm:h-full sm:overflow-clip">
           <TopNav onMenuClick={toggleMobileMenu} />
-          <main className="flex flex-1 flex-col overflow-auto bg-gray-50 dark:bg-theme-canvas p-4 pb-24 sm:p-6 sm:pb-12 transition-colors duration-200">
+          <main className="flex flex-1 flex-col sm:overflow-auto bg-gray-50 dark:bg-theme-canvas p-4 pb-24 sm:p-6 sm:pb-12 transition-colors duration-200">
             {redirectTo ? null : children}
           </main>
         </div>
