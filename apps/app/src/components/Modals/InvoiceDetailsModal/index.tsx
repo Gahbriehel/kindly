@@ -8,6 +8,7 @@ import { LuFileText } from "react-icons/lu";
 import { CenterModal } from "@/src/components/UI/CenterModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { ActionsList } from "@/src/components/UI/ActionsList";
+import { MessageHistory } from "@/src/components/Messages/MessageHistory";
 import { Skeleton } from "@/src/components/UI/Skeleton";
 import { InvoiceStatusBadge } from "@/src/components/UI/InvoiceStatusBadge";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
@@ -490,6 +491,14 @@ export function InvoiceDetailsModal({
             />
           </div>
           <InvoiceDocument data={documentData} />
+          {can("CLIENT_VIEW") && (
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                Messages
+              </h3>
+              <MessageHistory filter={{ invoiceId: invoice.id }} />
+            </section>
+          )}
         </div>
       </CenterModal>
 

@@ -2,6 +2,7 @@
 
 import type { JSX } from "react";
 import dayjs from "dayjs";
+import { clsx } from "clsx";
 import { IoMailOutline } from "react-icons/io5";
 import { RiWhatsappLine } from "react-icons/ri";
 import { InvoiceDocument } from "@/src/components/Invoices/InvoiceDocument";
@@ -15,6 +16,12 @@ interface Props {
   totals: InvoiceTotals;
   /** Set when editing an existing draft. */
   invoiceNumber?: string | null;
+  channel: "email" | "whatsapp";
+  onChannelChange: (channel: "email" | "whatsapp") => void;
+  canWhatsapp: boolean;
+  /** The plain-text message that will be prefilled in WhatsApp. */
+  whatsappBody: string;
+  disabled?: boolean;
 }
 
 /** Step 3: a read-only preview of the document and how it will be sent. */
@@ -23,8 +30,22 @@ export function StepPreview({
   business,
   totals,
   invoiceNumber = null,
+  channel,
+  onChannelChange,
+  canWhatsapp,
+  whatsappBody,
+  disabled = false,
 }: Props): JSX.Element {
   const clientEmail = values.client?.email?.trim();
+  const clientPhone = values.client?.phoneNumber?.trim();
+  const isWhatsapp = channel === "whatsapp";
+  const choice = (active: boolean) =>
+    clsx(
+      "flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60",
+      active
+        ? "border-theme-primary/20 bg-indigo-50/70 text-theme-primary shadow-xs dark:border-indigo-800/40 dark:bg-indigo-950/40 dark:text-indigo-300"
+        : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300",
+    );
 
   return (
     <div className="flex flex-col gap-5">
@@ -63,28 +84,50 @@ export function StepPreview({
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
-            aria-pressed="true"
-            className="flex h-12 cursor-default items-center justify-center gap-2 rounded-xl border border-theme-primary/20 bg-indigo-50/70 text-sm font-semibold text-theme-primary shadow-xs dark:border-indigo-800/40 dark:bg-indigo-950/40 dark:text-indigo-300"
+            aria-pressed={!isWhatsapp}
+            disabled={disabled}
+            onClick={() => onChannelChange("email")}
+            className={choice(!isWhatsapp)}
           >
             <IoMailOutline className="size-4.5" />
             <span>Email</span>
           </button>
-          {/* WhatsApp option disabled for now */}
-          <button
-            type="button"
-            disabled
-            className="flex h-12 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-gray-200/60 bg-gray-100/70 text-sm font-semibold text-gray-400 opacity-75 dark:border-slate-800/60 dark:bg-slate-800/50 dark:text-slate-500"
-            title="WhatsApp is currently disabled"
-          >
-            <RiWhatsappLine className="size-4.5" />
-            <span>WhatsApp</span>
-          </button>
+          {canWhatsapp && (
+            <span
+              title={clientPhone ? undefined : "Client has no phone number"}
+              className="flex"
+            >
+              <button
+                type="button"
+                aria-pressed={isWhatsapp}
+                disabled={disabled || !clientPhone}
+                onClick={() => onChannelChange("whatsapp")}
+                className={clsx(choice(isWhatsapp), "w-full")}
+              >
+                <RiWhatsappLine className="size-4.5" />
+                <span>WhatsApp</span>
+              </button>
+            </span>
+          )}
         </div>
-        <p className="text-xs text-gray-500 dark:text-slate-400">
-          {clientEmail
-            ? `Goes to ${clientEmail} as a PDF attachment.`
-            : `${values.client?.fullName ?? "This client"} has no email address yet.`}
-        </p>
+        {isWhatsapp ? (
+          <div className="flex flex-col gap-2 text-xs text-gray-500 dark:text-slate-400">
+            <p className="whitespace-pre-line rounded-xl bg-gray-50 p-3 text-gray-700 dark:bg-slate-800 dark:text-slate-300">
+              {whatsappBody}
+            </p>
+            <p>
+              The PDF is only attached when sent by email, so this is a text
+              message. The invoice will be saved as a draft and stays unsent.
+              You&apos;ll press send in WhatsApp.
+            </p>
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500 dark:text-slate-400">
+            {clientEmail
+              ? `Goes to ${clientEmail} as a PDF attachment.`
+              : `${values.client?.fullName ?? "This client"} has no email address yet.`}
+          </p>
+        )}
       </section>
     </div>
   );

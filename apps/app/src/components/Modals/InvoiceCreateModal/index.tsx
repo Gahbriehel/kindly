@@ -6,6 +6,7 @@ import { clsx } from "clsx";
 import dayjs from "dayjs";
 import { FiAlertCircle, FiCheck } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
+import { RiWhatsappLine } from "react-icons/ri";
 import { LuFileText } from "react-icons/lu";
 import { CenterModal } from "@/src/components/UI/CenterModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
@@ -20,6 +21,20 @@ import {
   useSendInvoice,
   useUpdateInvoice,
 } from "@/src/hooks/useInvoiceQuery";
+import { usePermissions } from "@/src/hooks/usePermissions";
+import {
+  useInitiateWhatsappMessage,
+  useCancelMessage,
+  useConfirmMessage,
+} from "@/src/hooks/useWhatsappMessageMutations";
+import { WhatsappConfirmBody } from "@/src/components/Modals/WhatsappConfirmBody";
+import {
+  clearWhatsappPending,
+  setModalConfirming,
+  writeWhatsappPending,
+  type WhatsappPending,
+} from "@/src/helpers/whatsappPending";
+import { formatCurrency } from "@/src/helpers/formatCurrency";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { customToast } from "@/src/helpers/customToast";
 import { calculateInvoiceTotals } from "@/src/helpers/invoiceTotals";
@@ -162,9 +177,13 @@ export function InvoiceCreateModal({
   const isEdit = !!invoice;
   const [step, setStep] = useState(0);
   const [draftId, setDraftId] = useState<string | null>(invoice?.id ?? null);
-  const [pendingAction, setPendingAction] = useState<"draft" | "send" | null>(
-    null,
-  );
+  const [pendingAction, setPendingAction] = useState<
+    "draft" | "send" | "whatsapp" | null
+  >(null);
+  const [channel, setChannel] = useState<"email" | "whatsapp">("email");
+  const [whatsappPending, setWhatsappPending] =
+    useState<WhatsappPending | null>(null);
+  const [answering, setAnswering] = useState<"yes" | "no" | null>(null);
   const [clientFormOpen, setClientFormOpen] = useState(false);
   const [eventFormOpen, setEventFormOpen] = useState(false);
 
@@ -214,7 +233,21 @@ export function InvoiceCreateModal({
     });
   }, [isEdit, companyCurrency, getFieldState, resetField]);
 
-  const { requestClose, prompt } = useUnsavedChangesGuard(isDirty, close);
+  // Once WhatsApp is open the draft is saved, so there is nothing to lose.
+  const { requestClose, prompt } = useUnsavedChangesGuard(
+    isDirty && !whatsappPending,
+    close,
+  );
+  const { can } = usePermissions();
+  const canWhatsapp = can("CLIENT_VIEW");
+  const initiateWhatsapp = useInitiateWhatsappMessage();
+  const confirmMessage = useConfirmMessage();
+  const cancelMessage = useCancelMessage();
+
+  useEffect(() => {
+    setModalConfirming(!!whatsappPending);
+    return () => setModalConfirming(false);
+  }, [whatsappPending]);
 
   const createMutation = useCreateInvoice();
   const updateMutation = useUpdateInvoice();
@@ -302,6 +335,70 @@ export function InvoiceCreateModal({
     }
   };
 
+  const isWhatsapp = channel === "whatsapp";
+  const whatsappBlocker = !values.client?.phoneNumber
+    ? `${values.client?.fullName ?? "This client"} has no phone number.`
+    : "";
+
+  /** Plain text only: WhatsApp links can't carry the PDF. */
+  const buildWhatsappBody = (): string => {
+    const name = values.client?.fullName?.trim().split(/\s+/)[0] || "there";
+    const amount = formatCurrency(totals.total, values.currency.value._id);
+    const due = values.dueDate
+      ? ` due ${dayjs(values.dueDate).format("D MMM")}`
+      : "";
+    return `Hi ${name}, your invoice for ${amount} is${due || " ready"}. Please let me know if you have any questions.`;
+  };
+
+  const onOpenWhatsapp = async () => {
+    const clientId = values.client?.id;
+    if (!clientId || whatsappBlocker || pendingAction) return;
+    // Open the tab inside the click, before any await, so popups aren't blocked.
+    const tab = window.open("about:blank", "_blank");
+    if (tab) tab.opener = null;
+    setPendingAction("whatsapp");
+    try {
+      // The log needs a real invoice, so save it as a draft (not sent).
+      const id = await saveDraft();
+      const { data } = await initiateWhatsapp.mutateAsync({
+        clientId,
+        body: buildWhatsappBody(),
+        invoiceId: id,
+      });
+      if (tab) tab.location.href = data.whatsappUrl;
+      else window.location.assign(data.whatsappUrl);
+      const next = { id: data.id, clientName: values.client?.fullName ?? "" };
+      writeWhatsappPending(next);
+      setWhatsappPending(next);
+    } catch {
+      // Errors are toasted by the axios interceptor.
+      tab?.close();
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
+  const answerWhatsapp = async (choice: "yes" | "no") => {
+    if (!whatsappPending) return;
+    setAnswering(choice);
+    try {
+      if (choice === "yes") {
+        await confirmMessage.mutateAsync(whatsappPending.id);
+        customToast.success("Logged");
+      } else {
+        await cancelMessage.mutateAsync(whatsappPending.id);
+      }
+      clearWhatsappPending();
+      setWhatsappPending(null);
+      // The draft is saved and was never marked SENT; close after a yes.
+      if (choice === "yes") close();
+    } catch {
+      // Already toasted; keep the question open to retry.
+    } finally {
+      setAnswering(null);
+    }
+  };
+
   const isBusy = pendingAction !== null;
   const sendBlockedReason = sendBlockers.join(" ");
 
@@ -354,7 +451,7 @@ export function InvoiceCreateModal({
       </div>
     ) : (
       <div className="flex flex-col gap-3">
-        {sendBlockers.length > 0 && (
+        {!isWhatsapp && sendBlockers.length > 0 && (
           <div
             id="invoice-send-blockers"
             role="status"
@@ -391,21 +488,41 @@ export function InvoiceCreateModal({
             disabled={isBusy}
             className="h-12 flex-1 rounded-2xl"
           />
-          {/* Disabled buttons don't fire hover events, so the tooltip sits on a wrapper. */}
-          <span className="flex flex-1" title={sendBlockedReason || undefined}>
-            <BaseButton
-              type="button"
-              color="primary"
-              text="Send invoice"
-              onClick={onSend}
-              loading={pendingAction === "send"}
-              disabled={isBusy || sendBlockers.length > 0}
-              aria-describedby={
-                sendBlockers.length ? "invoice-send-blockers" : undefined
-              }
-              className="h-12 w-full rounded-2xl"
-            />
-          </span>
+          {isWhatsapp ? (
+            <span className="flex flex-1" title={whatsappBlocker || undefined}>
+              <BaseButton
+                type="button"
+                color="primary"
+                text="Open WhatsApp"
+                icon={<RiWhatsappLine className="size-4" />}
+                onClick={onOpenWhatsapp}
+                loading={pendingAction === "whatsapp"}
+                disabled={isBusy || !!whatsappBlocker}
+                className="h-12 w-full rounded-2xl"
+              />
+            </span>
+          ) : (
+            <>
+              {/* Disabled buttons don't fire hover events, so the tooltip sits on a wrapper. */}
+              <span
+                className="flex flex-1"
+                title={sendBlockedReason || undefined}
+              >
+                <BaseButton
+                  type="button"
+                  color="primary"
+                  text="Send invoice"
+                  onClick={onSend}
+                  loading={pendingAction === "send"}
+                  disabled={isBusy || sendBlockers.length > 0}
+                  aria-describedby={
+                    sendBlockers.length ? "invoice-send-blockers" : undefined
+                  }
+                  className="h-12 w-full rounded-2xl"
+                />
+              </span>
+            </>
+          )}
         </div>
       </div>
     );
@@ -447,10 +564,25 @@ export function InvoiceCreateModal({
               business={business}
               totals={totals}
               invoiceNumber={invoice?.invoiceNumber}
+              channel={channel}
+              onChannelChange={setChannel}
+              canWhatsapp={canWhatsapp}
+              whatsappBody={buildWhatsappBody()}
+              disabled={isBusy}
             />
           )}
         </form>
         {prompt}
+        {whatsappPending && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit] bg-white dark:bg-slate-900">
+            <WhatsappConfirmBody
+              clientName={whatsappPending.clientName}
+              loading={answering}
+              onYes={() => answerWhatsapp("yes")}
+              onNo={() => answerWhatsapp("no")}
+            />
+          </div>
+        )}
       </CenterModal>
 
       {clientFormOpen && (
