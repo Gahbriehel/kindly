@@ -15,6 +15,7 @@ import {
 import { SidebarModal } from "@/src/components/UI/SidebarModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { CopyButton } from "@/src/components/UI/CopyButton";
+import { MessageHistory } from "@/src/components/Messages/MessageHistory";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { SendClientMessageModal } from "@/src/components/Modals/SendClientMessageModal";
 import { InvoiceSettingsInterceptModal } from "@/src/components/Modals/InvoiceSettingsInterceptModal";
@@ -304,6 +305,12 @@ export function ClientViewModal({
                 <NotAvailable />
               )}
             </Section>
+
+            {can("CLIENT_VIEW") && (
+              <Section title="Messages">
+                <MessageHistory filter={{ clientId: client.id }} />
+              </Section>
+            )}
           </div>
         )}
       </SidebarModal>
