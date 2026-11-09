@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type JSX } from "react";
-import { FiAlertTriangle, FiClock, FiX } from "react-icons/fi";
+import { FiAlertTriangle, FiArrowRight, FiClock, FiX } from "react-icons/fi";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
@@ -28,17 +28,24 @@ export function SubscriptionBanner(): JSX.Element | null {
   const [renewOpen, setRenewOpen] = useState(false);
   const [warningDismissed, setWarningDismissed] = useState(false);
 
-  const renewCta = isOwner ? (
-    <BaseButton
-      color="white"
-      text="Renew"
-      className="h-8 shrink-0 px-3 text-xs"
-      onClick={() => {
-        dispatch(closeExpiredModal());
-        setRenewOpen(true);
-      }}
-    />
-  ) : null;
+  const renewButton = (tone: "red" | "amber") =>
+    isOwner ? (
+      <button
+        type="button"
+        onClick={() => {
+          dispatch(closeExpiredModal());
+          setRenewOpen(true);
+        }}
+        className={`inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3.5 text-xs font-semibold text-white shadow-sm transition-colors max-sm:w-full ${
+          tone === "red"
+            ? "bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+            : "bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+        }`}
+      >
+        Renew now
+        <FiArrowRight className="size-3.5" />
+      </button>
+    ) : null;
   const staffNote = !isOwner ? "Ask your business owner to renew." : null;
 
   return (
@@ -55,7 +62,7 @@ export function SubscriptionBanner(): JSX.Element | null {
             </span>{" "}
             Your account is read-only.{staffNote && ` ${staffNote}`}
           </p>
-          {renewCta}
+          {renewButton("red")}
         </div>
       )}
 
@@ -70,7 +77,7 @@ export function SubscriptionBanner(): JSX.Element | null {
             {daysRemaining === 1 ? "day" : "days"}.
             {staffNote && ` ${staffNote}`}
           </p>
-          {renewCta}
+          {renewButton("amber")}
           <button
             type="button"
             aria-label="Dismiss"
