@@ -11,6 +11,7 @@ import { TopNav } from "../../components/UI/TopNav";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { LimitWarningModal } from "@/src/components/Modals/LimitWarningModal";
 import { WhatsappPendingPrompt } from "@/src/components/Modals/WhatsappPendingPrompt";
+import { SubscriptionBanner } from "@/src/components/UI/SubscriptionBanner";
 import { MobileNav } from "../../components/UI/MobileNav";
 import { queryClient } from "@/src/utils/Providers";
 import { logOut } from "@/src/store/slices/auth";
@@ -86,6 +87,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col sm:h-full sm:overflow-clip">
           <TopNav onMenuClick={toggleMobileMenu} />
+          <SubscriptionBanner />
           <main className="flex flex-1 flex-col sm:overflow-auto bg-gray-50 dark:bg-theme-canvas p-4 pb-24 sm:p-6 sm:pb-12 transition-colors duration-200">
             {redirectTo ? null : children}
           </main>

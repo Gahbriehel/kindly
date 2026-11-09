@@ -8,6 +8,7 @@ import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { IUserData } from "@/src/models/auth";
 import { useUpdateProfileMutation } from "@/src/hooks/useAuthQuery";
 import { Input } from "@/src/components/FormElements/Input";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { capitalizeFirstLetter } from "@/src/helpers/capitalizeFirstLetter";
 
@@ -19,6 +20,7 @@ interface ProfileFormValues {
 }
 
 export function ProfileView(): JSX.Element {
+  const { canWrite } = useSubscription();
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAppSelector((state) => state.auth);
   const userObj = user as IUserData | null;
@@ -142,7 +144,7 @@ export function ProfileView(): JSX.Element {
               text="Save Changes"
             />
           </div>
-        ) : (
+        ) : canWrite ? (
           <button
             type="button"
             onClick={() => setIsEditing(true)}
@@ -151,7 +153,7 @@ export function ProfileView(): JSX.Element {
             <LuPencil className="size-3.5 text-gray-500 dark:text-slate-400" />
             <span>Edit</span>
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* User Summary Banner */}

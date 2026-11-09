@@ -18,6 +18,7 @@ import {
 } from "@/src/hooks/useLocationQuery";
 import { Input } from "@/src/components/FormElements/Input";
 import { Select, ISelect } from "@/src/components/FormElements/Select";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { BaseButton } from "@/src/components/UI/Buttons";
 
 interface BusinessFormValues {
@@ -38,6 +39,7 @@ interface BusinessFormValues {
 }
 
 export function BusinessView(): JSX.Element {
+  const { canWrite } = useSubscription();
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAppSelector((state) => state.auth);
   const userObj = user as IUserData | null;
@@ -245,7 +247,7 @@ export function BusinessView(): JSX.Element {
               text="Save Changes"
             />
           </div>
-        ) : (
+        ) : canWrite ? (
           <button
             type="button"
             onClick={() => setIsEditing(true)}
@@ -254,7 +256,7 @@ export function BusinessView(): JSX.Element {
             <LuPencil className="size-3.5 text-gray-500 dark:text-slate-400" />
             <span>Edit</span>
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* Business Summary Banner */}

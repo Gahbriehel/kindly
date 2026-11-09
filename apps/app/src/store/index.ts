@@ -12,6 +12,7 @@ import {
 } from "redux-persist";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./slices/auth";
+import subscriptionUiSlice from "./slices/subscription";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 
 const createNoopStorage = () => {
@@ -35,6 +36,7 @@ const storage =
 
 const rootReducer = combineReducers({
   auth: authSlice,
+  subscriptionUi: subscriptionUiSlice,
 });
 
 // The access token lives in memory only. Strip it on write, and on read so a

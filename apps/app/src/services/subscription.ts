@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { IBaseResponse } from "../models/base";
-import type { IClientLimit } from "../models/auth";
+import type { IClientLimit, ISubscriptionStatus } from "../models/auth";
 
 export interface ICurrentSubscription {
   client_limit?: IClientLimit;
@@ -8,6 +8,7 @@ export interface ICurrentSubscription {
   subscriptionActive?: boolean;
   subscriptionStartAt?: string;
   subscriptionEndAt?: string;
+  subscription?: ISubscriptionStatus;
   [key: string]: unknown;
 }
 

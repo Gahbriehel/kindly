@@ -6,9 +6,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { logOut, setRedirectUrl } from "../store/slices/auth";
+import { openExpiredModal } from "../store/slices/subscription";
 import { customToast } from "../helpers/customToast";
 import { persistor, store } from "../store";
 import { Toaster } from "react-hot-toast";
+import { SUBSCRIPTION_CURRENT_KEY } from "../hooks/useSubscriptionQuery";
 import { axiosErrorToast } from "../helpers/axiosErrorToast";
 import {
   type ReactNode,
@@ -145,6 +147,20 @@ export function AxiosProvider({ children }: Props): JSX.Element {
           ?.code;
         if (errorCode === "PERMISSION_DENIED" || errorCode === "OWNER_ONLY") {
           void queryClient.invalidateQueries({ queryKey: ["profile"] });
+        }
+
+        // The cached status went stale (expired mid-session). Refresh it, show
+        // the expiry modal instead of a generic toast, and don't retry.
+        if (
+          error.response?.status === 403 &&
+          errorCode === "SUBSCRIPTION_EXPIRED"
+        ) {
+          void queryClient.invalidateQueries({ queryKey: ["profile"] });
+          void queryClient.invalidateQueries({
+            queryKey: SUBSCRIPTION_CURRENT_KEY,
+          });
+          dispatch(openExpiredModal());
+          return Promise.reject(error);
         }
 
         if (!error.response && error.request) {

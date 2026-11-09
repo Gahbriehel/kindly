@@ -3,6 +3,7 @@
 import { JSX } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { SwitchWrapper } from "@/src/components/FormElements/Switch";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { customToast } from "@/src/helpers/customToast";
 
@@ -13,6 +14,7 @@ export interface NotificationsFormData {
 }
 
 export function NotificationsForm(): JSX.Element {
+  const { canWrite } = useSubscription();
   const {
     control,
     handleSubmit,
@@ -97,6 +99,7 @@ export function NotificationsForm(): JSX.Element {
             color="primary"
             text="Save Changes"
             loading={isSubmitting}
+            disabled={!canWrite}
             className="px-8 py-2.5 rounded-xl text-sm font-medium transition-all"
           />
         </div>

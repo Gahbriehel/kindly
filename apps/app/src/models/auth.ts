@@ -59,6 +59,22 @@ export interface IUserData {
   staffCount: number;
   hasStaff: boolean;
   client_limit: IClientLimit;
+  subscription?: ISubscriptionStatus;
+}
+
+export type SubscriptionStatus = "ACTIVE" | "EXPIRED";
+
+export interface ISubscriptionStatus {
+  tier: string;
+  status: SubscriptionStatus;
+  is_active: boolean;
+  is_expired: boolean;
+  /** False means every write request will be rejected by the server. */
+  can_write: boolean;
+  start_at: string;
+  end_at: string;
+  days_remaining: number;
+  is_expiring_soon: boolean;
 }
 
 export interface IClientLimit {
@@ -114,6 +130,7 @@ export interface ICompanyData {
   subscriptionStartAt: string;
   subscriptionEndAt: string;
   subscriptionActive: boolean;
+  subscription?: ISubscriptionStatus;
 }
 
 export interface IUpdateCompanyPayload {

@@ -11,6 +11,7 @@ import {
   useUpdateInvoiceSettings,
 } from "@/src/hooks/useInvoiceQuery";
 import { Input } from "@/src/components/FormElements/Input";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { customToast } from "@/src/helpers/customToast";
 import { axiosErrorToast } from "@/src/helpers/axiosErrorToast";
@@ -32,6 +33,7 @@ function formatInvoiceNumber(prefix: string, counter: number): string {
 }
 
 export function InvoiceSettingsForm(): JSX.Element {
+  const { canWrite } = useSubscription();
   const [isEditing, setIsEditing] = useState(false);
   const { data, isLoading: isFetching } = useInvoiceSettingsQuery();
   const settings = data?.data?.settings;
@@ -140,7 +142,7 @@ export function InvoiceSettingsForm(): JSX.Element {
               text="Save Changes"
             />
           </div>
-        ) : (
+        ) : canWrite ? (
           <button
             type="button"
             onClick={() => setIsEditing(true)}
@@ -150,7 +152,7 @@ export function InvoiceSettingsForm(): JSX.Element {
             <LuPencil className="size-3.5 text-gray-500 dark:text-slate-400" />
             <span>Edit</span>
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* Next Invoice Preview Banner */}

@@ -2,6 +2,7 @@
 
 import { JSX } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -25,6 +26,7 @@ export interface SecurityFormData {
 }
 
 export function SecurityForm(): JSX.Element {
+  const { canWrite } = useSubscription();
   const { mutate: changePassword, isPending } = useChangePasswordMutation();
   const { control, handleSubmit, reset } = useForm<SecurityFormData>({
     defaultValues: {
@@ -98,6 +100,7 @@ export function SecurityForm(): JSX.Element {
             color="primary"
             text="Save Changes"
             loading={isPending}
+            disabled={!canWrite}
             className="px-8 py-2.5 rounded-xl text-sm font-medium transition-all"
           />
         </div>

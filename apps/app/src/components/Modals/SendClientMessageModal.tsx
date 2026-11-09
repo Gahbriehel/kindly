@@ -21,6 +21,7 @@ import { useTemplatesQuery } from "@/src/hooks/useTemplateQuery";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { htmlToPlainText } from "@/src/helpers/htmlHelpers";
 import { getInitials } from "@/src/helpers/stringHelpers";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import {
   useCancelMessage,
@@ -182,6 +183,7 @@ export function SendClientMessageModal({
   const whatsappBody = whatsappMessage.trim();
   const whatsappTooLong = whatsappMessage.length > WHATSAPP_BODY_LIMIT;
   const isOpening = initiateWhatsapp.isPending;
+  const { canWrite } = useSubscription();
 
   const handleOpenWhatsapp = async () => {
     if (!clientId || !whatsappBody || whatsappTooLong || isOpening || pending)
@@ -400,7 +402,9 @@ export function SendClientMessageModal({
                 text={isWhatsapp ? "Open WhatsApp" : "Send message"}
                 loading={isWhatsapp && isOpening}
                 disabled={
-                  isWhatsapp && (!whatsappBody || whatsappTooLong || isOpening)
+                  !canWrite ||
+                  (isWhatsapp &&
+                    (!whatsappBody || whatsappTooLong || isOpening))
                 }
                 className="px-5 font-semibold"
               />
