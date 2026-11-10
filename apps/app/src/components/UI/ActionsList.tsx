@@ -18,6 +18,8 @@ interface Props {
     verifyUser?: boolean;
     href?: string;
     disabled?: boolean;
+    /** Shown on hover; also disables the action. */
+    disabledReason?: string;
   }>;
 }
 
@@ -55,7 +57,11 @@ export function ActionsList({
             )}
           >
             <>
-              {actions?.map(({ color: colorProp, ...action }) => {
+              {actions?.map(({ color: colorProp, ...rawAction }) => {
+                const action = {
+                  ...rawAction,
+                  disabled: rawAction.disabled || !!rawAction.disabledReason,
+                };
                 const isDestructive =
                   colorProp === "red" ||
                   (colorProp === undefined &&
@@ -64,6 +70,7 @@ export function ActionsList({
                 return (
                   <Popover.Close
                     key={action.title}
+                    title={action.disabledReason}
                     onClick={() => {
                       if (action.disabled) {
                         return;

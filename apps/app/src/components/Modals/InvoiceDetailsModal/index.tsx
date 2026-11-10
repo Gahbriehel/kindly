@@ -36,6 +36,7 @@ import { formatDate } from "@/src/helpers/formatDate";
 import type { IUserData } from "@/src/models/auth";
 import type { IInvoice } from "@/src/models/invoice";
 import type { Permission } from "@/src/models/permission";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { RecordPaymentModal } from "./RecordPaymentModal";
 
@@ -159,6 +160,7 @@ export function InvoiceDetailsModal({
   const company = (user as IUserData | null)?.company;
   const { data: settingsData } = useInvoiceSettingsQuery();
   const { can } = usePermissions();
+  const { writeLockReason } = useSubscription();
 
   const sendMutation = useSendInvoice();
   const voidMutation = useVoidInvoice();
@@ -218,6 +220,7 @@ export function InvoiceDetailsModal({
                     {
                       title: "Delete draft",
                       color: "red" as const,
+                      disabledReason: writeLockReason,
                       fn: () => setConfirm("delete"),
                     },
                   ]
@@ -227,6 +230,7 @@ export function InvoiceDetailsModal({
                     {
                       title: "Void invoice",
                       color: "red" as const,
+                      disabledReason: writeLockReason,
                       fn: () => setConfirm("void"),
                     },
                   ]
@@ -440,7 +444,7 @@ export function InvoiceDetailsModal({
           <span
             key={action.label}
             className="flex flex-1"
-            title={action.disabledReason}
+            title={action.disabledReason ?? writeLockReason}
           >
             <BaseButton
               type="button"
@@ -448,7 +452,8 @@ export function InvoiceDetailsModal({
               text={action.label}
               onClick={action.onClick}
               loading={action.loading}
-              disabled={!!action.disabledReason || sendMutation.isPending}
+              disabledReason={action.disabledReason ?? writeLockReason}
+              disabled={sendMutation.isPending}
               className="h-12 w-full rounded-2xl"
             />
           </span>

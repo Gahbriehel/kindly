@@ -183,7 +183,7 @@ export function SendClientMessageModal({
   const whatsappBody = whatsappMessage.trim();
   const whatsappTooLong = whatsappMessage.length > WHATSAPP_BODY_LIMIT;
   const isOpening = initiateWhatsapp.isPending;
-  const { canWrite } = useSubscription();
+  const { writeLockReason } = useSubscription();
 
   const handleOpenWhatsapp = async () => {
     if (!clientId || !whatsappBody || whatsappTooLong || isOpening || pending)
@@ -401,10 +401,9 @@ export function SendClientMessageModal({
                 }
                 text={isWhatsapp ? "Open WhatsApp" : "Send message"}
                 loading={isWhatsapp && isOpening}
+                disabledReason={writeLockReason}
                 disabled={
-                  !canWrite ||
-                  (isWhatsapp &&
-                    (!whatsappBody || whatsappTooLong || isOpening))
+                  isWhatsapp && (!whatsappBody || whatsappTooLong || isOpening)
                 }
                 className="px-5 font-semibold"
               />

@@ -36,6 +36,7 @@ import {
   type DateKey,
 } from "@/src/helpers/calendarHelpers";
 import type { IEvent } from "@/src/models/event";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 
 const iconButton =
@@ -97,6 +98,7 @@ function CalendarContent({
   });
 
   const { can } = usePermissions();
+  const { writeLockReason } = useSubscription();
   const canCreate = can("EVENT_CREATE");
   const canEdit = can("EVENT_UPDATE");
 
@@ -184,6 +186,7 @@ function CalendarContent({
             {canCreate && (
               <BaseButton
                 color="primary"
+                disabledReason={writeLockReason}
                 icon={<FiPlus className="size-4" />}
                 onClick={() => openAdd(selected ?? undefined)}
                 className="shrink-0 max-sm:size-10 max-sm:px-0"

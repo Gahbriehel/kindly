@@ -2,7 +2,6 @@ import { useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAppSelector } from "./useAppSelector";
 import { useAppDispatch } from "./useAppDispatch";
-import { useSubscription } from "./useSubscription";
 import { getProfile } from "../services/auth";
 import { setUser } from "../store/slices/auth";
 import { hasPermission } from "../helpers/permissions";
@@ -10,14 +9,11 @@ import type { Permission } from "../models/permission";
 
 export function usePermissions() {
   const user = useAppSelector((state) => state.auth.user);
-  const { canWrite } = useSubscription();
-  // Once the subscription expires the API is read-only, so every permission
-  // except the *_VIEW ones reads as false and write controls disappear.
+  // Role permissions only. An expired subscription never hides a control:
+  // disable it with `disabledReason` from useSubscription().writeLockReason.
   const can = useCallback(
-    (permission: Permission) =>
-      hasPermission(user, permission) &&
-      (canWrite || permission.endsWith("_VIEW")),
-    [user, canWrite],
+    (permission: Permission) => hasPermission(user, permission),
+    [user],
   );
   return { can, isOwner: user?.role === "OWNER" };
 }

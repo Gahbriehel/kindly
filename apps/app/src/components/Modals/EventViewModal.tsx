@@ -25,6 +25,7 @@ import { InvoiceCreateModal } from "@/src/components/Modals/InvoiceCreateModal";
 import { isMissingInvoiceSetup } from "@/src/components/Invoices/invoiceBusiness";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { useInvoiceSettingsQuery } from "@/src/hooks/useInvoiceQuery";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import {
@@ -87,6 +88,7 @@ export function EventViewModal({
   const { user } = useAppSelector((state) => state.auth);
   const company = (user as IUserData | null)?.company;
   const { can } = usePermissions();
+  const { writeLockReason } = useSubscription();
   const { data: settingsData } = useInvoiceSettingsQuery();
 
   const handleClose = () => {
@@ -123,6 +125,7 @@ export function EventViewModal({
         text="Edit"
         icon={<FiEdit2 className="size-4" />}
         onClick={() => onEdit(event)}
+        disabledReason={writeLockReason}
         className="h-12 flex-1 rounded-2xl"
       />
     ));
@@ -170,6 +173,7 @@ export function EventViewModal({
               {editOrViewButton("outline")}
               {can("INVOICE_CREATE") && (
                 <BaseButton
+                  disabledReason={writeLockReason}
                   type="button"
                   color="outline"
                   text="Invoice"

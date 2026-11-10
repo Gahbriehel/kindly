@@ -134,7 +134,7 @@ function RoleBadge({ role }: { role: UserRole }): JSX.Element {
 
 export default function StaffPage(): JSX.Element | null {
   const { isOwner } = usePermissions();
-  const { canWrite } = useSubscription();
+  const { writeLockReason } = useSubscription();
   const [editing, setEditing] = useState<StaffAccessTarget | null>(null);
   const [editingStatus, setEditingStatus] = useState<StaffStatus>();
 
@@ -315,7 +315,7 @@ export default function StaffPage(): JSX.Element | null {
           position="icon-first"
           className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
           text="Invite Staff"
-          disabled={!canWrite}
+          disabledReason={writeLockReason}
         />
       </div>
 

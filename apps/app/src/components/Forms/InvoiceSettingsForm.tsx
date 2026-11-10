@@ -33,7 +33,7 @@ function formatInvoiceNumber(prefix: string, counter: number): string {
 }
 
 export function InvoiceSettingsForm(): JSX.Element {
-  const { canWrite } = useSubscription();
+  const { canWrite, writeLockReason } = useSubscription();
   const [isEditing, setIsEditing] = useState(false);
   const { data, isLoading: isFetching } = useInvoiceSettingsQuery();
   const settings = data?.data?.settings;
@@ -142,17 +142,18 @@ export function InvoiceSettingsForm(): JSX.Element {
               text="Save Changes"
             />
           </div>
-        ) : canWrite ? (
+        ) : (
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            disabled={isFetching}
-            className="self-start sm:self-auto inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
+            disabled={!canWrite || isFetching}
+            title={writeLockReason}
+            className="self-start sm:self-auto inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
           >
             <LuPencil className="size-3.5 text-gray-500 dark:text-slate-400" />
             <span>Edit</span>
           </button>
-        ) : null}
+        )}
       </div>
 
       {/* Next Invoice Preview Banner */}

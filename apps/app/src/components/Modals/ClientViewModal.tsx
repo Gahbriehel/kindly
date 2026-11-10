@@ -23,6 +23,7 @@ import { InvoiceCreateModal } from "@/src/components/Modals/InvoiceCreateModal";
 import { isMissingInvoiceSetup } from "@/src/components/Invoices/invoiceBusiness";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { useInvoiceSettingsQuery } from "@/src/hooks/useInvoiceQuery";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
@@ -89,6 +90,7 @@ export function ClientViewModal({
   const { user } = useAppSelector((state) => state.auth);
   const company = (user as IUserData | null)?.company;
   const { can } = usePermissions();
+  const { writeLockReason } = useSubscription();
   const { data: settingsData } = useInvoiceSettingsQuery();
   const birthday = client?.birthDate ? nextOccurrence(client.birthDate) : null;
   const daysAway = birthday?.diff(dayjs().startOf("day"), "day") ?? 0;
@@ -153,11 +155,13 @@ export function ClientViewModal({
                   text="Edit"
                   icon={<FiEdit2 className="size-4" />}
                   onClick={() => onEdit(client)}
+                  disabledReason={writeLockReason}
                   className="h-12 flex-1 rounded-2xl"
                 />
               )}
               {can("INVOICE_CREATE") && (
                 <BaseButton
+                  disabledReason={writeLockReason}
                   type="button"
                   color="outline"
                   text="Invoice"
@@ -274,11 +278,13 @@ export function ClientViewModal({
                             <button
                               type="button"
                               aria-label="Edit event"
+                              disabled={!!writeLockReason}
+                              title={writeLockReason}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onEditEvent(event);
                               }}
-                              className="cursor-pointer p-1 text-gray-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+                              className="cursor-pointer p-1 text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
                             >
                               <FiEdit2 className="size-4" />
                             </button>
@@ -287,11 +293,13 @@ export function ClientViewModal({
                             <button
                               type="button"
                               aria-label="Delete event"
+                              disabled={!!writeLockReason}
+                              title={writeLockReason}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onDeleteEvent(event);
                               }}
-                              className="cursor-pointer p-1 text-gray-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
+                              className="cursor-pointer p-1 text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
                             >
                               <FiTrash2 className="size-4" />
                             </button>

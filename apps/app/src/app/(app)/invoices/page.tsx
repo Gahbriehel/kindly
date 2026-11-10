@@ -42,6 +42,7 @@ import type {
   IInvoiceCurrencySummary,
 } from "@/src/models/invoice";
 import { BaseButton } from "@/src/components/UI/Buttons";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 
 function InvoiceEventInfo({ invoice }: { invoice: IInvoice }): JSX.Element {
@@ -83,6 +84,7 @@ function InvoiceEventInfo({ invoice }: { invoice: IInvoice }): JSX.Element {
 
 export default function InvoicesPage(): JSX.Element {
   const { can } = usePermissions();
+  const { writeLockReason } = useSubscription();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -475,6 +477,7 @@ export default function InvoicesPage(): JSX.Element {
         </div>
         {can("INVOICE_CREATE") && (
           <BaseButton
+            disabledReason={writeLockReason}
             type="button"
             onClick={handleNewInvoiceClick}
             color="primary"

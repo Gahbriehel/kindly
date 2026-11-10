@@ -25,6 +25,7 @@ import {
   useTagsQuery,
 } from "@/src/hooks/useClientQuery";
 import { useDeleteEvent } from "@/src/hooks/useEventQuery";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatRelativeTime } from "@/src/helpers/dateHelpers";
@@ -147,17 +148,27 @@ function ClientActions({
   /** Omitted when the user can't delete clients. */
   onDelete?: (id: string) => void;
 }) {
+  const { writeLockReason } = useSubscription();
   return (
     <ActionsList
       actions={[
         { title: "View Client", fn: () => onView(client) },
-        ...(onEdit ? [{ title: "Edit Client", fn: () => onEdit(client) }] : []),
+        ...(onEdit
+          ? [
+              {
+                title: "Edit Client",
+                fn: () => onEdit(client),
+                disabledReason: writeLockReason,
+              },
+            ]
+          : []),
         ...(onDelete
           ? [
               {
                 title: "Delete Client",
                 fn: () => onDelete(client.id),
                 color: "red" as const,
+                disabledReason: writeLockReason,
               },
             ]
           : []),
@@ -190,6 +201,7 @@ export default function ClientsPage(): JSX.Element {
   const [editingEvent, setEditingEvent] = useState<IEvent | null>(null);
 
   const { can } = usePermissions();
+  const { writeLockReason } = useSubscription();
   const canEdit = can("CLIENT_UPDATE");
   const canDelete = can("CLIENT_DELETE");
 
@@ -528,6 +540,7 @@ export default function ClientsPage(): JSX.Element {
         </div>
         {can("CLIENT_CREATE") && (
           <BaseButton
+            disabledReason={writeLockReason}
             type="button"
             onClick={openAdd}
             color="primary"

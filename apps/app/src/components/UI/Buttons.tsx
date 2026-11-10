@@ -32,6 +32,8 @@ type BaseButtonProps = {
   type?: Type;
   text?: string;
   loading?: boolean;
+  /** Disables the button and explains why on hover. Prefer this to hiding it. */
+  disabledReason?: string;
   hideText?: boolean;
   color?: Color;
   className?: string;
@@ -67,6 +69,7 @@ export const BaseButton = forwardRef<
     text,
     className,
     loading,
+    disabledReason,
     badgeNumber,
     color = "primary",
     position = "icon-first",
@@ -77,6 +80,8 @@ export const BaseButton = forwardRef<
   ref,
 ) {
   const content = children || text;
+  const isDisabled =
+    !!disabledReason || !!(props as BaseButtonTypeProps).disabled;
 
   const classNames = clsx(
     "relative flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-4 py-2 text-sm font-medium font-geist disabled:cursor-not-allowed [&>span]:hover:opacity-100 transition-all",
@@ -121,8 +126,10 @@ export const BaseButton = forwardRef<
 
   return (
     <motion.button
-      {...(!(props as BaseButtonTypeProps).disabled && motionProps)}
+      {...(!isDisabled && motionProps)}
       {...(props as BaseButtonTypeProps)}
+      disabled={isDisabled}
+      title={disabledReason ?? (props as BaseButtonTypeProps).title}
       ref={ref as ForwardedRef<HTMLButtonElement>}
       type={type}
       className={classNames}

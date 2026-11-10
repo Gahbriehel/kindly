@@ -14,7 +14,7 @@ export interface NotificationsFormData {
 }
 
 export function NotificationsForm(): JSX.Element {
-  const { canWrite } = useSubscription();
+  const { writeLockReason } = useSubscription();
   const {
     control,
     handleSubmit,
@@ -99,7 +99,7 @@ export function NotificationsForm(): JSX.Element {
             color="primary"
             text="Save Changes"
             loading={isSubmitting}
-            disabled={!canWrite}
+            disabledReason={writeLockReason}
             className="px-8 py-2.5 rounded-xl text-sm font-medium transition-all"
           />
         </div>
