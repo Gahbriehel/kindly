@@ -235,7 +235,7 @@ export function ClientFormModal({
   }, [categoriesData, anyBirthDate]);
 
   const [addingCategory, setAddingCategory] = useState(false);
-  const canAddCategory = usePermissions().can("CATEGORY_CREATE");
+  const addCategoryReason = usePermissions().reasonFor("CATEGORY_CREATE");
   const pendingCategoryName = useRef<string | null>(null);
 
   // Select the newly created category once the refetched list contains it.
@@ -496,11 +496,8 @@ export function ClientFormModal({
                       placeholder="Select category"
                       options={availableCategories}
                       loading={loadingCategories}
-                      addNewOption={
-                        canAddCategory
-                          ? () => setAddingCategory(true)
-                          : undefined
-                      }
+                      addNewOption={() => setAddingCategory(true)}
+                      addNewDisabledReason={addCategoryReason}
                     />
                   )}
                 />

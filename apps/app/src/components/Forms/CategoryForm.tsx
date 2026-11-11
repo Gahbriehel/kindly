@@ -6,7 +6,6 @@ import { BaseButton } from "@/src/components/UI/Buttons";
 import { Table } from "@/src/components/UI/Table";
 import { ActionsList } from "@/src/components/UI/ActionsList";
 import { CategoryDrawer } from "@/src/components/Forms/CategoryDrawer";
-import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import {
   useCategoriesQuery,
@@ -62,10 +61,7 @@ export function CategoryForm(): JSX.Element {
   };
 
   const deleteMutation = useDeleteCategory({});
-  const { can } = usePermissions();
-  const { writeLockReason } = useSubscription();
-  const canEdit = can("CATEGORY_UPDATE");
-  const canDelete = can("CATEGORY_DELETE");
+  const { reasonFor } = usePermissions();
 
   const openAddDrawer = () => {
     setEditingCategory(null);
@@ -140,30 +136,21 @@ export function CategoryForm(): JSX.Element {
       header: "Actions",
       cell: ({ row }) => {
         const item = row.original;
-        if (!canEdit && !canDelete) return null;
         return (
           <ActionsList
             actions={[
-              ...(canEdit
-                ? [
-                    {
-                      title: "Edit",
-                      fn: () => openEditDrawer(item),
-                      disabled: item.isSystem,
-                      disabledReason: writeLockReason,
-                    },
-                  ]
-                : []),
-              ...(canDelete
-                ? [
-                    {
-                      title: "Delete",
-                      fn: () => deleteMutation.mutate(item.id),
-                      disabled: item.isSystem,
-                      disabledReason: writeLockReason,
-                    },
-                  ]
-                : []),
+              {
+                title: "Edit",
+                fn: () => openEditDrawer(item),
+                disabled: item.isSystem,
+                disabledReason: reasonFor("CATEGORY_UPDATE"),
+              },
+              {
+                title: "Delete",
+                fn: () => deleteMutation.mutate(item.id),
+                disabled: item.isSystem,
+                disabledReason: reasonFor("CATEGORY_DELETE"),
+              },
             ]}
           />
         );
@@ -209,16 +196,14 @@ export function CategoryForm(): JSX.Element {
             },
           }}
         >
-          {can("CATEGORY_CREATE") && (
-            <BaseButton
-              disabledReason={writeLockReason}
-              onClick={openAddDrawer}
-              color="primary"
-              text="Add Category"
-              icon={<FiPlus className="size-4" />}
-              className="h-12 px-4.5 rounded-2xl text-sm font-medium transition-all"
-            />
-          )}
+          <BaseButton
+            disabledReason={reasonFor("CATEGORY_CREATE")}
+            onClick={openAddDrawer}
+            color="primary"
+            text="Add Category"
+            icon={<FiPlus className="size-4" />}
+            className="h-12 px-4.5 rounded-2xl text-sm font-medium transition-all"
+          />
         </Table>
       </div>
 

@@ -25,7 +25,6 @@ import {
   useTagsQuery,
 } from "@/src/hooks/useClientQuery";
 import { useDeleteEvent } from "@/src/hooks/useEventQuery";
-import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatRelativeTime } from "@/src/helpers/dateHelpers";
@@ -143,35 +142,25 @@ function ClientActions({
 }: {
   client: IClient;
   onView: (client: IClient) => void;
-  /** Omitted when the user can't edit clients. */
-  onEdit?: (client: IClient) => void;
-  /** Omitted when the user can't delete clients. */
-  onDelete?: (id: string) => void;
+  onEdit: (client: IClient) => void;
+  onDelete: (id: string) => void;
 }) {
-  const { writeLockReason } = useSubscription();
+  const { reasonFor } = usePermissions();
   return (
     <ActionsList
       actions={[
         { title: "View Client", fn: () => onView(client) },
-        ...(onEdit
-          ? [
-              {
-                title: "Edit Client",
-                fn: () => onEdit(client),
-                disabledReason: writeLockReason,
-              },
-            ]
-          : []),
-        ...(onDelete
-          ? [
-              {
-                title: "Delete Client",
-                fn: () => onDelete(client.id),
-                color: "red" as const,
-                disabledReason: writeLockReason,
-              },
-            ]
-          : []),
+        {
+          title: "Edit Client",
+          fn: () => onEdit(client),
+          disabledReason: reasonFor("CLIENT_UPDATE"),
+        },
+        {
+          title: "Delete Client",
+          fn: () => onDelete(client.id),
+          color: "red" as const,
+          disabledReason: reasonFor("CLIENT_DELETE"),
+        },
       ]}
       trigger={
         <button
@@ -187,6 +176,7 @@ function ClientActions({
 }
 
 export default function ClientsPage(): JSX.Element {
+  const { reasonFor } = usePermissions();
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilterState] = useState<ClientFilter | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -199,11 +189,6 @@ export default function ClientsPage(): JSX.Element {
   const [editingClient, setEditingClient] = useState<IClient | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<IClientEvent | null>(null);
   const [editingEvent, setEditingEvent] = useState<IEvent | null>(null);
-
-  const { can } = usePermissions();
-  const { writeLockReason } = useSubscription();
-  const canEdit = can("CLIENT_UPDATE");
-  const canDelete = can("CLIENT_DELETE");
 
   const openAdd = () => {
     setEditingClient(null);
@@ -416,13 +401,13 @@ export default function ClientsPage(): JSX.Element {
           <ClientActions
             client={row.original}
             onView={setViewingClient}
-            onEdit={canEdit ? openEdit : undefined}
-            onDelete={canDelete ? setDeletingClientId : undefined}
+            onEdit={openEdit}
+            onDelete={setDeletingClientId}
           />
         ),
       },
     ],
-    [canEdit, canDelete],
+    [],
   );
 
   const renderGridItem = (client: IClient) => {
@@ -468,8 +453,8 @@ export default function ClientsPage(): JSX.Element {
           <ClientActions
             client={client}
             onView={setViewingClient}
-            onEdit={canEdit ? openEdit : undefined}
-            onDelete={canDelete ? setDeletingClientId : undefined}
+            onEdit={openEdit}
+            onDelete={setDeletingClientId}
           />
         </div>
       </div>
@@ -538,18 +523,16 @@ export default function ClientsPage(): JSX.Element {
               : ""}
           </p>
         </div>
-        {can("CLIENT_CREATE") && (
-          <BaseButton
-            disabledReason={writeLockReason}
-            type="button"
-            onClick={openAdd}
-            color="primary"
-            icon={<FiPlus className="size-4" />}
-            position="icon-first"
-            className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
-            text="Add Client"
-          />
-        )}
+        <BaseButton
+          disabledReason={reasonFor("CLIENT_CREATE")}
+          type="button"
+          onClick={openAdd}
+          color="primary"
+          icon={<FiPlus className="size-4" />}
+          position="icon-first"
+          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
+          text="Add Client"
+        />
       </div>
 
       {/* Table Container */}
@@ -589,9 +572,9 @@ export default function ClientsPage(): JSX.Element {
       <ClientViewModal
         client={viewingClient}
         close={() => setViewingClient(null)}
-        onEdit={canEdit ? openEditFromView : undefined}
-        onEditEvent={can("EVENT_UPDATE") ? handleEditEvent : undefined}
-        onDeleteEvent={can("EVENT_DELETE") ? setDeletingEvent : undefined}
+        onEdit={openEditFromView}
+        onEditEvent={handleEditEvent}
+        onDeleteEvent={setDeletingEvent}
       />
 
       {formOpen && <ClientFormModal close={closeForm} client={editingClient} />}

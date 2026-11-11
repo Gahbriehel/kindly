@@ -36,7 +36,6 @@ import { formatDate } from "@/src/helpers/formatDate";
 import type { IUserData } from "@/src/models/auth";
 import type { IInvoice } from "@/src/models/invoice";
 import type { Permission } from "@/src/models/permission";
-import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { RecordPaymentModal } from "./RecordPaymentModal";
 
@@ -52,7 +51,7 @@ interface FooterAction {
   loading?: boolean;
   /** Set when the action is unavailable; shown as the button's tooltip. */
   disabledReason?: string;
-  /** Hidden entirely for users without it. */
+  /** Disabled, with a reason, for users without it. */
   permission: Permission;
 }
 
@@ -159,8 +158,7 @@ export function InvoiceDetailsModal({
   const { user } = useAppSelector((state) => state.auth);
   const company = (user as IUserData | null)?.company;
   const { data: settingsData } = useInvoiceSettingsQuery();
-  const { can } = usePermissions();
-  const { writeLockReason } = useSubscription();
+  const { can, reasonFor } = usePermissions();
 
   const sendMutation = useSendInvoice();
   const voidMutation = useVoidInvoice();
@@ -215,22 +213,22 @@ export function InvoiceDetailsModal({
                 disabled: downloading,
                 fn: () => void downloadPdf(invoice),
               },
-              ...(invoice.status === "DRAFT" && can("INVOICE_UPDATE")
+              ...(invoice.status === "DRAFT"
                 ? [
                     {
                       title: "Delete draft",
                       color: "red" as const,
-                      disabledReason: writeLockReason,
+                      disabledReason: reasonFor("INVOICE_UPDATE"),
                       fn: () => setConfirm("delete"),
                     },
                   ]
                 : []),
-              ...(OUTSTANDING.includes(invoice.status) && can("INVOICE_VOID")
+              ...(OUTSTANDING.includes(invoice.status)
                 ? [
                     {
                       title: "Void invoice",
                       color: "red" as const,
-                      disabledReason: writeLockReason,
+                      disabledReason: reasonFor("INVOICE_VOID"),
                       fn: () => setConfirm("void"),
                     },
                   ]
@@ -409,11 +407,9 @@ export function InvoiceDetailsModal({
     }
   }
 
-  actions = actions.filter((action) => can(action.permission));
-
   const footer = (
     <div className="flex flex-col gap-3">
-      {sendBlockers.length > 0 && can("INVOICE_SEND") && (
+      {sendBlockers.length > 0 && !reasonFor("INVOICE_SEND") && (
         <div
           role="status"
           className="flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 dark:border-amber-800/40 dark:bg-amber-950/30"
@@ -444,7 +440,7 @@ export function InvoiceDetailsModal({
           <span
             key={action.label}
             className="flex flex-1"
-            title={action.disabledReason ?? writeLockReason}
+            title={action.disabledReason ?? reasonFor(action.permission)}
           >
             <BaseButton
               type="button"
@@ -452,7 +448,9 @@ export function InvoiceDetailsModal({
               text={action.label}
               onClick={action.onClick}
               loading={action.loading}
-              disabledReason={action.disabledReason ?? writeLockReason}
+              disabledReason={
+                action.disabledReason ?? reasonFor(action.permission)
+              }
               disabled={sendMutation.isPending}
               className="h-12 w-full rounded-2xl"
             />

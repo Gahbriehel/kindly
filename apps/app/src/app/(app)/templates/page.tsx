@@ -21,7 +21,6 @@ import { useDebounce } from "@/src/hooks/useDebounce";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { ITemplate } from "@/src/models/template";
 import { TemplateForm } from "@/src/components/Forms/TemplateForm";
-import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { customToast } from "@/src/helpers/customToast";
@@ -32,8 +31,7 @@ export default function TemplatesPage(): JSX.Element {
   const [pageSize, setPageSize] = useState(6);
   const debouncedSearchQuery = useDebounce(searchQuery);
 
-  const { can } = usePermissions();
-  const { writeLockReason } = useSubscription();
+  const { reasonFor } = usePermissions();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<ITemplate | null>(
     null,
@@ -147,29 +145,25 @@ export default function TemplatesPage(): JSX.Element {
               </div>
             </div>
             <div className="flex items-center gap-1">
-              {can("TEMPLATE_UPDATE") && (
-                <button
-                  onClick={() => {
-                    setEditingTemplate(item);
-                    setIsSidebarOpen(true);
-                  }}
-                  disabled={!!writeLockReason}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-500 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                  title={writeLockReason ?? "Edit Template"}
-                >
-                  <FiEdit2 className="size-4" />
-                </button>
-              )}
-              {can("TEMPLATE_DELETE") && (
-                <button
-                  onClick={() => setDeletingTemplateId(item.id)}
-                  disabled={!!writeLockReason}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                  title={writeLockReason ?? "Delete Template"}
-                >
-                  <FiTrash2 className="size-4" />
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  setEditingTemplate(item);
+                  setIsSidebarOpen(true);
+                }}
+                disabled={!!reasonFor("TEMPLATE_UPDATE")}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-500 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title={reasonFor("TEMPLATE_UPDATE") ?? "Edit Template"}
+              >
+                <FiEdit2 className="size-4" />
+              </button>
+              <button
+                onClick={() => setDeletingTemplateId(item.id)}
+                disabled={!!reasonFor("TEMPLATE_DELETE")}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                title={reasonFor("TEMPLATE_DELETE") ?? "Delete Template"}
+              >
+                <FiTrash2 className="size-4" />
+              </button>
             </div>
           </div>
 
@@ -227,22 +221,20 @@ export default function TemplatesPage(): JSX.Element {
           </p>
         </div>
 
-        {can("TEMPLATE_CREATE") && (
-          <BaseButton
-            disabledReason={writeLockReason}
-            type="button"
-            text="New Template"
-            icon={<FiPlus className="size-4" />}
-            position="icon-first"
-            color="primary"
-            className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
-            onClick={() => {
-              setEditingTemplate(null);
-              setIsSidebarOpen(true);
-            }}
-            disabled={isLoading}
-          />
-        )}
+        <BaseButton
+          disabledReason={reasonFor("TEMPLATE_CREATE")}
+          type="button"
+          text="New Template"
+          icon={<FiPlus className="size-4" />}
+          position="icon-first"
+          color="primary"
+          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
+          onClick={() => {
+            setEditingTemplate(null);
+            setIsSidebarOpen(true);
+          }}
+          disabled={isLoading}
+        />
       </div>
 
       <Table

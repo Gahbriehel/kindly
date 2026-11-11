@@ -1,6 +1,6 @@
 "use client";
 
-import { useSubscription } from "@/src/hooks/useSubscription";
+import { usePermissions } from "@/src/hooks/usePermissions";
 import { useMemo, useState, type JSX, type Ref } from "react";
 import dayjs from "dayjs";
 import { clsx } from "clsx";
@@ -56,7 +56,7 @@ export function CalendarSidePanel({
   onEdit,
   onDelete,
 }: Props): JSX.Element {
-  const { writeLockReason } = useSubscription();
+  const { reasonFor } = usePermissions();
   const isDay = selected !== null;
   const today = todayKey();
   const isCurrentMonth = month.slice(0, 7) === today.slice(0, 7);
@@ -166,8 +166,8 @@ export function CalendarSidePanel({
               {onAdd && (isDay || showToday) && (
                 <button
                   type="button"
-                  disabled={!!writeLockReason}
-                  title={writeLockReason}
+                  disabled={!!reasonFor("EVENT_CREATE")}
+                  title={reasonFor("EVENT_CREATE")}
                   onClick={() => onAdd(selected ?? today)}
                   className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50 text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
@@ -207,7 +207,7 @@ function EventItem({
   onEdit?: (event: IEvent) => void;
   onDelete?: (id: string) => void;
 }): JSX.Element {
-  const { writeLockReason } = useSubscription();
+  const { reasonFor } = usePermissions();
   const key = eventDateKey(event);
   const name = getEventDisplayName(event);
   const config = getCategoryConfig(event.category?.name ?? "");
@@ -296,8 +296,8 @@ function EventItem({
               <button
                 type="button"
                 aria-label="Edit event"
-                disabled={!!writeLockReason}
-                title={writeLockReason}
+                disabled={!!reasonFor("EVENT_UPDATE")}
+                title={reasonFor("EVENT_UPDATE")}
                 onClick={(e) => {
                   e.stopPropagation();
                   onEdit(event);
@@ -311,8 +311,8 @@ function EventItem({
               <button
                 type="button"
                 aria-label="Delete event"
-                disabled={!!writeLockReason}
-                title={writeLockReason}
+                disabled={!!reasonFor("EVENT_DELETE")}
+                title={reasonFor("EVENT_DELETE")}
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(event.id);

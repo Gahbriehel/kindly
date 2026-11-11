@@ -74,8 +74,7 @@ export function SendClientMessageModal({
   const cancelMessage = useCancelMessage();
 
   // Templates are optional; without access the message is written by hand.
-  const { can } = usePermissions();
-  const canWhatsapp = can("CLIENT_VIEW");
+  const { can, reasonFor } = usePermissions();
   const { data: templatesData, isLoading: isTemplatesLoading } =
     useTemplatesQuery({ limit: 50 }, { enabled: can("TEMPLATE_VIEW") });
 
@@ -93,11 +92,13 @@ export function SendClientMessageModal({
       client?.phoneNumber ||
       participant?.phoneNumber ||
       "";
-  const whatsappDisabledReason = !phoneNumber
-    ? "Client has no phone number"
-    : !clientId
-      ? "Client can't be identified"
-      : undefined;
+  const whatsappDisabledReason = reasonFor("CLIENT_VIEW")
+    ? reasonFor("CLIENT_VIEW")
+    : !phoneNumber
+      ? "Client has no phone number"
+      : !clientId
+        ? "Client can't be identified"
+        : undefined;
   const initials = getInitials(clientName) || "CL";
 
   // Handle actual close: reset state and trigger close
@@ -301,25 +302,23 @@ export function SendClientMessageModal({
                 <span>Email</span>
               </button>
 
-              {canWhatsapp && (
-                <span title={whatsappDisabledReason} className="flex">
-                  <button
-                    type="button"
-                    onClick={() => handleChannelChange("whatsapp")}
-                    disabled={!!whatsappDisabledReason}
-                    aria-pressed={isWhatsapp}
-                    className={clsx(
-                      "flex h-12 w-full items-center justify-center gap-2 rounded-xl border text-sm font-semibold transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-75",
-                      isWhatsapp
-                        ? "border-theme-primary/20 bg-indigo-50/70 text-theme-primary dark:bg-indigo-950/40 dark:border-indigo-800/40 dark:text-indigo-300 shadow-xs"
-                        : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 disabled:bg-gray-100/70 disabled:text-gray-400 dark:disabled:bg-slate-800/50 dark:disabled:text-slate-500",
-                    )}
-                  >
-                    <RiWhatsappLine className="size-4.5" />
-                    <span>WhatsApp</span>
-                  </button>
-                </span>
-              )}
+              <span title={whatsappDisabledReason} className="flex">
+                <button
+                  type="button"
+                  onClick={() => handleChannelChange("whatsapp")}
+                  disabled={!!whatsappDisabledReason}
+                  aria-pressed={isWhatsapp}
+                  className={clsx(
+                    "flex h-12 w-full items-center justify-center gap-2 rounded-xl border text-sm font-semibold transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-75",
+                    isWhatsapp
+                      ? "border-theme-primary/20 bg-indigo-50/70 text-theme-primary dark:bg-indigo-950/40 dark:border-indigo-800/40 dark:text-indigo-300 shadow-xs"
+                      : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 disabled:bg-gray-100/70 disabled:text-gray-400 dark:disabled:bg-slate-800/50 dark:disabled:text-slate-500",
+                  )}
+                >
+                  <RiWhatsappLine className="size-4.5" />
+                  <span>WhatsApp</span>
+                </button>
+              </span>
             </div>
 
             {/* Template Selection */}

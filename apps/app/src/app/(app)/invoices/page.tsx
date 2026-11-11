@@ -42,7 +42,6 @@ import type {
   IInvoiceCurrencySummary,
 } from "@/src/models/invoice";
 import { BaseButton } from "@/src/components/UI/Buttons";
-import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 
 function InvoiceEventInfo({ invoice }: { invoice: IInvoice }): JSX.Element {
@@ -83,8 +82,7 @@ function InvoiceEventInfo({ invoice }: { invoice: IInvoice }): JSX.Element {
 }
 
 export default function InvoicesPage(): JSX.Element {
-  const { can } = usePermissions();
-  const { writeLockReason } = useSubscription();
+  const { reasonFor } = usePermissions();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -475,18 +473,16 @@ export default function InvoicesPage(): JSX.Element {
               : ""}
           </p>
         </div>
-        {can("INVOICE_CREATE") && (
-          <BaseButton
-            disabledReason={writeLockReason}
-            type="button"
-            onClick={handleNewInvoiceClick}
-            color="primary"
-            icon={<FiPlus className="size-4" />}
-            position="icon-first"
-            className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
-            text="New Invoice"
-          />
-        )}
+        <BaseButton
+          disabledReason={reasonFor("INVOICE_CREATE")}
+          type="button"
+          onClick={handleNewInvoiceClick}
+          color="primary"
+          icon={<FiPlus className="size-4" />}
+          position="icon-first"
+          className="h-11 px-5 rounded-2xl text-sm font-medium transition-all shadow-xs"
+          text="New Invoice"
+        />
       </div>
       {rawCurrencies.length > 1 && (
         <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-xl bg-gray-100 p-1 dark:bg-slate-800">

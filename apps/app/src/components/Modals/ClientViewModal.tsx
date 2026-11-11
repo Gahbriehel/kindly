@@ -23,7 +23,6 @@ import { InvoiceCreateModal } from "@/src/components/Modals/InvoiceCreateModal";
 import { isMissingInvoiceSetup } from "@/src/components/Invoices/invoiceBusiness";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { useInvoiceSettingsQuery } from "@/src/hooks/useInvoiceQuery";
-import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { formatDate } from "@/src/helpers/formatDate";
@@ -89,8 +88,7 @@ export function ClientViewModal({
   );
   const { user } = useAppSelector((state) => state.auth);
   const company = (user as IUserData | null)?.company;
-  const { can } = usePermissions();
-  const { writeLockReason } = useSubscription();
+  const { can, reasonFor } = usePermissions();
   const { data: settingsData } = useInvoiceSettingsQuery();
   const birthday = client?.birthDate ? nextOccurrence(client.birthDate) : null;
   const daysAway = birthday?.diff(dayjs().startOf("day"), "day") ?? 0;
@@ -148,28 +146,24 @@ export function ClientViewModal({
         footer={
           client && (
             <>
-              {onEdit && (
-                <BaseButton
-                  type="button"
-                  color="outline"
-                  text="Edit"
-                  icon={<FiEdit2 className="size-4" />}
-                  onClick={() => onEdit(client)}
-                  disabledReason={writeLockReason}
-                  className="h-12 flex-1 rounded-2xl"
-                />
-              )}
-              {can("INVOICE_CREATE") && (
-                <BaseButton
-                  disabledReason={writeLockReason}
-                  type="button"
-                  color="outline"
-                  text="Invoice"
-                  icon={<FiFileText className="size-4" />}
-                  onClick={handleInvoiceClick}
-                  className="h-12 flex-1 rounded-2xl"
-                />
-              )}
+              <BaseButton
+                type="button"
+                color="outline"
+                text="Edit"
+                icon={<FiEdit2 className="size-4" />}
+                onClick={() => onEdit?.(client)}
+                disabledReason={reasonFor("CLIENT_UPDATE")}
+                className="h-12 flex-1 rounded-2xl"
+              />
+              <BaseButton
+                disabledReason={reasonFor("INVOICE_CREATE")}
+                type="button"
+                color="outline"
+                text="Invoice"
+                icon={<FiFileText className="size-4" />}
+                onClick={handleInvoiceClick}
+                className="h-12 flex-1 rounded-2xl"
+              />
               <BaseButton
                 type="button"
                 color="primary"
@@ -274,36 +268,32 @@ export function ClientViewModal({
                           utc: false,
                         })}
                         <span className="flex w-auto items-center gap-2 opacity-100 transition-all duration-200 lg:w-0 lg:overflow-hidden lg:opacity-0 lg:group-hover:w-12 lg:group-hover:opacity-100 lg:group-focus-within:w-12 lg:group-focus-within:opacity-100">
-                          {onEditEvent && (
-                            <button
-                              type="button"
-                              aria-label="Edit event"
-                              disabled={!!writeLockReason}
-                              title={writeLockReason}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEditEvent(event);
-                              }}
-                              className="cursor-pointer p-1 text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
-                            >
-                              <FiEdit2 className="size-4" />
-                            </button>
-                          )}
-                          {onDeleteEvent && (
-                            <button
-                              type="button"
-                              aria-label="Delete event"
-                              disabled={!!writeLockReason}
-                              title={writeLockReason}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onDeleteEvent(event);
-                              }}
-                              className="cursor-pointer p-1 text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
-                            >
-                              <FiTrash2 className="size-4" />
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            aria-label="Edit event"
+                            disabled={!!reasonFor("EVENT_UPDATE")}
+                            title={reasonFor("EVENT_UPDATE")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditEvent?.(event);
+                            }}
+                            className="cursor-pointer p-1 text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+                          >
+                            <FiEdit2 className="size-4" />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Delete event"
+                            disabled={!!reasonFor("EVENT_DELETE")}
+                            title={reasonFor("EVENT_DELETE")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteEvent?.(event);
+                            }}
+                            className="cursor-pointer p-1 text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
+                          >
+                            <FiTrash2 className="size-4" />
+                          </button>
                         </span>
                       </span>
                     </li>

@@ -238,8 +238,8 @@ export function InvoiceCreateModal({
     isDirty && !whatsappPending,
     close,
   );
-  const { can } = usePermissions();
-  const canWhatsapp = can("CLIENT_VIEW");
+  const { reasonFor } = usePermissions();
+  const whatsappPermissionReason = reasonFor("CLIENT_VIEW");
   const initiateWhatsapp = useInitiateWhatsappMessage();
   const confirmMessage = useConfirmMessage();
   const cancelMessage = useCancelMessage();
@@ -566,7 +566,7 @@ export function InvoiceCreateModal({
               invoiceNumber={invoice?.invoiceNumber}
               channel={channel}
               onChannelChange={setChannel}
-              canWhatsapp={canWhatsapp}
+              whatsappPermissionReason={whatsappPermissionReason}
               whatsappBody={buildWhatsappBody()}
               disabled={isBusy}
             />

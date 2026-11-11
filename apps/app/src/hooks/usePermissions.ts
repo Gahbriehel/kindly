@@ -4,18 +4,34 @@ import { useAppSelector } from "./useAppSelector";
 import { useAppDispatch } from "./useAppDispatch";
 import { getProfile } from "../services/auth";
 import { setUser } from "../store/slices/auth";
+import { SUBSCRIPTION_LOCK_REASON, useSubscription } from "./useSubscription";
 import { hasPermission } from "../helpers/permissions";
 import type { Permission } from "../models/permission";
 
 export function usePermissions() {
   const user = useAppSelector((state) => state.auth.user);
-  // Role permissions only. An expired subscription never hides a control:
-  // disable it with `disabledReason` from useSubscription().writeLockReason.
+  const { canWrite } = useSubscription();
   const can = useCallback(
     (permission: Permission) => hasPermission(user, permission),
     [user],
   );
-  return { can, isOwner: user?.role === "OWNER" };
+  /**
+   * Why `permission` is unavailable, or undefined when it's allowed. Controls
+   * are never hidden for this: pass the result to `disabledReason`.
+   */
+  const reasonFor = useCallback(
+    (permission: Permission): string | undefined => {
+      if (!hasPermission(user, permission)) {
+        return "You don't have permission to do this. Ask your business owner for access.";
+      }
+      if (!canWrite && !permission.endsWith("_VIEW")) {
+        return SUBSCRIPTION_LOCK_REASON;
+      }
+      return undefined;
+    },
+    [user, canWrite],
+  );
+  return { can, reasonFor, isOwner: user?.role === "OWNER" };
 }
 
 /**

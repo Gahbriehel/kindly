@@ -18,7 +18,8 @@ interface Props {
   invoiceNumber?: string | null;
   channel: "email" | "whatsapp";
   onChannelChange: (channel: "email" | "whatsapp") => void;
-  canWhatsapp: boolean;
+  /** Why WhatsApp is unavailable to this user; the button stays visible. */
+  whatsappPermissionReason?: string;
   /** The plain-text message that will be prefilled in WhatsApp. */
   whatsappBody: string;
   disabled?: boolean;
@@ -32,7 +33,7 @@ export function StepPreview({
   invoiceNumber = null,
   channel,
   onChannelChange,
-  canWhatsapp,
+  whatsappPermissionReason,
   whatsappBody,
   disabled = false,
 }: Props): JSX.Element {
@@ -92,23 +93,24 @@ export function StepPreview({
             <IoMailOutline className="size-4.5" />
             <span>Email</span>
           </button>
-          {canWhatsapp && (
-            <span
-              title={clientPhone ? undefined : "Client has no phone number"}
-              className="flex"
+          <span
+            title={
+              whatsappPermissionReason ??
+              (clientPhone ? undefined : "Client has no phone number")
+            }
+            className="flex"
+          >
+            <button
+              type="button"
+              aria-pressed={isWhatsapp}
+              disabled={disabled || !clientPhone || !!whatsappPermissionReason}
+              onClick={() => onChannelChange("whatsapp")}
+              className={clsx(choice(isWhatsapp), "w-full")}
             >
-              <button
-                type="button"
-                aria-pressed={isWhatsapp}
-                disabled={disabled || !clientPhone}
-                onClick={() => onChannelChange("whatsapp")}
-                className={clsx(choice(isWhatsapp), "w-full")}
-              >
-                <RiWhatsappLine className="size-4.5" />
-                <span>WhatsApp</span>
-              </button>
-            </span>
-          )}
+              <RiWhatsappLine className="size-4.5" />
+              <span>WhatsApp</span>
+            </button>
+          </span>
         </div>
         {isWhatsapp ? (
           <div className="flex flex-col gap-2 text-xs text-gray-500 dark:text-slate-400">

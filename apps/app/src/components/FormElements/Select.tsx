@@ -56,6 +56,8 @@ interface Props {
   itemRight?: (option: ISelect) => ReactNode;
   closeIconFn?: () => void;
   addNewOption?: () => void;
+  /** Keeps "Add new" visible but disabled, with this as the tooltip. */
+  addNewDisabledReason?: string;
   queryHook?: (params: IQueryParams) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: any;
@@ -89,6 +91,7 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
     onBlur,
     itemRight,
     addNewOption,
+    addNewDisabledReason,
     queryHook,
     transformData,
     optionsClassName,
@@ -157,6 +160,7 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
     if (disabled || !selectedValue) return;
     if (
       addNewOption &&
+      !addNewDisabledReason &&
       selectedValue?.value?._id === "" &&
       selectedValue?.label === ""
     ) {
@@ -279,7 +283,9 @@ export const Select = forwardRef<HTMLInputElement, Props>(function Select(
               {addNewOption && (
                 <Combobox.Option
                   value={emptySelect()}
-                  className="flex cursor-pointer items-center gap-2 px-10 py-2 text-sky-900 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-slate-700"
+                  disabled={!!addNewDisabledReason}
+                  title={addNewDisabledReason}
+                  className="flex cursor-pointer items-center gap-2 px-10 py-2 text-sky-900 hover:bg-sky-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 dark:text-sky-300 dark:hover:bg-slate-700"
                 >
                   <>
                     <span className="font-medium">Add new</span>

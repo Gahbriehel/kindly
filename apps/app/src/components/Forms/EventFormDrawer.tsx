@@ -106,7 +106,7 @@ export function EventFormDrawer({
   const [participants, setParticipants] =
     useState<ISelect[]>(initialParticipants);
   const [addingCategory, setAddingCategory] = useState(false);
-  const canAddCategory = usePermissions().can("CATEGORY_CREATE");
+  const addCategoryReason = usePermissions().reasonFor("CATEGORY_CREATE");
 
   const { data: categoriesData, isLoading: loadingCategories } =
     useCategoriesQuery();
@@ -245,9 +245,8 @@ export function EventFormDrawer({
                 placeholder="Select category"
                 options={categoryOptions}
                 loading={loadingCategories}
-                addNewOption={
-                  canAddCategory ? () => setAddingCategory(true) : undefined
-                }
+                addNewOption={() => setAddingCategory(true)}
+                addNewDisabledReason={addCategoryReason}
               />
             )}
           />
