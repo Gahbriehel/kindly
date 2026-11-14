@@ -70,8 +70,6 @@ export function getSnapshotBusiness(
 const BUSINESS_FIELD_LABELS: [keyof InvoiceBusiness, string][] = [
   ["logoUrl", "logo"],
   ["billingAddress", "billing address"],
-  ["registrationNumber", "registration number"],
-  ["taxId", "tax ID"],
   ["bankName", "bank name"],
   ["bankAccountName", "account name"],
   ["bankAccountNumber", "account number"],
@@ -113,7 +111,7 @@ export function getSendBlockers({
       `Add an email address to ${clientName || "the client"}'s profile.`,
     );
   if (!hasEvent) blockers.push(fixInvoiceHint.event);
-  if (!dueDate || dueDate <= dayjs().format("YYYY-MM-DD"))
+  if (!dueDate || dueDate < dayjs().format("YYYY-MM-DD"))
     blockers.push(fixInvoiceHint.dueDate);
   return blockers;
 }

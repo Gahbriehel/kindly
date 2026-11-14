@@ -321,7 +321,8 @@ export function InvoiceDetailsModal({
         dueDate: invoice.dueDate?.slice(0, 10),
         fixInvoiceHint: {
           event: "Edit the draft to link an event.",
-          dueDate: "Edit the draft to set a due date after today.",
+          dueDate:
+            "Due date cannot be in the past. Edit the draft to change it.",
         },
       })
     : [];

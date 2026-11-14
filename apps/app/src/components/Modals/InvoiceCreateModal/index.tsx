@@ -275,7 +275,7 @@ export function InvoiceCreateModal({
           dueDate: values.dueDate,
           fixInvoiceHint: {
             event: "Link an event to this invoice in step 1.",
-            dueDate: "Set a due date after today.",
+            dueDate: "Due date cannot be in the past.",
           },
         })
       : [];
