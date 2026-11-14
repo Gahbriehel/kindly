@@ -13,5 +13,8 @@ export function useMessagesQuery(
     queryFn: async () => await getMessages(params),
     placeholderData: keepPreviousData,
     enabled,
+    // Emails move QUEUED -> SENT/FAILED in the background; poll until settled.
+    refetchInterval: (query) =>
+      query.state.data?.data.some((m) => m.status === "QUEUED") ? 3000 : false,
   });
 }

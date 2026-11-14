@@ -9,6 +9,8 @@ import {
 import { RiWhatsappLine, RiSendPlaneFill } from "react-icons/ri";
 import { HiSparkles } from "react-icons/hi2";
 import { clsx } from "clsx";
+import Link from "next/link";
+import { isAxiosError } from "axios";
 import { CenterModal } from "@/src/components/UI/CenterModal";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import {
@@ -27,10 +29,12 @@ import { htmlToPlainText } from "@/src/helpers/htmlHelpers";
 import { getInitials } from "@/src/helpers/stringHelpers";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import { usePermissions } from "@/src/hooks/usePermissions";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
 import {
   useCancelMessage,
   useConfirmMessage,
   useInitiateWhatsappMessage,
+  useSendEmailMessage,
 } from "@/src/hooks/useWhatsappMessageMutations";
 import { customToast } from "@/src/helpers/customToast";
 import {
@@ -39,7 +43,8 @@ import {
   writeWhatsappPending,
   type WhatsappPending,
 } from "@/src/helpers/whatsappPending";
-import { WHATSAPP_BODY_LIMIT } from "@/src/models/message";
+import { EMAIL_SUBJECT_LIMIT, WHATSAPP_BODY_LIMIT } from "@/src/models/message";
+import type { IUserData } from "@/src/models/auth";
 import { WhatsappConfirmBody } from "@/src/components/Modals/WhatsappConfirmBody";
 import type { IEvent } from "@/src/models/event";
 
@@ -83,6 +88,11 @@ export function SendClientMessageModal({
   // Email is rich text (HTML); WhatsApp is plain text.
   const [message, setMessage] = useState<string>("");
   const [whatsappMessage, setWhatsappMessage] = useState<string>("");
+  const [subject, setSubject] = useState("");
+  // Template/event defaults only fill the subject until the user types one.
+  const [subjectEdited, setSubjectEdited] = useState(false);
+  // Set when the API rejects with COMPANY_EMAIL_REQUIRED (cached company stale).
+  const [companyEmailRejected, setCompanyEmailRejected] = useState(false);
   const [pending, setPending] = useState<WhatsappPending | null>(null);
   const [answering, setAnswering] = useState<"yes" | "no" | null>(null);
   const isWhatsapp = selectedChannel === "whatsapp";
@@ -90,9 +100,12 @@ export function SendClientMessageModal({
   const initiateWhatsapp = useInitiateWhatsappMessage();
   const confirmMessage = useConfirmMessage();
   const cancelMessage = useCancelMessage();
+  const sendEmail = useSendEmailMessage();
 
   // Templates are optional; without access the message is written by hand.
-  const { can, reasonFor } = usePermissions();
+  const { can, reasonFor, isOwner } = usePermissions();
+  const user = useAppSelector((state) => state.auth.user) as IUserData | null;
+  const companyEmail = user?.company?.email;
   const { data: templatesData, isLoading: isTemplatesLoading } =
     useTemplatesQuery({ limit: 50 }, { enabled: can("TEMPLATE_VIEW") });
 
@@ -110,6 +123,20 @@ export function SendClientMessageModal({
       client?.phoneNumber ||
       participant?.phoneNumber ||
       "";
+  // Not clientContact: that falls back to the phone number for display.
+  // Opened from an event: default the subject to its title until edited.
+  const subjectValue = subject || (subjectEdited ? "" : (event?.title ?? ""));
+  const emailAddress = client?.email || participant?.email || "";
+  const companyEmailMissing = !companyEmail || companyEmailRejected;
+  const emailMissingReason = !clientId
+    ? "Client can't be identified"
+    : !emailAddress
+      ? "Client has no email address"
+      : companyEmailMissing
+        ? isOwner
+          ? "Add a business email in Settings → Company to email clients"
+          : "Ask the account owner to add a business email"
+        : undefined;
   const whatsappDisabledReason = reasonFor("CLIENT_VIEW")
     ? reasonFor("CLIENT_VIEW")
     : !phoneNumber
@@ -125,6 +152,9 @@ export function SendClientMessageModal({
     setClientSearch("");
     setSelectedTemplate(emptySelect());
     setMessage("");
+    setSubject("");
+    setSubjectEdited(false);
+    setCompanyEmailRejected(false);
     setWhatsappMessage("");
     setSelectedChannel("email");
     setPending(null);
@@ -138,6 +168,7 @@ export function SendClientMessageModal({
     !pending &&
     (htmlToPlainText(message).length > 0 ||
       whatsappMessage.trim().length > 0 ||
+      (subjectEdited && subjectValue.trim().length > 0) ||
       Boolean(selectedTemplate.value?._id));
 
   // Tell the global prompt that this modal is asking the question itself.
@@ -199,6 +230,9 @@ export function SendClientMessageModal({
         setMessage(html);
       }
     }
+    if (!isWhatsapp && !subjectEdited && option.label) {
+      setSubject(fillName(option.label));
+    }
   };
 
   // Pre-fill from a template chosen elsewhere, using the picked client's name.
@@ -233,8 +267,10 @@ export function SendClientMessageModal({
         templateId: selectedTemplate.value?._id,
         eventId: event?.id,
       });
-      if (tab) tab.location.href = data.whatsappUrl;
-      else window.location.href = data.whatsappUrl;
+      const url = data.whatsappUrl;
+      if (!url) throw new Error("Missing WhatsApp link");
+      if (tab) tab.location.href = url;
+      else window.location.href = url;
       const next = { id: data.id, clientName };
       writeWhatsappPending(next);
       setPending(next);
@@ -268,8 +304,35 @@ export function SendClientMessageModal({
     }
   };
 
-  const handleSend = () => {
-    // Email sending is not wired to an endpoint yet and does nothing for now
+  const emailText = htmlToPlainText(message).trim();
+  const canSendEmail =
+    !!subjectValue.trim() &&
+    !!emailText &&
+    !emailMissingReason &&
+    !sendEmail.isPending;
+
+  const handleSend = async () => {
+    if (!canSendEmail || !clientId) return;
+    try {
+      await sendEmail.mutateAsync({
+        clientId,
+        subject: subjectValue.trim(),
+        body: message,
+        templateId: selectedTemplate.value?._id,
+        eventId: event?.id,
+      });
+      // 202 means queued, not delivered.
+      customToast.success("Email queued");
+      handleActualClose();
+    } catch (error) {
+      // The axios interceptor already toasted the API error; keep the form open.
+      if (
+        isAxiosError(error) &&
+        error.response?.data?.code === "COMPANY_EMAIL_REQUIRED"
+      ) {
+        setCompanyEmailRejected(true);
+      }
+    }
   };
 
   const customHeader = (
@@ -450,16 +513,48 @@ export function SendClientMessageModal({
                 </p>
               </div>
             ) : (
-              <RichTextEditor
-                label="Message"
-                value={message}
-                onChange={setMessage}
-                placeholder="Write your message here..."
-                toolbarPosition="bottom"
-                variant="compact"
-                editorMinHeight="110px"
-                showCharCount
-              />
+              <>
+                <Input
+                  id="email-subject"
+                  label="Subject"
+                  value={subjectValue}
+                  onChange={(e) => {
+                    setSubject(e.target.value);
+                    setSubjectEdited(true);
+                  }}
+                  maxLength={EMAIL_SUBJECT_LIMIT}
+                  placeholder="Email subject"
+                />
+                <RichTextEditor
+                  label="Message"
+                  value={message}
+                  onChange={setMessage}
+                  placeholder="Write your message here..."
+                  toolbarPosition="bottom"
+                  variant="compact"
+                  editorMinHeight="110px"
+                  showCharCount
+                />
+              </>
+            )}
+
+            {!isWhatsapp && companyEmailMissing && (
+              <p className="text-xs text-amber-700 dark:text-amber-400">
+                {isOwner ? (
+                  <>
+                    Add a business email in{" "}
+                    <Link
+                      href="/profile?tab=business"
+                      className="font-semibold underline"
+                    >
+                      Settings → Company
+                    </Link>{" "}
+                    to email clients.
+                  </>
+                ) : (
+                  "Ask the account owner to add a business email."
+                )}
+              </p>
             )}
 
             {/* Modal Footer / Action */}
@@ -469,7 +564,9 @@ export function SendClientMessageModal({
                 <span>
                   {isWhatsapp
                     ? `${clientName} will receive this on WhatsApp. You'll press send in WhatsApp.`
-                    : `${clientName} will receive this via email.`}
+                    : `${clientName} will receive this via email.${
+                        companyEmail ? ` Replies go to ${companyEmail}.` : ""
+                      }`}
                 </span>
               </div>
               <BaseButton
@@ -484,10 +581,15 @@ export function SendClientMessageModal({
                   )
                 }
                 text={isWhatsapp ? "Open WhatsApp" : "Send message"}
-                loading={isWhatsapp && isOpening}
-                disabledReason={writeLockReason}
+                loading={isWhatsapp ? isOpening : sendEmail.isPending}
+                disabledReason={
+                  writeLockReason ??
+                  (isWhatsapp ? undefined : emailMissingReason)
+                }
                 disabled={
-                  isWhatsapp && (!whatsappBody || whatsappTooLong || isOpening)
+                  isWhatsapp
+                    ? !whatsappBody || whatsappTooLong || isOpening
+                    : !canSendEmail
                 }
                 className="px-5 font-semibold"
               />

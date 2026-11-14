@@ -1,6 +1,7 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ProfileView } from "@/src/components/Forms/ProfileView";
 import { BusinessView } from "@/src/components/Forms/BusinessView";
@@ -12,7 +13,21 @@ import { AppearanceForm } from "@/src/components/Forms/AppearanceForm";
 import { PROFILE_TABS, type ProfileTab } from "./tabs";
 
 export default function ProfilePage(): JSX.Element {
-  const [activeTab, setActiveTab] = useState<ProfileTab>("profile");
+  return (
+    <Suspense fallback={null}>
+      <ProfileContent />
+    </Suspense>
+  );
+}
+
+function ProfileContent(): JSX.Element {
+  // Deep links such as /profile?tab=business open that tab directly.
+  const tabParam = useSearchParams().get("tab");
+  const [activeTab, setActiveTab] = useState<ProfileTab>(
+    PROFILE_TABS.some((t) => t.id === tabParam)
+      ? (tabParam as ProfileTab)
+      : "profile",
+  );
 
   return (
     <div className="w-full h-full mx-auto pb-12">

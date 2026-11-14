@@ -365,8 +365,10 @@ export function InvoiceCreateModal({
         body: buildWhatsappBody(),
         invoiceId: id,
       });
-      if (tab) tab.location.href = data.whatsappUrl;
-      else window.location.assign(data.whatsappUrl);
+      const url = data.whatsappUrl;
+      if (!url) throw new Error("Missing WhatsApp link");
+      if (tab) tab.location.href = url;
+      else window.location.assign(url);
       const next = { id: data.id, clientName: values.client?.fullName ?? "" };
       writeWhatsappPending(next);
       setWhatsappPending(next);

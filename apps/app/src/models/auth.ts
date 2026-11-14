@@ -113,6 +113,7 @@ export interface ICompanyData {
   businessName: string;
   industry: string;
   estimatedClientCount: number;
+  email?: string | null;
   phoneNumber?: string | null;
   address?: string | null;
   country?: string | null;
@@ -137,6 +138,7 @@ export interface IUpdateCompanyPayload {
   businessName?: string;
   industry?: string;
   estimatedClientCount?: number;
+  email?: string;
   phoneNumber?: string | null;
   address?: string | null;
   country?: string | null;

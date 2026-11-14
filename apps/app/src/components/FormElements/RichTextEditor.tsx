@@ -67,7 +67,7 @@ export const RichTextEditor = forwardRef<ReactQuillType, RichTextEditorProps>(
       () => ({
         toolbar:
           variant === "compact"
-            ? [["bold", "italic"], [{ list: "bullet" }], ["link", "image"]]
+            ? [["bold", "italic"], [{ list: "bullet" }], ["link"]]
             : [
                 [{ header: [1, 2, 3, false] }],
                 ["bold", "italic", "underline", "strike"],

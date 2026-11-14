@@ -4,6 +4,7 @@ import type {
   IMessageLogResponse,
   IMessagesQueryParams,
   IMessagesResponse,
+  ISendEmailMessagePayload,
   IWhatsappMessagePayload,
 } from "../models/message";
 
@@ -36,6 +37,16 @@ export async function confirmMessage(id: string): Promise<IMessageLogResponse> {
 export async function cancelMessage(id: string): Promise<IMessageLogResponse> {
   const response = await axios.patch<IMessageLogResponse>(
     `/messages/${id}/cancel`,
+  );
+  return response.data;
+}
+
+export async function sendEmailMessage(
+  payload: ISendEmailMessagePayload,
+): Promise<IMessageLogResponse> {
+  const response = await axios.post<IMessageLogResponse>(
+    "/messages/email",
+    payload,
   );
   return response.data;
 }

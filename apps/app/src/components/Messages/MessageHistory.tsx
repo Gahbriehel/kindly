@@ -3,12 +3,15 @@
 import type { JSX } from "react";
 import { clsx } from "clsx";
 import { RiWhatsappLine } from "react-icons/ri";
+import { IoMailOutline } from "react-icons/io5";
+import { htmlToPlainText } from "@/src/helpers/htmlHelpers";
 import { NotAvailable } from "@/src/components/UI/NotAvailable";
 import { useMessagesQuery } from "@/src/hooks/useMessagesQuery";
 import { formatDate } from "@/src/helpers/formatDate";
 import type { IMessagesQueryParams, MessageStatus } from "@/src/models/message";
 
-// WhatsApp gives no delivery signal, so these never say "delivered".
+// WhatsApp gives no delivery signal, so it never says "delivered". For email,
+// SENT only means the mail server accepted it, not that it was read.
 const STATUS: Record<MessageStatus, { label: string; className: string }> = {
   CONFIRMED: {
     label: "Sent (confirmed)",
@@ -19,6 +22,20 @@ const STATUS: Record<MessageStatus, { label: string; className: string }> = {
     label: "Opened, not confirmed",
     className:
       "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
+  },
+  QUEUED: {
+    label: "Sending…",
+    className:
+      "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
+  },
+  SENT: {
+    label: "Sent",
+    className:
+      "bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400",
+  },
+  FAILED: {
+    label: "Failed to send",
+    className: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400",
   },
   CANCELLED: {
     label: "Not sent",
@@ -50,13 +67,30 @@ export function MessageHistory({ filter }: Props): JSX.Element {
         const who = message.requestedBy
           ? `${message.requestedBy.firstName} ${message.requestedBy.lastName}`
           : null;
+        const isEmail = message.channel === "EMAIL";
+        const recipient = isEmail
+          ? message.recipientEmail
+          : message.recipientPhone;
+        // Body is HTML for email: render plain text, never raw HTML.
+        const preview = isEmail ? htmlToPlainText(message.body) : message.body;
         return (
           <li key={message.id} className="flex flex-col gap-1.5 px-4 py-3">
             <div className="flex items-start justify-between gap-3">
               <span className="flex min-w-0 items-start gap-2 text-sm text-gray-900 dark:text-slate-100">
-                <RiWhatsappLine className="mt-0.5 size-4 shrink-0 text-green-600 dark:text-green-400" />
-                <span className="line-clamp-2 whitespace-pre-line break-words">
-                  {message.body}
+                {isEmail ? (
+                  <IoMailOutline className="mt-0.5 size-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                ) : (
+                  <RiWhatsappLine className="mt-0.5 size-4 shrink-0 text-green-600 dark:text-green-400" />
+                )}
+                <span className="min-w-0">
+                  {isEmail && message.subject && (
+                    <span className="block truncate font-semibold">
+                      {message.subject}
+                    </span>
+                  )}
+                  <span className="line-clamp-2 whitespace-pre-line break-words">
+                    {preview}
+                  </span>
                 </span>
               </span>
               <span
@@ -70,6 +104,7 @@ export function MessageHistory({ filter }: Props): JSX.Element {
             </div>
             <p className="pl-6 text-xs text-gray-500 dark:text-slate-400">
               {who ? `${who} · ` : ""}
+              {recipient ? `${recipient} · ` : ""}
               {formatDate({ date: message.createdAt, utc: false })}
             </p>
           </li>

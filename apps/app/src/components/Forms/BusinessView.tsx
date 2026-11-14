@@ -25,6 +25,7 @@ interface BusinessFormValues {
   businessName: string;
   industry: ISelect;
   estimatedClientCount: ISelect;
+  email: string;
   phoneNumber: string;
   address: string;
   country: ISelect;
@@ -110,6 +111,7 @@ export function BusinessView(): JSX.Element {
         value: { _id: countValue },
         label: matchedCount?.label ?? `${countValue} clients`,
       },
+      email: company?.email ?? "",
       phoneNumber: company?.phoneNumber ?? "",
       address: company?.address ?? "",
       country: {
@@ -197,6 +199,8 @@ export function BusinessView(): JSX.Element {
           data.industry?.label ||
           "Events",
         estimatedClientCount: clientCount,
+        // The API cannot clear the email, so only send it when filled.
+        email: data.email.trim() || undefined,
         phoneNumber: data.phoneNumber.trim() || null,
         address: data.address.trim() || null,
         country: data.country?.value?._id || data.country?.label || null,
@@ -521,6 +525,43 @@ export function BusinessView(): JSX.Element {
           <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-2">
             Contact &amp; Location
           </h4>
+        </div>
+
+        {/* Business email */}
+        <div className="py-4.5 flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+          <span className="text-sm font-medium text-gray-500 dark:text-slate-400 sm:w-48 shrink-0 sm:pt-2.5">
+            Business Email
+          </span>
+          <div className="w-full sm:max-w-xl">
+            {isEditing ? (
+              <>
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      id="companyEmail"
+                      type="email"
+                      placeholder="hello@yourbusiness.com"
+                      error={fieldState.error?.message}
+                    />
+                  )}
+                />
+                <p className="mt-1.5 text-xs text-gray-400 dark:text-slate-500">
+                  Required to email clients. Their replies come to this address.
+                </p>
+              </>
+            ) : (
+              <p className="text-sm font-semibold text-gray-900 dark:text-slate-100 py-0.5">
+                {company?.email || (
+                  <span className="text-gray-400 dark:text-slate-500 italic font-normal">
+                    Not provided
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Phone */}

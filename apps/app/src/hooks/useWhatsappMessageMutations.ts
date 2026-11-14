@@ -3,8 +3,12 @@ import {
   cancelMessage,
   confirmMessage,
   initiateWhatsappMessage,
+  sendEmailMessage,
 } from "../services/messages";
-import type { IWhatsappMessagePayload } from "../models/message";
+import type {
+  ISendEmailMessagePayload,
+  IWhatsappMessagePayload,
+} from "../models/message";
 import { MESSAGES_KEY } from "./useMessagesQuery";
 
 function useInvalidateMessages() {
@@ -33,6 +37,15 @@ export function useCancelMessage() {
   const invalidate = useInvalidateMessages();
   return useMutation({
     mutationFn: (id: string) => cancelMessage(id),
+    onSuccess: invalidate,
+  });
+}
+
+export function useSendEmailMessage() {
+  const invalidate = useInvalidateMessages();
+  return useMutation({
+    mutationFn: (payload: ISendEmailMessagePayload) =>
+      sendEmailMessage(payload),
     onSuccess: invalidate,
   });
 }
