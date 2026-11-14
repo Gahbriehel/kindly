@@ -24,6 +24,7 @@ import { TemplateForm } from "@/src/components/Forms/TemplateForm";
 import { usePermissions } from "@/src/hooks/usePermissions";
 import { ConfirmActionModal } from "@/src/components/Modals/ConfirmActionModal";
 import { customToast } from "@/src/helpers/customToast";
+import { SendClientMessageModal } from "@/src/components/Modals/SendClientMessageModal";
 
 export default function TemplatesPage(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,6 +37,7 @@ export default function TemplatesPage(): JSX.Element {
   const [editingTemplate, setEditingTemplate] = useState<ITemplate | null>(
     null,
   );
+  const [usingTemplate, setUsingTemplate] = useState<ITemplate | null>(null);
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(
     null,
   );
@@ -196,7 +198,7 @@ export default function TemplatesPage(): JSX.Element {
           <div className="flex items-center gap-1 w-full sm:w-auto">
             <BaseButton
               text="Use Template"
-              onClick={() => console.log("Use template", item.id)}
+              onClick={() => setUsingTemplate(item)}
               className="!h-8 sm:!h-9 px-3 sm:px-4 w-full sm:w-auto rounded-lg text-xs sm:text-sm font-medium transition-all"
             />
           </div>
@@ -279,6 +281,11 @@ export default function TemplatesPage(): JSX.Element {
       />
 
       {/* Delete Confirmation Modal */}
+      <SendClientMessageModal
+        display={!!usingTemplate}
+        close={() => setUsingTemplate(null)}
+        initialTemplate={usingTemplate}
+      />
       <ConfirmActionModal
         actionName="Delete"
         title="Delete Template"

@@ -18,6 +18,10 @@ import {
 } from "@/src/components/FormElements/Select";
 import { RichTextEditor } from "@/src/components/FormElements/RichTextEditor";
 import { useTemplatesQuery } from "@/src/hooks/useTemplateQuery";
+import { useClientsQuery } from "@/src/hooks/useClientQuery";
+import { useDebounce } from "@/src/hooks/useDebounce";
+import { Input } from "@/src/components/FormElements/Input";
+import { FiSearch } from "react-icons/fi";
 import { useUnsavedChangesGuard } from "@/src/hooks/useUnsavedChangesGuard";
 import { htmlToPlainText } from "@/src/helpers/htmlHelpers";
 import { getInitials } from "@/src/helpers/stringHelpers";
@@ -39,24 +43,38 @@ import { WHATSAPP_BODY_LIMIT } from "@/src/models/message";
 import { WhatsappConfirmBody } from "@/src/components/Modals/WhatsappConfirmBody";
 import type { IEvent } from "@/src/models/event";
 
+interface MessageClient {
+  id?: string;
+  fullName: string;
+  phoneNumber?: string;
+  email?: string;
+}
+
 export interface SendClientMessageModalProps {
   display: boolean;
   close: () => void;
   event?: IEvent | null;
-  client?: {
-    id?: string;
-    fullName: string;
-    phoneNumber?: string;
-    email?: string;
-  } | null;
+  client?: MessageClient | null;
+  /** Pre-fills the message. When no client/event is given, the user picks a client first. */
+  initialTemplate?: { id: string; message: string } | null;
 }
 
 export function SendClientMessageModal({
   display,
   close,
   event,
-  client,
+  client: clientProp,
+  initialTemplate,
 }: SendClientMessageModalProps): JSX.Element | null {
+  const [pickedClient, setPickedClient] = useState<MessageClient | null>(null);
+  const [clientSearch, setClientSearch] = useState("");
+  const debouncedClientSearch = useDebounce(clientSearch.trim(), 400);
+  const client = clientProp ?? pickedClient;
+  const needsClient = !clientProp && !event && !pickedClient;
+  const { data: clientsData, isLoading: isClientsLoading } = useClientsQuery(
+    { page: 1, limit: 5, search: debouncedClientSearch },
+    { enabled: display && needsClient && !!debouncedClientSearch },
+  );
   const [selectedChannel, setSelectedChannel] = useState<"email" | "whatsapp">(
     "email",
   );
@@ -103,6 +121,8 @@ export function SendClientMessageModal({
 
   // Handle actual close: reset state and trigger close
   const handleActualClose = () => {
+    setPickedClient(null);
+    setClientSearch("");
     setSelectedTemplate(emptySelect());
     setMessage("");
     setWhatsappMessage("");
@@ -153,8 +173,8 @@ export function SendClientMessageModal({
     }));
   }, [templatesData, isWhatsapp]);
 
-  const fillName = (text: string) =>
-    text.replace(/\{\{\s*fullName\s*\}\}/gi, clientName);
+  const fillName = (text: string, name: string = clientName) =>
+    text.replace(/\{\{\s*fullName\s*\}\}/gi, name);
 
   const handleChannelChange = (channel: "email" | "whatsapp") => {
     if (channel === selectedChannel) return;
@@ -179,6 +199,18 @@ export function SendClientMessageModal({
         setMessage(html);
       }
     }
+  };
+
+  // Pre-fill from a template chosen elsewhere, using the picked client's name.
+  const handlePickClient = (c: MessageClient) => {
+    setPickedClient(c);
+    if (!initialTemplate) return;
+    setSelectedTemplate({
+      value: { _id: initialTemplate.id, message: initialTemplate.message },
+      label: "",
+    });
+    const html = fillName(initialTemplate.message, c.fullName).trim();
+    setMessage(html);
   };
 
   const whatsappBody = whatsappMessage.trim();
@@ -277,7 +309,60 @@ export function SendClientMessageModal({
         maxWidth="max-w-lg"
         className="p-0"
       >
-        {pending ? (
+        {needsClient ? (
+          <div className="p-6 space-y-3">
+            <Input
+              id="message-client-search"
+              type="search"
+              value={clientSearch}
+              onChange={(e) => setClientSearch(e.target.value)}
+              placeholder="Search clients"
+              aria-label="Search clients"
+              autoFocus
+              className="h-12 rounded-2xl pl-11"
+              icon={
+                <FiSearch className="pointer-events-none absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-gray-400" />
+              }
+            />
+            {!clientSearch.trim() ? (
+              <p className="px-1 text-xs text-gray-400 dark:text-slate-500">
+                Search for the client you want to message.
+              </p>
+            ) : isClientsLoading ||
+              clientSearch.trim() !== debouncedClientSearch ? (
+              <p className="px-1 text-sm text-gray-500 dark:text-slate-400">
+                Searching...
+              </p>
+            ) : (clientsData?.data ?? []).length === 0 ? (
+              <p className="px-1 py-3 text-center text-sm text-gray-500 dark:text-slate-400">
+                No clients match &quot;{debouncedClientSearch}&quot;
+              </p>
+            ) : (
+              <div className="flex flex-col gap-1">
+                {(clientsData?.data ?? []).map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => handlePickClient(c)}
+                    className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-slate-800"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-bold text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400">
+                      {getInitials(c.fullName) || "CL"}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-gray-900 dark:text-slate-100">
+                        {c.fullName}
+                      </p>
+                      <p className="truncate text-xs text-gray-500 dark:text-slate-400">
+                        {c.email || c.phoneNumber}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : pending ? (
           <WhatsappConfirmBody
             clientName={pending.clientName}
             loading={answering}
