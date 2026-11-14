@@ -378,7 +378,7 @@ export function InvoiceDetailsModal({
     actions = [
       editAction,
       {
-        label: "Mark as paid",
+        label: "Record payment",
         color: "outline",
         permission: "INVOICE_RECORD_PAYMENT",
         onClick: () => setPaymentOpen(true),
