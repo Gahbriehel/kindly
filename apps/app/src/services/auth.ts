@@ -51,9 +51,10 @@ export async function resetPassword(payload: IResetPasswordPayload) {
   return response.data;
 }
 
+// Signed-in flow: authenticated by the access token plus the current password.
 export async function changePassword(payload: IUpdatePasswordPayload) {
   const response = await axios.post<IBaseResponse>(
-    `/auth/reset-password`,
+    `/auth/change-password`,
     payload,
   );
   return response.data;

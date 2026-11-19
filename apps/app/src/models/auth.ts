@@ -106,7 +106,7 @@ export interface IResetPasswordPayload {
 }
 
 export interface IUpdatePasswordPayload {
-  token: string;
+  currentPassword: string;
   newPassword: string;
   confirmPassword: string;
 }

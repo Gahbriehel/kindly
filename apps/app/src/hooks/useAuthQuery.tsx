@@ -9,7 +9,7 @@ import {
   updateIndividualProfile,
   updateCompanyProfile,
 } from "@/src/services/auth";
-import { IUpdatePasswordPayload, IUserData } from "@/src/models/auth";
+import { IUserData } from "@/src/models/auth";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { setUser, setToken, logOut } from "@/src/store/slices/auth";
 import { customToast } from "@/src/helpers/customToast";
@@ -85,19 +85,11 @@ export function useResetPasswordMutation() {
 }
 
 export function useChangePasswordMutation() {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { accessToken } = useAppSelector((state) => state.auth);
+  // This session stays signed in; the backend only ends the other sessions.
   return useMutation({
-    mutationFn: (data: Omit<IUpdatePasswordPayload, "token">) =>
-      changePassword({
-        ...data,
-        token: accessToken ?? "",
-      }),
+    mutationFn: changePassword,
     onSuccess: (response) => {
       customToast.success(response.message);
-      dispatch(logOut());
-      router.push("/login");
     },
     onError: (error: AxiosError<{ message: string }>) =>
       toastUnhandledError(error, "Change password failed"),

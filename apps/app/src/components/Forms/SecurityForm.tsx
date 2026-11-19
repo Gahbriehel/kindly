@@ -1,48 +1,76 @@
 "use client";
 
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useSubscription } from "@/src/hooks/useSubscription";
+import { AxiosError } from "axios";
 import { BaseButton } from "@/src/components/UI/Buttons";
 import { Input } from "@/src/components/FormElements/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useChangePasswordMutation } from "@/src/hooks/useAuthQuery";
+import {
+  PASSWORD_RULES_HINT,
+  confirmPasswordSchema,
+  newPasswordSchema,
+} from "@/src/helpers/passwordRules";
+
+const WRONG_CURRENT_PASSWORD = "Current password is incorrect";
 
 export const securitySchema = yup.object({
-  newPassword: yup
-    .string()
-    .required("New password is required")
-    .min(8, "New password must be at least 8 characters"),
-  confirmNewPassword: yup
-    .string()
-    .required("Confirm new password is required")
-    .oneOf([yup.ref("newPassword")], "Passwords do not match"),
+  currentPassword: yup.string().required("Enter your current password"),
+  newPassword: newPasswordSchema,
+  confirmNewPassword: confirmPasswordSchema("newPassword"),
 });
 
-export interface SecurityFormData {
-  newPassword: string;
-  confirmNewPassword: string;
-}
+export type SecurityFormData = yup.InferType<typeof securitySchema>;
+
+type PasswordField = keyof SecurityFormData;
 
 export function SecurityForm(): JSX.Element {
-  const { writeLockReason } = useSubscription();
+  // Changing a password stays allowed on a read-only (expired) plan.
   const { mutate: changePassword, isPending } = useChangePasswordMutation();
-  const { control, handleSubmit, reset } = useForm<SecurityFormData>({
+  const [visible, setVisible] = useState<Record<PasswordField, boolean>>({
+    currentPassword: false,
+    newPassword: false,
+    confirmNewPassword: false,
+  });
+  const { control, handleSubmit, reset, setError } = useForm<SecurityFormData>({
     defaultValues: {
+      currentPassword: "",
       newPassword: "",
       confirmNewPassword: "",
     },
     resolver: yupResolver(securitySchema),
   });
 
+  const toggleProps = (name: PasswordField) => ({
+    type: visible[name] ? "text" : "password",
+    password: true,
+    showPassword: () => setVisible((v) => ({ ...v, [name]: true })),
+    hidePassword: () => setVisible((v) => ({ ...v, [name]: false })),
+  });
+
   const onSubmit = (data: SecurityFormData) => {
     changePassword(
       {
+        currentPassword: data.currentPassword,
         newPassword: data.newPassword,
         confirmPassword: data.confirmNewPassword,
       },
-      { onSuccess: () => reset() },
+      {
+        onSuccess: () => reset(),
+        onError: (error) => {
+          const message = (error as AxiosError<{ message?: string }>).response
+            ?.data?.message;
+          if (message === WRONG_CURRENT_PASSWORD) {
+            setError(
+              "currentPassword",
+              { message: WRONG_CURRENT_PASSWORD },
+              { shouldFocus: true },
+            );
+          }
+        },
+      },
     );
   };
 
@@ -60,18 +88,41 @@ export function SecurityForm(): JSX.Element {
 
         <div className="grid gap-8 rounded-2xl bg-white dark:bg-slate-800/80 p-6 border border-gray-100 dark:border-slate-700/50">
           <Controller
-            name="newPassword"
+            name="currentPassword"
             control={control}
             render={({ field, fieldState }) => (
               <Input
                 {...field}
-                id="password"
-                label="Change Password"
+                {...toggleProps("currentPassword")}
+                id="current-password"
+                label="Current Password"
                 required
-                type="password"
-                placeholder="Enter a new password"
+                autoComplete="current-password"
+                placeholder="Enter your current password"
                 error={fieldState.error?.message}
               />
+            )}
+          />
+
+          <Controller
+            name="newPassword"
+            control={control}
+            render={({ field, fieldState }) => (
+              <div className="space-y-1.5">
+                <Input
+                  {...field}
+                  {...toggleProps("newPassword")}
+                  id="new-password"
+                  label="New Password"
+                  required
+                  autoComplete="new-password"
+                  placeholder="Enter a new password"
+                  error={fieldState.error?.message}
+                />
+                <p className="text-xs text-gray-500 dark:text-slate-400">
+                  {PASSWORD_RULES_HINT}
+                </p>
+              </div>
             )}
           />
 
@@ -81,10 +132,11 @@ export function SecurityForm(): JSX.Element {
             render={({ field, fieldState }) => (
               <Input
                 {...field}
+                {...toggleProps("confirmNewPassword")}
                 id="confirm-password"
                 label="Confirm New Password"
                 required
-                type="password"
+                autoComplete="new-password"
                 placeholder="Confirm your new password"
                 error={fieldState.error?.message}
               />
@@ -100,7 +152,7 @@ export function SecurityForm(): JSX.Element {
             color="primary"
             text="Save Changes"
             loading={isPending}
-            disabledReason={writeLockReason}
+            disabled={isPending}
             className="px-8 py-2.5 rounded-xl text-sm font-medium transition-all"
           />
         </div>
