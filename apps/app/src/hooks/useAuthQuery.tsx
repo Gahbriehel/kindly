@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   changePassword,
   forgotPassword,
+  resetPassword,
   login,
   logout,
   signup,
@@ -12,6 +13,7 @@ import { IUpdatePasswordPayload, IUserData } from "@/src/models/auth";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { setUser, setToken, logOut } from "@/src/store/slices/auth";
 import { customToast } from "@/src/helpers/customToast";
+import { toastUnhandledError } from "@/src/helpers/axiosErrorToast";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { useAppSelector } from "./useAppSelector";
@@ -30,12 +32,8 @@ export function useLoginMutation() {
       customToast.success(response.message);
       router.push("/dashboard");
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      const message = error.response?.data?.message;
-      if (message !== "You already have an active session on another device.") {
-        customToast.error(message ?? "Login failed");
-      }
-    },
+    onError: (error: AxiosError<{ message: string }>) =>
+      toastUnhandledError(error, "Login failed"),
   });
 }
 
@@ -51,9 +49,8 @@ export function useSignupMutation() {
       customToast.success(response.message);
       router.push("/dashboard");
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      customToast.error(error.response?.data.message ?? "Signup failed");
-    },
+    onError: (error: AxiosError<{ message: string }>) =>
+      toastUnhandledError(error, "Signup failed"),
   });
 }
 
@@ -65,10 +62,24 @@ export function useForgotPasswordMutation() {
       customToast.success(response.message);
       router.push("/login");
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      customToast.error(
-        error.response?.data.message ?? "Mail sent. Check your inbox!",
-      );
+    onError: (error: AxiosError<{ message: string }>) =>
+      toastUnhandledError(error, "Couldn't send the reset link"),
+  });
+}
+
+export function useResetPasswordMutation() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  // The global axios interceptor already toasts the backend's error message.
+  return useMutation({
+    mutationFn: resetPassword,
+    onSuccess: (response) => {
+      customToast.success(response.message);
+      // The backend has ended every session, so drop any local auth state too.
+      dispatch(logOut());
+      queryClient.clear();
+      broadcastAuth({ type: "logout" });
+      router.replace("/login");
     },
   });
 }
@@ -88,11 +99,8 @@ export function useChangePasswordMutation() {
       dispatch(logOut());
       router.push("/login");
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      customToast.error(
-        error.response?.data.message ?? "Change password failed",
-      );
-    },
+    onError: (error: AxiosError<{ message: string }>) =>
+      toastUnhandledError(error, "Change password failed"),
   });
 }
 
@@ -111,11 +119,8 @@ export function useUpdateProfileMutation() {
         } as IUserData),
       );
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      customToast.error(
-        error.response?.data.message ?? "Failed to update profile",
-      );
-    },
+    onError: (error: AxiosError<{ message: string }>) =>
+      toastUnhandledError(error, "Failed to update profile"),
   });
 }
 
@@ -148,11 +153,8 @@ export function useUpdateCompanyProfileMutation() {
       // Same company row; a renamed business changes the auto invoice prefix
       queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      customToast.error(
-        error.response?.data?.message ?? "Failed to update business profile",
-      );
-    },
+    onError: (error: AxiosError<{ message: string }>) =>
+      toastUnhandledError(error, "Failed to update business profile"),
   });
 }
 
@@ -170,7 +172,7 @@ export function useLogoutMutation() {
       customToast.success(response?.message || "Logged out successfully");
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      customToast.error(error.response?.data.message ?? "Logout failed");
+      toastUnhandledError(error, "Logout failed");
       dispatch(logOut());
       queryClient.clear();
       broadcastAuth({ type: "logout" });

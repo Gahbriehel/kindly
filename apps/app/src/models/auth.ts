@@ -99,6 +99,12 @@ export interface IRefreshResponse extends IBaseResponse {
   };
 }
 
+export interface IResetPasswordPayload {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface IUpdatePasswordPayload {
   token: string;
   newPassword: string;

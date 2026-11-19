@@ -6,6 +6,7 @@ import type {
   ISignUpResponse,
   IRefreshResponse,
   IUpdatePasswordPayload,
+  IResetPasswordPayload,
   IUpdateProfilePayload,
   IUpdateCompanyPayload,
   IProfileResponse,
@@ -36,6 +37,15 @@ export async function refreshTokenRequest() {
 export async function forgotPassword(payload: { email: string }) {
   const response = await axios.post<IBaseResponse>(
     `/auth/forgot-password`,
+    payload,
+  );
+  return response.data;
+}
+
+// Email-link flow: the token comes from the reset email, not the session.
+export async function resetPassword(payload: IResetPasswordPayload) {
+  const response = await axios.post<IBaseResponse>(
+    `/auth/reset-password`,
     payload,
   );
   return response.data;
